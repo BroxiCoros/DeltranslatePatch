@@ -96,6 +96,44 @@ function add_sprite(argument0, argument1) //gml_Script_add_sprite
             sprite_set_offset(sp_sprite, xoffset, yoffset)
             ds_map_add(global.chemg_sprite_map, ("sp_" + spr_name), sp_sprite)
         }
+
+        var spm_filename = get_lang_folder_path() + "chapter3/sprites/spm_" + spr_name + ".png"
+        if file_exists(spm_filename) {
+            if (sprites_settings != -1) {
+                sprite_settings = variable_struct_get(sprites_settings, "spm_" + spr_name)
+            }
+            if (sprite_settings != undefined) {
+                fr_num = variable_struct_get(sprite_settings, "frame_num")
+                if (fr_num != undefined)
+                    frame_num = int64(fr_num)
+            }
+            spm_sprite = sprite_add(spm_filename, frame_num, false, false, 0, 0)
+            if (orig_sprite != -1) {
+                xoffset = sprite_get_xoffset(orig_sprite)
+                yoffset = sprite_get_yoffset(orig_sprite)
+                if (xoffset == floor((sprite_get_width(orig_sprite) / 2)))
+                    xoffset = floor((sprite_get_width(spm_sprite) / 2))
+                if (yoffset == floor((sprite_get_height(orig_sprite) / 2)))
+                    yoffset = floor((sprite_get_height(spm_sprite) / 2))
+
+                sprite_set_bbox_mode(spm_sprite, sprite_get_bbox_mode(orig_sprite))
+                sprite_set_bbox(spm_sprite, sprite_get_bbox_left(orig_sprite), sprite_get_bbox_top(orig_sprite), sprite_get_bbox_right(orig_sprite), sprite_get_bbox_bottom(orig_sprite))
+            }
+            if (sprite_settings != undefined) {
+                xoff = variable_struct_get(sprite_settings, "xoffset")
+                if (xoff != undefined)
+                    xoffset = int64(xoff)
+                yoff = variable_struct_get(sprite_settings, "yoffset")
+                if (yoff != undefined)
+                    yoffset = int64(yoff)
+                spd = variable_struct_get(sprite_settings, "spr_speed")
+                if (spd != undefined)
+                    spr_speed = int64(spd)
+            }
+            sprite_set_speed(spm_sprite, spr_speed, spr_speed_type)
+            sprite_set_offset(spm_sprite, xoffset, yoffset)
+            ds_map_add(global.chemg_sprite_map, ("spm_" + spr_name), spm_sprite)
+        }
     }
     else
         sprite = orig_sprite
