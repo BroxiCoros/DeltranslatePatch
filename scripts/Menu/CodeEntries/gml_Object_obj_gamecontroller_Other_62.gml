@@ -15,7 +15,8 @@ if (ds_map_find_value(async_load, "id") == lang_changes_call)
         }
         catch (err)
         {
-            break;
+            show_message("Loaded broken JSON file changes.json");
+            exit;
         }
 
 
