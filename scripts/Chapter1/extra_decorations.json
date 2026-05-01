@@ -1,0 +1,18 @@
+{
+  "_doc": "Decoraciones extra de salas para el Capitulo 1. Se aplican antes del bloque comun generado a partir de RoomsWithBacksLayers.json. Generadas a partir del Fix.csx original (preambulo de room_cc_5f).",
+  "extra_decorations": [
+    {
+      "_comment": "Tienda de Rurus en cc_5f. El guard se declara a nivel de block (no de section) para que en el GML emitido el if del room sea el envoltorio externo y el if del sprite quede anidado dentro. Asi se preserva exactamente el comportamiento del Fix.csx original (donde scr_84_get_sprite solo se evalua cuando room == room_cc_5f).",
+      "blocks": [
+        {
+          "room": "room_cc_5f",
+          "guard": { "type": "sprite_localized", "sprite": "bg_rurus_shop" },
+          "markers": [
+            { "x": 380, "y": 600, "sprite": "bg_rurus_shop", "depth": 949999 }
+          ],
+          "raw": "var arr = layer_get_all_elements(\"Compatibility_Tiles_Depth_950000\");\nlayer_tilemap_destroy(arr[array_length(arr) - 2]);"
+        }
+      ]
+    }
+  ]
+}

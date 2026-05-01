@@ -1,63 +1,44 @@
+// =====================================================================
+// Chapter1/Fix.csx
+// =====================================================================
+// Aplica al data.win las modificaciones especificas del Capitulo 1.
+// La logica comun (helpers, parsing del DSL, inyeccion de assets, etc.)
+// vive en BaseFix.csx -> Common/*.csx.
+//
+// Trabajo especifico de este capitulo:
+//   1. Construir el room_code con el preambulo de room_cc_5f (la tienda
+//      de Rurus que usa un sprite localizado).
+//   2. Reordenar el obj_gamecontroller en ROOM_INITIALIZE para que se
+//      ejecute antes que obj_initializer2 (necesario para que el modo
+//      traductor pueda enganchar antes de que el juego arranque).
+// =====================================================================
+
 #load "../BaseFix.csx"
 
+using System.Collections.Generic;
+using System.IO;
 
+// ----- Construir el room_code (decoracion de salas) -----
+//
+// Cap. 1 usa scr_marker (NO scr_marker_animated), conserva la excepcion
+// de room_town_school. Tiene un preambulo especifico declarado en
+// extra_decorations.json (room_cc_5f).
 
-#region Отрисовка доп. спрайтов в контроллере
-
-string room_code = @"
-if (room == room_cc_5f) {
-    if (scr_84_get_sprite(""bg_rurus_shop"") != bg_rurus_shop) {
-        n = scr_marker(380, 600, scr_84_get_sprite(""bg_rurus_shop""))
-        n.depth = 949999
-        var arr = layer_get_all_elements(""Compatibility_Tiles_Depth_950000"")
-        layer_tilemap_destroy(arr[array_length(arr) - 2])
-    }
-}";
-foreach (var room in jsonRooms) {
-    room_code += string.Format("if (room == {0}) {{\n", room.Key);
-
-    foreach (var spr in jsonRooms[room.Key]) {
-        if (spr["type"] == "tile") {
-            if (room.Key == "room_town_school") {
-                room_code += $@"    
-                var n = scr_marker({spr["x"]}, {spr["y"]}, scr_84_get_sprite(""{spr["sprite"]}""))
-                n.depth = {spr["depth"]}
-                var arr = layer_get_all_elements(""{spr["layer"]}"")
-                layer_tilemap_destroy(arr[array_length(arr) - 4])
-                ";
-            } else {
-                room_code += $@"    
-                var n = scr_marker({spr["x"]}, {spr["y"]}, scr_84_get_sprite(""{spr["sprite"]}""))
-                n.depth = {spr["depth"]} - 1
-                ";
-            }
-        }
-        if (spr["type"] == "sprite") {
-            room_code += $@"
-            var lay_id = layer_get_id(""{spr["layer"]}"")
-            var back_id = layer_sprite_get_id(lay_id, ""{spr["spr_name"]}"");
-            layer_sprite_change(back_id, scr_84_get_sprite(""{spr["sprite"]}""));
-            ";
-        }
-        if (spr["type"] == "background") {
-            room_code += $@"
-            var lay_id = layer_get_id(""{spr["layer"]}"");
-            var back_id = layer_background_get_id(lay_id);
-            layer_background_sprite(back_id, scr_84_get_sprite(""{spr["sprite"]}""));
-            ";
-        }
-    }
-
-    room_code += "}\n";
-}
+string room_code = BuildRoomDecorationCode(
+    jsonRooms,
+    useAnimatedMarkers: false,
+    skipTownSchoolException: false,
+    prependCode: LoadAndBuildExtraDecorations());
 
 AddNewEvent("obj_gamecontroller", EventType.Other, (uint)EventSubtypeOther.RoomStart, room_code);
 
-#endregion
+// ----- Reordenar obj_gamecontroller delante de obj_initializer2 -----
+//
+// En ROOM_INITIALIZE el motor crea las instancias en orden de aparicion
+// en el array. Necesitamos que obj_gamecontroller se inicialice ANTES de
+// obj_initializer2 para que el sistema de localizacion este listo cuando
+// obj_initializer2 corra. Lo conseguimos intercambiando posiciones.
 
-#region Всякая говнинка
-
-// Ставим obj_gamecontroller перед obj_initializer2
 var room = Data.Rooms.ByName("ROOM_INITIALIZE");
 
 foreach (var layer in room.Layers)
@@ -69,8 +50,11 @@ foreach (var layer in room.Layers)
             var inst = layer.InstancesData.Instances[i];
             if (inst.ObjectDefinition.Name.Content == "obj_gamecontroller")
             {
-                (layer.InstancesData.Instances[0].InstanceID, layer.InstancesData.Instances[i].InstanceID) = (layer.InstancesData.Instances[i].InstanceID, layer.InstancesData.Instances[0].InstanceID);
-                (layer.InstancesData.Instances[0], layer.InstancesData.Instances[i]) = (layer.InstancesData.Instances[i], layer.InstancesData.Instances[0]);
+                // Swap con la instancia 0 (incluyendo InstanceID para no romper refs)
+                (layer.InstancesData.Instances[0].InstanceID, layer.InstancesData.Instances[i].InstanceID) =
+                    (layer.InstancesData.Instances[i].InstanceID, layer.InstancesData.Instances[0].InstanceID);
+                (layer.InstancesData.Instances[0], layer.InstancesData.Instances[i]) =
+                    (layer.InstancesData.Instances[i], layer.InstancesData.Instances[0]);
             }
         }
     }
@@ -80,12 +64,9 @@ for (var i = 0; i < room.GameObjects.Count; i++)
 {
     if (room.GameObjects[i].ObjectDefinition.Name.Content == "obj_gamecontroller")
     {
+        // Swap con el slot 0 (lista de game objects globales de la room)
         (room.GameObjects[i], room.GameObjects[0]) = (room.GameObjects[0], room.GameObjects[i]);
     }
 }
-
-#endregion
-
-
 
 await SaveEntries();

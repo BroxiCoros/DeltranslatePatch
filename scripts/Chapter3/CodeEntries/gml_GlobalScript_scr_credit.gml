@@ -128,7 +128,7 @@ function generate_credits()
     ];
 
     var translators_credits = get_chapter_lang_setting("translators_credits", json_parse("[[{\"header\": [\"-Japanese Localization-\"],\"text_line\": [\"8-4, Ltd.\"],\"columns\": 1},{\"header\": [\"-Translator-\"],\"text_line\": [\"Keiko Fukuichi\"],\"columns\": 1}],[{\"header\": [\"-Localization Producers-\"],\"text_line\": [\"Tina Carter\", \"John Ricciardi\"],\"columns\": 1},{\"header\": [\"-Localization Support-\"],\"text_line\": [\"Hiroyuki Matsushita\", \"Yutaka Ohbuchi\", \"Sami Ragone\", \"Alissa Staples\", \"JP Wentz\"],\"columns\": 1}]]"))
-    // TODO своим заполнить
+    // TODO: rellenar con creditos del traductor (lista localizada)
     credits[8] = translators_credits[0];
     credits[9] = translators_credits[1];
 

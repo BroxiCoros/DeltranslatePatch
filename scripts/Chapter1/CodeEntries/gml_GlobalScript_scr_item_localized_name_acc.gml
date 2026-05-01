@@ -2,7 +2,7 @@ function scr_item_localized_name_acc(argument0, argument1) //gml_Script_scr_item
 {
     var item = argument0
 
-    // Просто предметы
+    // Items normales
     if (argument1 == 0)
     switch (item) {
         case 1:
@@ -37,7 +37,7 @@ function scr_item_localized_name_acc(argument0, argument1) //gml_Script_scr_item
             return scr_84_get_lang_string("scr_itemnamelist_slash_scr_itemnamelist_gml_50_1", scr_84_get_lang_string("scr_itemnamelist_slash_scr_itemnamelist_gml_50_0"))
     }
 
-    // Броня
+    // Armaduras
     if (argument1 == 1)
     switch item {
         case 0:
@@ -58,7 +58,7 @@ function scr_item_localized_name_acc(argument0, argument1) //gml_Script_scr_item
             return scr_84_get_lang_string("scr_armorinfo_slash_scr_armorinfo_gml_148_1", scr_84_get_lang_string("scr_armorinfo_slash_scr_armorinfo_gml_148_0")) // Jevilstail
     }
 
-    // Оружие
+    // Armas
     if (argument1 == 2)
     switch item {
         case 0:
@@ -85,7 +85,7 @@ function scr_item_localized_name_acc(argument0, argument1) //gml_Script_scr_item
             return scr_84_get_lang_string("scr_weaponinfo_slash_scr_weaponinfo_gml_223_1", scr_84_get_lang_string("scr_weaponinfo_slash_scr_weaponinfo_gml_223_0")) // DaintyScarf
     }
 
-    // Ключевые предметы
+    // Items clave
     if (argument1 == 3)
     switch item {
         case 0:
@@ -108,7 +108,7 @@ function scr_item_localized_name_acc(argument0, argument1) //gml_Script_scr_item
             return scr_84_get_lang_string("scr_keyiteminfo_slash_scr_keyiteminfo_gml_42_1", scr_84_get_lang_string("scr_keyiteminfo_slash_scr_keyiteminfo_gml_42_0")) // ShadowCrystal
     }
 
-    // Светлый мир
+    // Mundo de luz (Light World)
     if (argument1 == 4)
     switch item {
         case 0:

@@ -1,4 +1,7 @@
 {
+    "3.0.0": {
+        "description": "- Soporte multiidioma y bordes."
+    },
     "2.3.0": {
         "description": "- Deltranslate now is a mod\nfor standalone translation.",
         "description_ru": "- Обновление структуры файлов\nи способа их подкачки."

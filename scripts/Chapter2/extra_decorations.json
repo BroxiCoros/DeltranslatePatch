@@ -1,0 +1,24 @@
+{
+  "_doc": "Decoraciones extra de salas para el Capitulo 2. Se aplican antes del bloque comun generado a partir de RoomsWithBacksLayers.json. Generadas a partir del Fix.csx original (preambulo de spr_queen_poster).",
+  "extra_decorations": [
+    {
+      "_comment": "Carteles de Queen en treasure y spamton_alley.",
+      "blocks": [
+        {
+          "room": "room_dw_city_treasure",
+          "markers": [
+            { "x": 400, "y": 174, "sprite": "spr_queen_poster", "depth": 899999, "image_index": 1 }
+          ]
+        },
+        {
+          "room": "room_dw_city_spamton_alley",
+          "markers": [
+            { "x": 240, "y": 94, "sprite": "spr_queen_poster", "depth": 989999, "image_index": 1 },
+            { "x": 400, "y": 94, "sprite": "spr_queen_poster", "depth": 989999, "image_index": 1 },
+            { "x": 800, "y": 94, "sprite": "spr_queen_poster", "depth": 989999, "image_index": 2 }
+          ]
+        }
+      ]
+    }
+  ]
+}

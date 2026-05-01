@@ -2,7 +2,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
 {
     var item = argument0
 
-    // Просто предметы
+    // Items normales
     if (argument1 == 0 || argument1 == "item")
     switch (item) {
         case 0:
@@ -138,7 +138,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
             return stringsetloc(stringsetloc("BitterTear", "scr_itemnamelist_slash_scr_itemnamelist_gml_135_0"), "scr_itemnamelist_slash_scr_itemnamelist_gml_135_1");
     }
 
-    // Броня
+    // Armaduras
     if (argument1 == 1 || argument1 == "armor")
     switch item {
         case 0:
@@ -241,7 +241,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
             return stringsetloc(stringsetloc("GoldWidow", "scr_armorinfo_slash_scr_armorinfo_gml_788_0"), "scr_armorinfo_slash_scr_armorinfo_gml_788_1");
     }
 
-    // Оружие
+    // Armas
     if (argument1 == 2 || argument1 == "weapon")
     switch item {
         case 0:
@@ -341,7 +341,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
             return stringsetloc(stringsetloc("AbsorbAx", "scr_weaponinfo_slash_scr_weaponinfo_gml_721_0"), "scr_weaponinfo_slash_scr_weaponinfo_gml_721_1");
     }
 
-    // Ключевые предметы
+    // Items clave
     if (argument1 == 3 || argument1 == "key")
     switch item {
         case 0:
@@ -415,7 +415,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
             return stringsetloc(stringsetloc("ClaimbClaws", "scr_keyiteminfo_slash_scr_keyiteminfo_gml_182_0"), "scr_keyiteminfo_slash_scr_keyiteminfo_gml_182_1");
     }
 
-    // Светлый мир
+    // Mundo de luz (Light World)
     if (argument1 == 4)
     switch item {
         case 0:

@@ -1533,7 +1533,7 @@ if (rand == 9) {
     _textscale = min(1, 126 / string_width(str1))
 %%%
 
-// Блядский Тоби Фокс
+// Caso especial de Toby Fox: hardcodeo el escalado para japones
 ---#
 if (rand == 9 && global.lang != "ja") {
     _textscale = 0.7;

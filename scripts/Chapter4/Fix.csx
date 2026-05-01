@@ -1,59 +1,24 @@
+// =====================================================================
+// Chapter4/Fix.csx
+// =====================================================================
+// Modificaciones especificas del Capitulo 4.
+//
+// Cap. 4 no tiene preambulo de room_code propio: simplemente aplica el
+// patron general (scr_marker_animated, con excepcion de room_town_school)
+// sobre RoomsWithBacksLayers.json y guarda. Es el mas simple de los 4.
+// =====================================================================
+
 #load "../BaseFix.csx"
 
-#region Отрисовка доп. спрайтов в контроллере
+using System.Collections.Generic;
+using System.IO;
 
-string room_code = @"";
-foreach (var room in jsonRooms)
-{
-    room_code += string.Format("if (room == {0}) {{\n", room.Key);
-
-    foreach (var spr in jsonRooms[room.Key])
-    {
-        if (spr["type"] == "tile")
-        {
-            if (room.Key == "room_town_school")
-            {
-                room_code += $@"    
-                var n = scr_marker_animated({spr["x"]}, {spr["y"]}, scr_84_get_sprite(""{spr["sprite"]}""), sprite_get_speed(scr_84_get_sprite(""{spr["sprite"]}"")))
-                n.depth = {spr["depth"]}
-                var arr = layer_get_all_elements(""{spr["layer"]}"")
-                layer_tilemap_destroy(arr[array_length(arr) - 4])
-                ";
-            }
-            else
-            {
-                room_code += $@"    
-                var n = scr_marker_animated({spr["x"]}, {spr["y"]}, scr_84_get_sprite(""{spr["sprite"]}""), sprite_get_speed(scr_84_get_sprite(""{spr["sprite"]}"")))
-                n.depth = {spr["depth"]} - 1
-                ";
-            }
-        }
-        if (spr["type"] == "sprite")
-        {
-            room_code += $@"
-            var lay_id = layer_get_id(""{spr["layer"]}"");
-            var back_id = layer_sprite_get_id(lay_id, ""{spr["spr_name"]}"");
-            layer_sprite_change(back_id, scr_84_get_sprite(""{spr["sprite"]}""));
-            ";
-        }
-        if (spr["type"] == "background")
-        {
-            room_code += $@"
-            var lay_id = layer_get_id(""{spr["layer"]}"");
-            var back_id = layer_background_get_id(lay_id);
-            layer_background_sprite(back_id, scr_84_get_sprite(""{spr["sprite"]}""));
-            ";
-        }
-
-        IncrementProgress();
-        UpdateProgressValue(GetProgress());
-    }
-
-    room_code += "}\n";
-}
+string room_code = BuildRoomDecorationCode(
+    jsonRooms,
+    useAnimatedMarkers: true,
+    skipTownSchoolException: false,
+    prependCode: LoadAndBuildExtraDecorations());
 
 AddNewEvent("obj_gamecontroller", EventType.Other, (uint)EventSubtypeOther.RoomStart, room_code);
-
-#endregion
 
 await SaveEntries();

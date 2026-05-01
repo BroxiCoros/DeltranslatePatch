@@ -2,7 +2,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
 {
     var item = argument0
 
-    // Просто предметы
+    // Items normales
     if (argument1 == 0 || argument1 == "item")
     switch (item) {
         case 0:
@@ -127,7 +127,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
             
     }
 
-    // Броня
+    // Armaduras
     if (argument1 == 1)
     switch item {
         case 0:
@@ -216,7 +216,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
 
     }
 
-    // Оружие
+    // Armas
     if (argument1 == 2)
     switch item {
         case 0:
@@ -302,7 +302,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
 
     }
 
-    // Ключевые предметы
+    // Items clave
     if (argument1 == 3)
     switch item {
         case 0:
@@ -370,7 +370,7 @@ function scr_item_localized_name_acc(argument0, argument1, argument2) //gml_Scri
             }
     }
 
-    // Светлый мир
+    // Mundo de luz (Light World)
     if (argument1 == 4)
     switch item {
         case 0:

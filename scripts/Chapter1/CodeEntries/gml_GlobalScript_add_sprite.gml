@@ -59,10 +59,35 @@ function add_sprite(argument0, argument1) //gml_Script_add_sprite
 
         array_push(global.loaded_sprites, sprite)
 
-        var sp_filename = get_lang_folder_path() + "chapter1/sprites/sp_" + spr_name + ".png"
-        if file_exists(sp_filename) {
+        // ===========================================================
+        // Variantes de modos especiales
+        // -----------------------------------------------------------
+        // Antes este bloque cargaba siempre `sp_<n>.png`. Ahora iteramos
+        // los modos declarados por el pack (`global.special_modes`) y
+        // para cada uno intentamos cargar `<prefix>_<n>.png`.
+        //
+        // Ejemplos reconocidos:
+        //   chapter1/sprites/sp_1_spr_kris.png  -> modo prefix "sp_1"
+        //   chapter1/sprites/sp_2_spr_kris.png  -> modo prefix "sp_2"
+        //   chapter1/sprites/sp_spr_kris.png    -> compat viejo ("sp")
+        //
+        // Si no hay modos declarados, este bucle no hace nada y todo
+        // queda exactamente como en el mod original.
+        // ===========================================================
+        var sp_modes = variable_global_exists("special_modes") ? global.special_modes : []
+        for (var sp_i = 0; sp_i < array_length(sp_modes); sp_i++)
+        {
+            var sp_prefix = get_struct_field(sp_modes[sp_i], "prefix", "")
+            if (sp_prefix == "")
+                continue
+
+            var sp_key = sp_prefix + "_" + spr_name
+            var sp_filename = get_lang_folder_path() + "chapter1/sprites/" + sp_key + ".png"
+            if (!file_exists(sp_filename))
+                continue
+
             if (sprites_settings != -1) {
-                sprite_settings = variable_struct_get(sprites_settings, "sp_" + spr_name)
+                sprite_settings = variable_struct_get(sprites_settings, sp_key)
             }
             if (sprite_settings != undefined) {
                 fr_num = variable_struct_get(sprite_settings, "frame_num")
@@ -94,46 +119,11 @@ function add_sprite(argument0, argument1) //gml_Script_add_sprite
             }
             sprite_set_speed(sp_sprite, spr_speed, spr_speed_type)
             sprite_set_offset(sp_sprite, xoffset, yoffset)
-            ds_map_add(global.chemg_sprite_map, ("sp_" + spr_name), sp_sprite)
+            ds_map_add(global.chemg_sprite_map, sp_key, sp_sprite)
         }
 
-        var spm_filename = get_lang_folder_path() + "chapter1/sprites/spm_" + spr_name + ".png"
-        if file_exists(spm_filename) {
-            if (sprites_settings != -1) {
-                sprite_settings = variable_struct_get(sprites_settings, "spm_" + spr_name)
-            }
-            if (sprite_settings != undefined) {
-                fr_num = variable_struct_get(sprite_settings, "frame_num")
-                if (fr_num != undefined)
-                    frame_num = int64(fr_num)
-            }
-            spm_sprite = sprite_add(spm_filename, frame_num, false, false, 0, 0)
-            if (orig_sprite != -1) {
-                xoffset = sprite_get_xoffset(orig_sprite)
-                yoffset = sprite_get_yoffset(orig_sprite)
-                if (xoffset == floor((sprite_get_width(orig_sprite) / 2)))
-                    xoffset = floor((sprite_get_width(spm_sprite) / 2))
-                if (yoffset == floor((sprite_get_height(orig_sprite) / 2)))
-                    yoffset = floor((sprite_get_height(spm_sprite) / 2))
-
-                sprite_set_bbox_mode(spm_sprite, sprite_get_bbox_mode(orig_sprite))
-                sprite_set_bbox(spm_sprite, sprite_get_bbox_left(orig_sprite), sprite_get_bbox_top(orig_sprite), sprite_get_bbox_right(orig_sprite), sprite_get_bbox_bottom(orig_sprite))
-            }
-            if (sprite_settings != undefined) {
-                xoff = variable_struct_get(sprite_settings, "xoffset")
-                if (xoff != undefined)
-                    xoffset = int64(xoff)
-                yoff = variable_struct_get(sprite_settings, "yoffset")
-                if (yoff != undefined)
-                    yoffset = int64(yoff)
-                spd = variable_struct_get(sprite_settings, "spr_speed")
-                if (spd != undefined)
-                    spr_speed = int64(spd)
-            }
-            sprite_set_speed(spm_sprite, spr_speed, spr_speed_type)
-            sprite_set_offset(spm_sprite, xoffset, yoffset)
-            ds_map_add(global.chemg_sprite_map, ("spm_" + spr_name), spm_sprite)
-        }
+        // Nota: Chapter1 NO tiene variante `spm_` aquí. El mod original
+        // solo añadió esa ruta en Ch2+. Se respeta esa convención.
     }
     else
         sprite = orig_sprite
@@ -141,4 +131,3 @@ function add_sprite(argument0, argument1) //gml_Script_add_sprite
     ds_map_add(global.chemg_sprite_map, spr_name, sprite)
     return sprite;
 }
-

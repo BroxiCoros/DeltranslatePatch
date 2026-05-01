@@ -1,0 +1,34 @@
+{
+  "_doc": "Decoraciones extra de salas para el Capitulo 3. Se aplican antes del bloque comun generado a partir de RoomsWithBacksLayers.json. Generadas a partir del Fix.csx original (preambulo de spr_dw_tv_word_poster + spr_board_shop).",
+  "extra_decorations": [
+    {
+      "_comment": "Carteles de TV (palabras) en teevie_intro y teevie_large_01. Solo si el sprite esta cargado para este pack.",
+      "guard": { "type": "sprite_loaded", "sprite": "spr_dw_tv_word_poster" },
+      "blocks": [
+        {
+          "room": "room_dw_teevie_intro",
+          "markers": [
+            { "x": 360, "y": 40, "sprite": "spr_dw_tv_word_poster", "depth": 999999 }
+          ]
+        },
+        {
+          "room": "room_dw_teevie_large_01",
+          "markers": [
+            { "x": 1040, "y": 200, "sprite": "spr_dw_tv_word_poster", "depth": 1000095 },
+            { "x": 1600, "y": 40, "sprite": "spr_dw_tv_word_poster", "depth": 1000095 }
+          ]
+        }
+      ]
+    },
+    {
+      "_comment": "Tienda de board en room_board_1: instancia un nuevo obj_board_parent con el sprite localizado.",
+      "guard": { "type": "sprite_loaded", "sprite": "spr_board_shop" },
+      "blocks": [
+        {
+          "room": "room_board_1",
+          "raw": "var n = instance_create_layer(416, 128, \"BOARD_Instances\", obj_board_parent);\nn.sprite_index = scr_84_get_sprite(\"spr_board_shop\");\nn.depth = 1000000 - 1;"
+        }
+      ]
+    }
+  ]
+}

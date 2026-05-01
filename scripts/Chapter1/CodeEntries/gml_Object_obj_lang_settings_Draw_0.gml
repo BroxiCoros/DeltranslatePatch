@@ -1,4 +1,4 @@
-// Говна из ВУМШСУ_ЬУТГ
+// Codigo adaptado de DEVICE_MENU (animaciones de fondo y BG_ALPHA fade)
 
 if (BGMADE == 1)
 {
@@ -44,19 +44,20 @@ for (var i = 0; i < options_count; i++) {
     if (options[i] == "language") {
         draw_text_shadow(xx_options, yy_options + yyoff_options * i, lang_choice_text, scale, scale, 0)
         var xx_off = string_width(lang_choice_text) * scale
-        // draw_text_shadow(xx_options + xx_off, yy_options + yyoff_options * i, "< ", scale, scale, 0)
-        // xx_off += string_width("< ") * scale
+
+        var lang_has_multi = (get_lang_count() > 1)
+        var lang_name_str = get_lang_setting("name")
+        var lang_display = lang_has_multi ? ("< " + lang_name_str + " >") : lang_name_str
 
         if (option == i) {
             var link = get_lang_setting("link", "")
             if (link != "")
-                draw_rectangle_color(xx_options + xx_off, yy_options + 14 * scale, xx_options + xx_off + string_width(get_lang_setting("name")) * scale, yy_options + 14 * scale + 1, c_blue, c_blue, c_blue, c_blue, false)
+                draw_rectangle_color(xx_options + xx_off, yy_options + 14 * scale, xx_options + xx_off + string_width(lang_display) * scale, yy_options + 14 * scale + 1, c_blue, c_blue, c_blue, c_blue, false)
         }
-        
-        draw_text_shadow(xx_options + xx_off, yy_options + yyoff_options * i, get_lang_setting("name"), scale, scale, 0)
-        
-        xx_off += string_width(get_lang_setting("name")) * scale
-        // draw_text_shadow(xx_options + xx_off, yy_options + yyoff_options * i, " >", scale, scale, 0)
+
+        draw_text_shadow(xx_options + xx_off, yy_options + yyoff_options * i, lang_display, scale, scale, 0)
+
+        xx_off += string_width(lang_display) * scale
 
         if (option == i) {
             var lang_desc = get_lang_setting("description", "")
@@ -70,15 +71,20 @@ for (var i = 0; i < options_count; i++) {
 
     if (options[i] == "special_mode") {
         draw_text_shadow(xx_options, yy_options + yyoff_options * i, spec_mode_text, scale, scale, 0)
-        draw_text_shadow(xx_options + string_width(spec_mode_text) * scale, yy_options + yyoff_options * i, (global.special_mode ? yes_text : no_text), scale, scale, 0)
+
+        // "< nombre >" si hay >1 entrada en special_modes (default + ≥1).
+        var sp_value = get_sp_mode_name()
+        var sp_display = (array_length(global.special_modes) > 1) ? ("< " + sp_value + " >") : sp_value
+        draw_text_shadow(xx_options + string_width(spec_mode_text) * scale, yy_options + yyoff_options * i, sp_display, scale, scale, 0)
+
         if (option == i) {
             draw_set_halign(fa_center)
             draw_set_color(TYPE ? c_aqua : c_gray)
-            draw_text_shadow(xx_mid, yy_options + yyoff_options * options_count, (global.special_mode ? spec_mode_desc_enabled : spec_mode_desc_disabled), scale, scale, 0)
+            draw_text_shadow(xx_mid, yy_options + yyoff_options * options_count, get_sp_mode_desc(), scale, scale, 0)
             draw_set_halign(fa_left)
         }
     } else
-    
+
     if (options[i] == "enable_translated_songs_switch") {
         draw_text_shadow(xx_options, yy_options + yyoff_options * i, tr_songs_text, scale, scale, 0)
         draw_text_shadow(xx_options + string_width(tr_songs_text) * scale, yy_options + yyoff_options * i, (global.translated_songs ? yes_text : no_text), scale, scale, 0)
@@ -95,6 +101,3 @@ if (option < options_count) {
 } else {
     draw_sprite_ext(spr_heartsmall, 0, (xx_mid - string_width(return_text) / 2) - xxoff_heart, yy_return + 4 * scale, scale, scale, 0, COL_A, 1)
 }
-
-
-

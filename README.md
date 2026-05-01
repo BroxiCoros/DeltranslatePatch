@@ -1,362 +1,179 @@
-# Deltranslate Mod v2.0 by Neprim
+# DeltranslatePatch (*fork* con refactor)
+
+*Fork* del mod [*Deltranslate*](https://github.com/Lazy-Desman/DeltranslatePatch) de Neprim, mantenido por **BroxiCoros** como base de *scripts* del proyecto [*LetraDelta*](https://github.com/BroxiCoros/LetraDelta) (traducción al español americano de *DELTARUNE*).
+
+A partir del [repositorio *upstream* de LazyDesman](https://github.com/Lazy-Desman/DeltranslatePatch), este *fork* introduce primero un conjunto de cambios funcionales (restauración del soporte multi-idioma, rediseño de modos especiales, corrección de errores) y luego un refactor estructural en seis etapas que reorganiza el código sin cambiar el comportamiento observable, corrige varios errores latentes e introduce carga diferida de fuentes para acelerar el cambio de idioma. Los detalles completos están en [`CHANGES.md`](CHANGES.md).
+
+Junto con el refactor, este repositorio también incluye los *scripts* y los recursos gráficos para la **versión con bordes** (basada en [*NXRUNE*](https://github.com/IruzzArcana/NXRUNE) de IRUZZ), integrados en la misma jerarquía de carpetas. La opción se activa o desactiva en el momento de aplicar los parches mediante una bandera del *patcher*; no requiere descargas adicionales.
+
+---
+
+## Contenido del repositorio
+
 ```
-Contacts: 
-Discord: @neprim
-Deltranslate Discord Server: https://discord.com/invite/K98BzHZG9P
+scripts/
+├── BaseFix.csx                punto de entrada compartido (#load de los módulos)
+├── changes.json               manifiesto de versiones consumido por el sistema de actualización del mod
+├── Common/                    módulos reutilizables: Helpers, MenuSetup, AssetInjector, FontInjector, etc.
+├── Menu/                      parches del data.win raíz (selector de capítulos)
+├── Chapter1/                  parches del data.win del capítulo 1
+│   ├── Fix.csx                entrada principal de parcheo del capítulo
+│   ├── Borders.csx            parches de la versión con bordes (NXRUNE)
+│   ├── Borders/               recursos gráficos de los bordes (PNG)
+│   ├── manifest.json          declaración de sprites, sonidos y fuentes a localizar
+│   ├── CodeChanges.txt        parches al GML del juego en un DSL propio
+│   └── ...
+├── Chapter2/                  estructura análoga al capítulo 1
+├── Chapter3/                  estructura análoga al capítulo 1
+└── Chapter4/                  estructura análoga al capítulo 1
 ```
 
-`lang` folder means using `https://github.com/Lazy-Desman/EngDeltranslatePack/lang` as template.
+Cada subcarpeta de capítulo contiene un `Fix.csx` (entrada de parcheo principal), un `Borders.csx` (parches de la versión con bordes), un `manifest.json` declarativo, un archivo `CodeChanges.txt` con parches al GML descompilado y varios JSON adicionales que controlan la inyección de recursos.
 
-- Fast-check:
-  - [Fonts](#fonts)
-  - [settings.json](#settingsjson)
-  - [chapter_settings.json](#chapter_settingsjson)
-  - [changes.json](#changesjson)
-  - [lang_info.json](#lang_infojson)
+---
 
-## Fonts
+## Cambios funcionales respecto al *upstream*
 
-You can (and should if you have characters other from base Latin) add your own fonts by putting them into `fonts` folder. If you don't have them, you can copy those from en folder and add characters that you want to them via any font editor. Font sizes that game uses are:
-- `fnt_small` - 6
-- `fnt_tinynoelle` - 7
-- `fnt_comicsans` - 10
-- `fnt_dotumche` - 12
-- `fnt_main` - 12
-- `fnt_main_mono` - 12 (if not present, `fnt_main` is used)
-- `fnt_8bit` - 12
-- `fnt_legend` - 12
-- `fnt_mainbig` - 24
-- `fnt_mainbig_mono` - 24 (if not present, `fnt_mainbig` is used)
+Estos cambios alteran el comportamiento del mod. Todos son compatibles con los paquetes de idioma existentes; no se requieren cambios en `lang/`, `settings.json` ni `chapter_settings.json`.
 
+### Soporte multi-idioma restaurado
 
+El *upstream* había eliminado la capacidad de tener varios paquetes de idioma en la misma instalación. Este *fork* la restaura:
 
-## settings.json
+- `lang/` puede contener subcarpetas por idioma (`lang/es_mx/`, `lang/ru/`, etc.), cada una con su propio `settings.json`, `strings.json`, `sprites/`, etc.
+- Compatibilidad con la estructura plana del mod original: si `lang/settings.json` existe directamente en la raíz, se trata como un único idioma.
+- La opción *Language* del menú permite ciclar entre todos los paquetes disponibles con ←/→, con persistencia en `true_config.ini` bajo `LANG.LANG_DT`.
+- Cambio de idioma en caliente dentro de *gameplay* sin perder la partida.
 
-`name`
-Full name of your language translation.
+### Modos especiales rediseñados
 
-`lang_code`
-Language code of your language translation.
-
-`description`
-Description of your language translation.
-
-
-`link`
-Link to your social media (if needed).
-
-
-`monospace_fonts`
-Set true if you want dialogues looks like in original with monospaced symbols. Highly unrecommended for languages with w i d e characters.
-It also change limitations from 33 and 26 (for faces) symbols per line to 33\*8 = 264 and 26\*8 = 208 pixels per line, so more symbols should fit in one line.
-
-![Monospace and non-monospace image](https://imgur.com/m7Pwi2c.png)
-
-`special_mode`
-If true, adds button "Special Mode: " in language config menu that allows players to switch between usual strings and special string (string, that starts from "sp_")
-
- ![Special mode image](https://imgur.com/To8KhR5.png)
-
-For example:
-```json
-"scr_something": "Usual Deltarune",
-"sp_scr_something": "Very Special Deltarune"
-```
- ![Special mode image](https://imgur.com/KmGuRot.png)
-
-Sprites and sounds are also affected by this setting if you copy them with "sp_" prefix.
-
- ![Special mode image](https://imgur.com/EC7ZnKd.png)
-
-`enable_translated_voices_switch`
-If true, adds button "Translated Voices: " in language config menu that allows players to switch between translated songs (if you have ones) and original ones.
-
-![](https://imgur.com/UIZGKpK.png)
-
-This setting includes following files (they all lie in en folder):
-
-Chapter 1:
-`AUDIO_INTRONOISE.ogg`, `dontforget.ogg`, `snd_joker_anything.ogg`, `snd_joker_chaos.ogg`, `snd_joker_metamorphosis.ogg`, `snd_joker_neochaos.ogg`, `snd_joker_laugh0.ogg`, `snd_joker_laugh1.ogg`, `snd_joker_ha0.ogg`, `snd_joker_ha1.ogg`, `snd_joker_oh.ogg`, `snd_joker_byebye.ogg`
-
-  
-
-Chapter 2:
-`AUDIO_INTRONOISE.ogg`, `ch2_credits.ogg`, `spamton_battle.ogg`, `spamton_meeting.ogg`, `spamton_neo_mix_ex_wip.ogg`, `snd_tm_quiz_a.ogg`, `snd_tm_quiz_b.ogg`, `snd_tm_quiz_c.ogg`, `snd_tm_quiz_d.ogg`, `snd_boxing_fight.ogg`, `snd_boxing_fight_bc.ogg`, `snd_boxing_round1.ogg`, `snd_boxing_round1_bc.ogg`, `snd_boxing_round2.ogg`, `snd_boxing_round2_bc.ogg`, `snd_boxing_round3.ogg`, `snd_boxing_round3_bc.ogg`
-
-  
-
-Chapter 3:
-`AUDIO_INTRONOISE.ogg`, `ch2_credits.ogg`, `snd_joker_laugh0.ogg`, `snd_its_tv_time.ogg`, `snd_smashreveal.ogg`
-
-  
-
-Chapter 4:
-`AUDIO_INTRONOISE.ogg`, `snd_alt_takingtoolong.ogg`, `snd_jackolantern_laugh.ogg`, `snd_jackolantern_laugh_small.ogg`, `snd_long_only.ogg`, `snd_pumpkin_scream_mama.ogg`, `snd_pumpkin_scream_mama_end.ogg`, `snd_takingtoolongtoolong.ogg`, `snd_taking_too_lol.ogg`, `snd_taking_too_long.ogg`, `snd_taking_too_long_fast.ogg`, `snd_taking_too_long_small.ogg`, `snd_taking_too_long_small_fast.ogg`, `snd_taking_tutu.ogg`, `snd_tem_sing_1.ogg`, `snd_tem_sing_2.ogg`, `snd_tem_sing_3.ogg`, `snd_tem_sing_4.ogg`, `snd_tutu_fast.ogg`, `snd_your_long.ogg`, `snd_your_too_bright.ogg`, `snd_your_tutu.ogg`, `snd_statue_left.ogg`, `snd_statue_right.ogg`, `snd_statue_up.ogg`, `snd_statue_down.ogg`
-
-If some strings or sprites depends on voices switch, you can add `spm_` prefixed ones that would be used instead of base ones if translated voices are disabled. For example, it can be used for using different strings in Jackenstein battle if you adapt tutu jokes for your language but they wouldn't make sense without translated voices.
-
- ![spm_ usage image](https://imgur.com/Km06Xbf.png)
- 
-`translate_mode`
-If true, allows you to switch to translate mode (U) that allows you: 
-- (F) Run the game in x4 speed
-- (Shift + F) Run the game in x12 speed
-- (F + A) Run the game in x0.25 speed
-- (F + 0) Run the game in x1/30 speed
-- (S) Save the game in current room
-- (L) Load the game from the last save
-- (N) Enter next room *(use with caution)*
-- (P) Enter previous room *(use with caution)*
-- (H) Heal each party member for 1000
-- (Q) Change language*
-- (R) Reload language strings without reloading a game
-
-*Be careful, as it also reloads sprites and sounds that sometimes can lead to unexpected results. Althought, it fixes by re-entering the room.
-
-`files_url` 
-Link to root for your language files pack, including pack folder. For example, if settings file in your language pack accessed via `https://example.com/lang/en/setting.json` and chapter 1 strings via `https://example.com/lang/en/chapter1/strings.json`, you should put `https://example.com/lang/en/` in `files_url`.
-
-`datas_url` 
-Links to data.win's in case you want to update them by yourself. 
-
-`line_height_factor`
-Multiplies line height in dialogues by this value. Can be used for adding forth line in dialogues if you need so.
-
-![line](https://imgur.com/aPO3Mel.png)
-
-## chapter_settings.json
-(all settings here are optional and listed in `en` folder only as example)
-
-`sprites_settings`
-Allows you to change parametres for sprites that you load such as:
-- `frame_num` - amount of frames in a sprite
-- `xoffset`, `yoffset` - origin offsets of a sprite
-- `spr_speed` - speed of a sprite
-
-If any parameter is absent the one from original sprite is taken.
-
-
-Chapter 1:
-
-`do_not_forget_timings`
-- 0 (60) - "When the"
-- 1 (108) - "light is running low" && Credits next page (CNP)
-- 2 (180) - "And the shadows start to grow"
-- 3 (201) - CNP
-- 4 (278) - "And the places that you know"
-- 5 (298) - CNP
-- 6 (366) - "Seem like fantasy"
-- 7 (390) - CNP
-- 8~9 (480-520) - Lyrics shading
-- 10 (526) - "There's a"
-- 11 (573) - "Light inside your soul" && CNP with translators
-- 12 (645) - "That's still shining in the cold"
-- 13 (668) - CNP
-- 14 (735) - "With the truth"
-- 15 (765) - CNP
-- 16 (798) - "The promise in our hearts"
-- 17 (870) - CNP
-- 18~19 (960-1030) - Lyrics shading
-- 20 (1033) - "Don't forget"
-- 21 (1086) - "I'm with you in the dark"
-- 22-23 (1300-1560) - "To be continued" shading++
-- 23 (1560) - "To be continued" shading--
-- 24 (1660) - Song ending
-- 25 (1680) - "Continue to Chapter 2"
-
-`boob`
-Defines what sprites would be used in the end of the first Chapter ("spr_blockler_" + corresponding letter). *Yeah, I really added that option.*
-
-![boob](https://imgur.com/Q64mAr1.png)
-
-Chapter 2:
-
-`welcome_sign_x1"/"welcome_sign_x2`:
-Xs for "Welcome to the City" sign's lights. First X for letter's start x, second for end x.
-
-![Welcome to the City](https://imgur.com/WSmanFu.png)
-
-`button_sounds_symbols`
-Sounds for buttons with letter. Just list all the letters you use in puzzles and don't forget to add appropriate sound files in sounds/button_sounds. All sounds MUST be in .ogg format (strangely, but the game just can't read another formats). If you don't change puzzle or use only english sounds, just keep english "button_sounds_symbols" - will be used original sounds.
-
-![buttons](https://imgur.com/XdMaKx2.png)
-
-`only_one_tutoriel`
-If you need only one pixel Toriel in Kris's room in the mansion for a good pun adaptation, set this parameter to 1
-
-![One Toriel](https://imgur.com/NBGqOhO.png)
-
-Chapter 3:
-
-`logo_pieces_pos`
-Positions for appearing pieces of logo for chapter 3 intro.
-
-For example, let's take the English logo to show how it works:
-```json
-    "logo_pieces_pos": [
-        [48, 21, 83, 33],
-        [252, 19, 93, 23],
-        [76, 19, 93, 23],
-        [226, 19, 93, 23],
-        [102, 7, 83, 33],
-        [200, 19, 93, 23],
-        [116, 19, 83, 33],
-        [174, 19, 93, 23],
-        [142, 25, 93, 23]
-    ],
-```
-Let's take the first element as an example, which corresponds to the letter "d":
-`[48, 21, 83, 33]`
-- 48 — Distance from the left side
-- 21 — Width
-- 83 — Distance from the top
-- 33 — Height
-
-![Intro](https://imgur.com/H6oyM8u.png)
+El sistema de modos especiales fue reescrito para soportar un número arbitrario de modos declarados en `settings.json`:
 
 ```json
-"additional_funny_words": [
-	"spr_funnytext_star2",
-	"spr_funnytext_loves"
-],
-"additional_funny_sounds": [
-	"snd_amogus",
+"special_modes": [
+    { "name": "Modo normal", "description": "Traducción estándar." },
+    { "prefix": "sp_1", "name": "Modo rima", "description": "Diálogos en verso." },
+    { "prefix": "sp_2", "name": "Modo caló", "description": "Jerga mexicana." }
 ]
 ```
-↑ You can add additional funny words and sounds for Tenna's strings if you need so. Just add them in arrays if needed and add `{I:spr_funnytext_something}` for images or `{S:snd_something}` for sounds.
 
-For example:
+El primer elemento es el modo por defecto (sin `prefix`). Los demás llevan `prefix`, que se usa como prefijo en `strings.json` y en los sprites. El índice activo se persiste por idioma en `true_config.ini`. El formato antiguo `"special_mode": true` sigue siendo compatible.
 
-```json
-    "obj_ch3_GSA04_slash_Step_0_gml_230_0": "* Kris^1, your mother used to {I:spr_funnytext_something}{S:snd_something} cooking shows^1, didn't she?/%",
-```
+### Correcciones de errores
 
-`video_caption_times`
-Timings for Tenna's VHS intro.
+**Tecla R sin condición en `obj_lang_settings_Step_0`** — El *upstream* disparaba `room_restart()` ante cualquier pulsación de `R` sin restricción alguna, una herramienta de desarrollo que cualquier usuario podía activar accidentalmente. Correcciones aplicadas:
 
-`input_game_name_chars`
-Alphabet for game podium name input.
+1. La tecla `R` ahora solo funciona si `global.translator_mode` está activo.
+2. Se añade `audio_stop_all()` antes de `room_restart()` para evitar que la música en bucle se duplique al reiniciar la sala.
 
-![Podium](https://imgur.com/VPtNXsU.png)
+---
 
-`kri_word`
-"KRI" word for podium reaction.
+## Resumen del refactor
 
-`krs_word`
-"KRS" word for podium reaction
+El refactor es compatible con el sistema de paquetes de idioma existente. Los detalles técnicos de cada etapa están en [`CHANGES.md`](CHANGES.md).
 
-`bad_word`
-Bad words for podium reactions.
+- **Etapa 1.** Manifiestos JSON por capítulo como fuente única de verdad. Los tres `.gml` de localización (`scr_init_localization`, `scr_lang_reload_partial`, `scr_load_lang_sprites_only`) se generan en memoria a partir del manifiesto en cada ejecución de `Fix.csx`, sin pasos previos de regeneración manual. Se añade soporte para `font_overrides` (ajuste de tamaño y rango de fuentes desde `settings.json` y `chapter_settings.json`). Errores corregidos: comportamiento de respaldo de `scr_get_font` y de `AppendToEnd(string, string)`.
+- **Etapa 2.** Modularización de `BaseFix.csx`: de 688 líneas monolíticas a 35 líneas que orquestan seis módulos reutilizables (`Helpers`, `MenuSetup`, `CodeChangesParser`, `AssetInjector`, `FontInjector`, `RoomDecorator`).
+- **Etapa 3.** Decoración de salas declarativa, definida en `extra_decorations.json` por capítulo. Antes vivía como literales C# embebidos en cada `Fix.csx`.
+- **Etapa 4.** Limpieza: comentarios en ruso traducidos al español, código muerto eliminado, nomenclatura corregida.
+- **Etapa 5.** Corrección de errores: `scr_lang_reload_partial` ahora recarga `button_sounds` y `tvlandfont` correctamente. Eliminado el duplicado de `fnt_tinynoelle` en el Cap. 1. Refactor del bloque del *keyboard puzzle* del Cap. 2.
+- **Etapa 6.** **Carga diferida de fuentes** y caché global. Solo `fnt_main` se rasteriza en el momento del cambio de idioma; el resto se aplaza hasta el primer uso. Los cambios de idioma a JA/CN/KR pasan de bloqueos de 1–2 segundos a ~150–300 ms en el primer cambio y ~5 ms en los siguientes (vía caché).
 
-`other_name_word` 
-Names of other characters for podium reaction.
+---
 
-`aaa_word`
-"AAA" word for podium reaction (in case you do not use latin A as first character).
+## Cómo se aplica el parche
 
-`bad_word_parent_control`
-Bad words that have special interaction for some reason.
+El flujo dual sigue siendo el del *upstream*: a través de UndertaleModTool (manual) o a través de `DeltaPatcherCLI` (automático, lo que utiliza el [instalador de *LetraDelta*](https://github.com/BroxiCoros/InstaladorLetraDelta)).
 
-`very_bad_word`
-Very bad words for secret podium interaction.
-    
-`forbidden_words_schemas`
-Words that fit corresponding schemas are not allowed to be entered in podium.
+### Mediante UndertaleModTool (uso manual o desarrollo)
 
-`its_tv_time_lights_xs`
-Right Xs for "ITS TV TIME" sign's lights.
+1. Localizar el `data.win` raíz y los de `chapter1_windows/` ... `chapter4_windows/`.
+2. Para cada uno, abrir el `data.win` correspondiente en UndertaleModTool, ir a `Scripts → Run other script` y ejecutar el `Fix.csx` adecuado:
+   - `data.win` raíz → `scripts/Menu/Fix.csx`
+   - `chapter1_windows/data.win` → `scripts/Chapter1/Fix.csx`
+   - … y así con los otros capítulos.
+3. Guardar cada `data.win`.
 
-![tv time](https://imgur.com/80v0yLU.png)
+Si se desea la versión con bordes, ejecutar `scripts/ChapterN/Borders.csx` después de `Fix.csx` en el mismo `data.win` antes de guardar.
 
-`tv_time_timestamps`
-"It's TV Time!" timings.
+### Mediante el instalador automático
 
-`button_sounds_symbols`
-Sounds for buttons with letter. Just list all the letters you use in puzzles and don't forget to add appropriate sound files in sounds/button_sounds. All sounds MUST be in .ogg format (strangely, but the game just can't read another formats). If you don't change puzzle or use only english sounds, just keep english "button_sounds_symbols" - will be used original sounds.
+El [`InstaladorLetraDelta`](https://github.com/BroxiCoros/InstaladorLetraDelta) descarga el `scripts.7z` de la versión `latest` de este repositorio y aplica los parches automáticamente. Los usuarios finales no necesitan utilizar UndertaleModTool.
 
-![Button](https://imgur.com/iSjrP0U.png)
+---
 
-`tvlangfont_string`
-Used for making font from `spr_tvlandfont` that used in Green Room Minigames Room for running line.
+## El DSL de `CodeChanges.txt`
 
-![Tv land font](https://imgur.com/phi6vAK.gif)
-	
-`t_pose_offset`
-X offset for spinning Tenna in secret T-rank room.
-
-![T-V POSE](https://imgur.com/1MSdEpZ.png)
-
-`lyrics_chart_raise_up_your_bat`
-Timings for "Raise up your bat" Ralsei's lyric charts.
-
-Chapter 4:
-
-`alternate_pass`
-Alternate password for Mike's room. Original 6453 remains usable.
-
-`jack_phrases`
-Jackenstein phrases. You can use more or less words in one phrase, just do not forget to add corresponding timings.
-
-`jack_timings`
-Jackenstein phases' timings. So, yet again, do not forget to change them if you translate original voices.
-
-
-Chapter 3&4:
-```json
-"translators_credits": [
-	[
-		{
-			"header": ["-Some header-"],
-			"text_line": ["Some string"],
-			"columns": 1
-		},
-		{
-			"header": ["-Some header-"],
-			"text_line": ["Some string"],
-			"columns": 1
-		}
-	],
-	[
-		{
-			"header": ["-Some header-"],
-			"text_line": ["Some string 1", "Some string 2"],
-			"columns": 1
-		},
-		{
-			"header": ["-Some header-"],
-			"text_line": [
-				"String 1, column 1",
-				"String 2, columnn 1",
-				
-				"String 3, column 2",
-				"String 4, column 2"
-			],
-			"columns": 2
-		}
-	]
-]
-```
-↑ Two pages for your localization team credits. Working for chapter 3 and 4, for chapter 1 and 2 change corresponding lines in `strings.json`
-
-
-
-## changes.json
-If you want to make new version of translation (and make it automatically downloadable), add new entry in `changes.json` like this:
+Cada `Chapter*/CodeChanges.txt` es un archivo de parches al GML descompilado del juego. La sintaxis es la siguiente:
 
 ```
-"major.minor.patch": {
-	"description": "- Some changes.",
-	"name": "Version name",
-	"files": [
-		"file_to/be_changed.txt", 
-		"another_file.json"
-	],
-	"datas": [0, 1, 2, 3, 4] // 0 means chapters menu. Omit this field if you don't update data.win's
-}
+=== gml_Object_obj_X_Step_0
+--- # (opcional: # = ignorar si no se encuentra)
+texto a buscar
+multilínea
++++
+texto de reemplazo
+%%%
 ```
 
-So, how it works. The game downloads `files_url` + `changes.json` file from server and compares it with local `lang/your_lang/changes.json`. If some versions on server are greater than local ones, the game suggests to user to download new translation files:
+Los marcadores y sus significados:
 
-![Language update notification image](https://imgur.com/Yb7bKhx.gif)
+- `===` — nombre del código GML que se va a parchear.
+- `---` — inicio del patrón de búsqueda. Si va seguido de `#`, el parche se ignora silenciosamente cuando el patrón no aparece (útil para parches que solo aplican en ciertas versiones del juego).
+- `+++` — fin del patrón, inicio del reemplazo.
+- `%%%` — fin del bloque. A continuación se puede abrir otro `---`/`+++`/`%%%` para el mismo código, o saltar a otro código con `===`.
 
-If user press `G`, files stated in greater versions are downloaded from `files_url` + `files_path`. New `changes.json` and `settings.json` are downloaded too.
+Las reglas de coincidencia son:
+
+- Los espacios consecutivos del patrón se colapsan a `\s*` (no es necesario indentar de forma exacta).
+- Las llaves `{` y `}` son opcionales (`{?`/`}?`).
+- Los caracteres especiales de las expresiones regulares se escapan automáticamente.
+
+La implementación completa vive en `scripts/Common/CodeChangesParser.csx`.
+
+---
+
+## Publicación automatizada del `scripts.7z`
+
+El flujo `.github/workflows/zip_scripts.yml` se dispara con cada *push* que toca `scripts/**` y publica una versión flotante llamada `latest` con dos archivos:
+
+- `scripts.7z` — toda la carpeta `scripts/` (incluidos los `Borders.csx` y los PNG) empaquetada con compresión rápida (LZMA2 nivel 1, prioridad: descarga rápida sobre tamaño reducido).
+- `dt_changes.json` — copia de `scripts/changes.json` con prefijo `dt_`. Es el manifiesto que consume el cliente del mod en línea para detectar nuevas versiones.
+
+El proceso es transparente: se trabaja como siempre, se hacen `commit` y `push`, y la versión `latest` se actualiza sola. Tanto el instalador como el cliente del mod ven siempre la última.
+
+---
+
+## Compatibilidad
+
+Esta versión está alineada con *DELTARUNE* capítulos 1–4. Las versiones más antiguas no están soportadas.
+
+---
+
+## Repositorios del proyecto
+
+- **[BroxiCoros/LetraDelta](https://github.com/BroxiCoros/LetraDelta)** — pack de español (`lang/`).
+- **[BroxiCoros/LetraDelta-EN](https://github.com/BroxiCoros/LetraDelta-EN)** — pack de inglés (`lang/`).
+- **[BroxiCoros/DeltranslatePatch](https://github.com/BroxiCoros/DeltranslatePatch)** — este repositorio.
+- **[BroxiCoros/InstaladorLetraDelta](https://github.com/BroxiCoros/LetraDeltaInstaller)** — instalador `.exe` para Windows.
+
+---
+
+## Créditos y reconocimientos
+
+A **Neprim**, autor original del mod [*Deltranslate*](https://github.com/Lazy-Desman/DeltranslatePatch).
+
+A **IRUZZ**, por el código de [*NXRUNE*](https://github.com/IruzzArcana/NXRUNE), del que se toman los recursos y la lógica de la versión con bordes.
+
+A **BroxiCoros**, cambios funcionales, refactor (etapas 1–6) y mantenimiento de este *fork*.
+
+### Contacto
+
+- **Discord de *LetraDelta*:** https://discord.gg/ndkjnhXPPr
+- **Discord de *Deltranslate* (*upstream*):** https://discord.com/invite/K98BzHZG9P
+
+---
+
+## Aviso legal
+
+Este proyecto es un mod no oficial sin vínculo alguno con Toby Fox ni con *DELTARUNE*. Todos los derechos sobre el juego pertenecen a sus respectivos propietarios. Este repositorio contiene únicamente código de parcheo; no se distribuyen aquí archivos propiedad de los autores del juego original.
