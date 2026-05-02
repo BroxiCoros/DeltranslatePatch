@@ -192,7 +192,7 @@ Esta versión está alineada con *DELTARUNE* capítulos 1–4. Las versiones má
 - **[BroxiCoros/LetraDelta](https://github.com/BroxiCoros/LetraDelta)** — pack de español (`lang/`).
 - **[BroxiCoros/LetraDelta-EN](https://github.com/BroxiCoros/LetraDelta-EN)** — pack de inglés (`lang/`).
 - **[BroxiCoros/DeltranslatePatch](https://github.com/BroxiCoros/DeltranslatePatch)** — este repositorio.
-- **[BroxiCoros/InstaladorLetraDelta](https://github.com/BroxiCoros/LetraDeltaInstaller)** — instalador `.exe` para Windows.
+- **[BroxiCoros/InstaladorLetraDelta](https://github.com/BroxiCoros/InstaladorLetraDelta)** — instalador `.exe` para Windows.
 
 ---
 
