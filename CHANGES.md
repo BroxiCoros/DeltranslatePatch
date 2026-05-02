@@ -80,7 +80,16 @@ Reorganización del código en seis etapas sucesivas. Ninguna de las etapas alte
 - **`scripts/Chapter{1,2,3,4}/manifest.json`** (archivo nuevo por capítulo): manifiesto declarativo que actúa como fuente única de verdad para sprites, sonidos, canciones, fuentes, aliases y *extra loaders* (`button_sounds`, `tvlandfont`, `additional_funny_assets`). Los doce `.gml` de localización se generan en memoria a partir del manifiesto en cada ejecución de `Fix.csx`; no hay pasos previos de regeneración manual.
 - **`scripts/Common/LocalizationGenerator.csx`** (módulo nuevo): lee un manifiesto y emite los tres `.gml` de localización del capítulo. No se ejecuta directamente; lo carga `tools/regen_localization.csx`.
 - **`tools/regen_localization.csx`** (archivo nuevo): punto de entrada del regenerador. Procesa los cuatro capítulos en una sola ejecución desde UndertaleModTool (`Scripts → Run other script`). No toca el `data.win`; solo escribe los `.gml` en disco. El generador es determinista: dos ejecuciones seguidas producen los mismos bytes.
-- **Soporte para `font_overrides`**: `add_font.gml` fue reescrito para admitir ajustes de tamaño y rango de fuentes desde `chapter_settings.json` y `settings.json`, sin necesidad de volver a compilar el mod.
+- **Soporte para `font_settings`**: `add_font.gml` fue reescrito para admitir ajustes de tamaño y rango de fuentes desde `chapter_settings.json` y `settings.json`, sin necesidad de volver a compilar el mod. La clave `font_settings` acepta un objeto cuyas claves son nombres lógicos de fuentes y cuyos valores tienen los campos opcionales `size` (entero, tamaño en puntos) y `range` (array de dos enteros, rango de puntos de código Unicode). El valor en `chapter_settings.json` tiene prioridad sobre el de `settings.json`. Ejemplo:
+
+  ```json
+  "font_settings": {
+      "fnt_main":  { "size": 18, "range": [2, 255] },
+      "fnt_8bit":  { "size": 8 }
+  }
+  ```
+
+- **Fuentes de reemplazo por capítulo**: `add_font.gml` busca primero un archivo `<fnt_name>_chapterN.ttf` (o `.otf`) en la carpeta `fonts/` del pack antes de intentar el archivo genérico `<fnt_name>.ttf`. Esto permite que una fuente compartida por nombre lógico (p. ej. `fnt_8bit`) use un archivo físico distinto en cada capítulo sin ningún cambio en el código del juego. Si el archivo con sufijo no existe, el comportamiento es idéntico al anterior.
 
 **Bugs corregidos en esta etapa:**
 

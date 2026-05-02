@@ -66,13 +66,50 @@ El primer elemento es el modo por defecto (sin `prefix`). Los demás llevan `pre
 1. La tecla `R` ahora solo funciona si `global.translator_mode` está activo.
 2. Se añade `audio_stop_all()` antes de `room_restart()` para evitar que la música en bucle se duplique al reiniciar la sala.
 
+### Ajuste de fuentes desde `settings.json` y `chapter_settings.json`
+
+El pack de idioma puede afinar el tamaño y el rango de glifos de cualquier fuente sin recompilar el mod, mediante la clave `font_settings` en `settings.json` (efecto global) o en `chapter_settings.json` (efecto por capítulo, con prioridad sobre el global):
+
+```json
+"font_settings": {
+    "fnt_main": {
+        "size": 18,
+        "range": [2, 255]
+    },
+    "fnt_8bit": {
+        "size": 8
+    }
+}
+```
+
+Cada entrada es el nombre lógico de la fuente (igual que el nombre del asset en el juego). Los campos disponibles son:
+
+- `size` — tamaño en puntos con el que se rasterizará la fuente. Sustituye al tamaño declarado en el manifiesto del capítulo.
+- `range` — rango de puntos de código Unicode a incluir, como `[inicio, fin]`. Si se omite, se usa `fonts_range` de `settings.json` o el valor por defecto `[2, 128]`.
+
+Ambos campos son opcionales: se puede especificar uno solo sin el otro.
+
+### Fuentes de reemplazo por capítulo
+
+Si se necesita usar un archivo de fuente diferente para la misma fuente lógica según el capítulo (por ejemplo, porque `fnt_8bit` tiene un diseño distinto en el capítulo 4), basta con colocar en `fonts/` un archivo con el sufijo `_chapterN`:
+
+```
+lang/
+└── es_mx/
+    └── fonts/
+        ├── fnt_8bit.ttf           ← usado en capítulos sin archivo específico
+        └── fnt_8bit_chapter4.ttf  ← usado automáticamente en el capítulo 4
+```
+
+El motor busca primero `<nombre>_chapterN.ttf` (y `.otf`); si no existe, cae al archivo genérico. El código del juego sigue solicitando `fnt_8bit` sin cambios: el reemplazo es transparente.
+
 ---
 
 ## Resumen del refactor
 
 El refactor es compatible con el sistema de paquetes de idioma existente. Los detalles técnicos de cada etapa están en [`CHANGES.md`](CHANGES.md).
 
-- **Etapa 1.** Manifiestos JSON por capítulo como fuente única de verdad. Los tres `.gml` de localización (`scr_init_localization`, `scr_lang_reload_partial`, `scr_load_lang_sprites_only`) se generan en memoria a partir del manifiesto en cada ejecución de `Fix.csx`, sin pasos previos de regeneración manual. Se añade soporte para `font_overrides` (ajuste de tamaño y rango de fuentes desde `settings.json` y `chapter_settings.json`). Errores corregidos: comportamiento de respaldo de `scr_get_font` y de `AppendToEnd(string, string)`.
+- **Etapa 1.** Manifiestos JSON por capítulo como fuente única de verdad. Los tres `.gml` de localización (`scr_init_localization`, `scr_lang_reload_partial`, `scr_load_lang_sprites_only`) se generan en memoria a partir del manifiesto en cada ejecución de `Fix.csx`, sin pasos previos de regeneración manual. Se añade soporte para `font_settings` (ajuste de tamaño y rango de fuentes desde `settings.json` y `chapter_settings.json`). Errores corregidos: comportamiento de respaldo de `scr_get_font` y de `AppendToEnd(string, string)`.
 - **Etapa 2.** Modularización de `BaseFix.csx`: de 688 líneas monolíticas a 35 líneas que orquestan seis módulos reutilizables (`Helpers`, `MenuSetup`, `CodeChangesParser`, `AssetInjector`, `FontInjector`, `RoomDecorator`).
 - **Etapa 3.** Decoración de salas declarativa, definida en `extra_decorations.json` por capítulo. Antes vivía como literales C# embebidos en cada `Fix.csx`.
 - **Etapa 4.** Limpieza: comentarios en ruso traducidos al español, código muerto eliminado, nomenclatura corregida.

@@ -5,8 +5,8 @@
 // argument1: tamano por defecto (size base, definido en el manifiesto).
 //
 // Resolucion de tamano y rango (de mayor a menor prioridad):
-//   1. chapter_settings.json -> font_overrides.<fnt_name>.{size,range}
-//   2. settings.json         -> font_overrides.<fnt_name>.{size,range}
+//   1. chapter_settings.json -> font_settings.<fnt_name>.{size,range}
+//   2. settings.json         -> font_settings.<fnt_name>.{size,range}
 //   3. argument1                                            (size por defecto)
 //      get_lang_setting("fonts_range") o [2, 128]            (range por defecto)
 //
@@ -21,7 +21,7 @@
 //   es responsabilidad de scr_invalidate_font_cache (p. ej. tras la
 //   actualizacion en caliente de archivos del pack).
 //
-// Compatible con packs antiguos: si no hay font_overrides, todo funciona
+// Compatible con packs antiguos: si no hay font_settings, todo funciona
 // igual que antes.
 
 function add_font(argument0, argument1) //gml_Script_add_font
@@ -38,7 +38,7 @@ function add_font(argument0, argument1) //gml_Script_add_font
     // ----- Override por fuente: tamano y rango -----
     // Primero global (settings.json), despues chapter (chapter_settings.json).
     // El de capitulo gana sobre el global.
-    var global_overrides = get_lang_setting("font_overrides", undefined)
+    var global_overrides = get_lang_setting("font_settings", undefined)
     if (!is_undefined(global_overrides) && is_struct(global_overrides) && variable_struct_exists(global_overrides, fnt_name)) {
         var ovr = variable_struct_get(global_overrides, fnt_name)
         if (is_struct(ovr)) {
@@ -48,7 +48,7 @@ function add_font(argument0, argument1) //gml_Script_add_font
                 fonts_range = variable_struct_get(ovr, "range")
         }
     }
-    var chapter_overrides = get_chapter_lang_setting("font_overrides", undefined)
+    var chapter_overrides = get_chapter_lang_setting("font_settings", undefined)
     if (!is_undefined(chapter_overrides) && is_struct(chapter_overrides) && variable_struct_exists(chapter_overrides, fnt_name)) {
         var ovr = variable_struct_get(chapter_overrides, fnt_name)
         if (is_struct(ovr)) {
