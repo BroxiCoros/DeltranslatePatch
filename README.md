@@ -53,7 +53,7 @@ El sistema de modos especiales fue reescrito para soportar un número arbitrario
 "special_modes": [
     { "name": "Modo normal", "description": "Traducción estándar." },
     { "prefix": "sp_1", "name": "Modo rima", "description": "Diálogos en verso." },
-    { "prefix": "sp_2", "name": "Modo caló", "description": "Jerga mexicana." }
+    { "prefix": "sp_2", "name": "Modo México", "description": "Jerga mexicana." }
 ]
 ```
 
