@@ -159,7 +159,7 @@ FN_3 == "GASTER" || FN_3 == stringsetloc("GASTER", "DEVICE_NAMER_slash_Draw_0_gm
 +++
     var texts = [];
     var i = 90;
-    while (i < 100 && !is_undefined(ds_map_find_value(global.lang_map, "obj_dw_churchb_bookshelf_slash_Step_0_gml_" + string(i) + "_0"))) {
+    while (!is_undefined(ds_map_find_value(global.lang_map, "obj_dw_churchb_bookshelf_slash_Step_0_gml_" + string(i) + "_0"))) {
         array_push(texts, stringsetloc("", "obj_dw_churchb_bookshelf_slash_Step_0_gml_" + string(i) + "_0"));
         i++;
     }
