@@ -2,6 +2,21 @@
 
 Historial completo de cambios introducidos en este *fork* respecto al repositorio *upstream* de [Neprim / Lazy-Desman](https://github.com/Lazy-Desman/DeltranslatePatch). Los cambios se presentan en orden cronológico de implementación.
 
+
+---
+
+## Hotfix posterior — `add_font` no pisa variables de instancia
+
+**Motivo:** la carga diferida/cached de fuentes podía ejecutarse desde el contexto de cualquier objeto que pidiera una fuente. En GameMaker, las asignaciones sin `var` dentro de un script pueden escribirse en la instancia llamadora. En `add_font.gml`, variables temporales como `path`, `font`, `fnt_name`, `fnt_size`, `fonts_range` y nombres de archivo no estaban declaradas como locales.
+
+**Síntoma observado:** en el Capítulo 3, tablero 2, al pasar a controlar a Susie, `obj_mainchara_board.path` podía quedar sobrescrito con una ruta string de fuente. Después, `mp_grid_path` recibía ese string donde esperaba un ID numérico y el juego crasheaba con:
+
+```text
+mp_grid_path argument 2 incorrect type (string) expecting a Number (YYGI32)
+```
+
+**Corrección:** todos los `gml_GlobalScript_add_font.gml` del menú y de los capítulos 1–4 declaran sus temporales con `var`, evitando que el script modifique variables de instancia del objeto que lo invoca.
+
 ---
 
 ## Cambios funcionales (previos al refactor)

@@ -26,11 +26,11 @@
 
 function add_font(argument0, argument1) //gml_Script_add_font
 {
-    fnt_name = argument0
-    fnt_size = argument1
+    var fnt_name = argument0
+    var fnt_size = argument1
 
     // ----- Range por defecto (preserva comportamiento del mod base) -----
-    fonts_range = get_lang_setting("fonts_range")
+    var fonts_range = get_lang_setting("fonts_range")
     if (is_undefined(fonts_range)) {
         fonts_range = [2, 128]
     }
@@ -59,7 +59,7 @@ function add_font(argument0, argument1) //gml_Script_add_font
         }
     }
 
-    path = get_lang_folder_path() + "fonts/"
+    var path = get_lang_folder_path() + "fonts/"
     // Override por capitulo. Si el pack provee un archivo
     // `<fnt_name>_chapter3.ttf` (u .otf) en `fonts/`, lo usa con
     // prioridad sobre el archivo generico `<fnt_name>.ttf`. Esto
@@ -68,10 +68,10 @@ function add_font(argument0, argument1) //gml_Script_add_font
     // el codigo de juego sigue pidiendo "fnt_8bit" sin saber del
     // override, pero aqui cargamos el archivo correcto. Si el
     // archivo con sufijo no existe, todo se comporta como antes.
-    filename_ttf_chapter = ((path + fnt_name) + "_chapter3.ttf")
-    filename_otf_chapter = ((path + fnt_name) + "_chapter3.otf")
-    filename_ttf = ((path + fnt_name) + ".ttf")
-    filename_otf = ((path + fnt_name) + ".otf")
+    var filename_ttf_chapter = ((path + fnt_name) + "_chapter3.ttf")
+    var filename_otf_chapter = ((path + fnt_name) + "_chapter3.otf")
+    var filename_ttf = ((path + fnt_name) + ".ttf")
+    var filename_otf = ((path + fnt_name) + ".otf")
 
     // ----- Resolver QUE archivo se va a usar (si alguno) -----
     // Antes este if/else if entrelazaba la resolucion con la llamada
@@ -85,7 +85,7 @@ function add_font(argument0, argument1) //gml_Script_add_font
 
     // Asset built-in (Deltarune original) usado para heredar bold/italic
     // y como fallback si no hay archivo del pack.
-    font = asset_get_index(fnt_name)
+    var font = asset_get_index(fnt_name)
 
     if (resolved_path != "") {
         // ----- Cache por (path, size, rango) -----
