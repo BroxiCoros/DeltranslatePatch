@@ -109,7 +109,7 @@ El motor busca primero `<nombre>_chapterN.ttf` (y `.otf`); si no existe, cae al 
 
 El refactor es compatible con el sistema de paquetes de idioma existente. Los detalles técnicos de cada etapa están en [`CHANGES.md`](CHANGES.md).
 
-- **Etapa 1.** Manifiestos JSON por capítulo como fuente única de verdad. Los tres `.gml` de localización (`scr_init_localization`, `scr_lang_reload_partial`, `scr_load_lang_sprites_only`) se generan en memoria a partir del manifiesto en cada ejecución de `Fix.csx`, sin pasos previos de regeneración manual. Se añade soporte para `font_settings` (ajuste de tamaño y rango de fuentes desde `settings.json` y `chapter_settings.json`). Errores corregidos: comportamiento de respaldo de `scr_get_font` y de `AppendToEnd(string, string)`.
+- **Etapa 1.** Manifiestos JSON por capítulo como fuente única de verdad. Los tres `.gml` de localización (`scr_init_localization`, `scr_lang_reload_partial`, `scr_load_lang_sprites_only`) se generan a partir del manifiesto con `tools/regen_localization.csx`, que escribe los archivos en `CodeEntries/`. **Es un paso manual:** tras editar cualquier `manifest.json` hay que ejecutar el regenerador (en UndertaleModTool: `Scripts → Run other script`); si se omite, `Fix.csx` aplicará en silencio los `.gml` desactualizados del disco. Se añade soporte para `font_settings` (ajuste de tamaño y rango de fuentes desde `settings.json` y `chapter_settings.json`). Errores corregidos: comportamiento de respaldo de `scr_get_font` y de `AppendToEnd(string, string)`.
 - **Etapa 2.** Modularización de `BaseFix.csx`: de 688 líneas monolíticas a 35 líneas que orquestan seis módulos reutilizables (`Helpers`, `MenuSetup`, `CodeChangesParser`, `AssetInjector`, `FontInjector`, `RoomDecorator`).
 - **Etapa 3.** Decoración de salas declarativa, definida en `extra_decorations.json` por capítulo. Antes vivía como literales C# embebidos en cada `Fix.csx`.
 - **Etapa 4.** Limpieza: comentarios en ruso traducidos al español, código muerto eliminado, nomenclatura corregida.
@@ -145,7 +145,7 @@ Cada `Chapter*/CodeChanges.txt` es un archivo de parches al GML descompilado del
 
 ```
 === gml_Object_obj_X_Step_0
---- # (opcional: # = ignorar si no se encuentra)
+---# (la # es opcional: ignorar si no se encuentra; debe ir pegada, sin espacio)
 texto a buscar
 multilínea
 +++
@@ -156,7 +156,7 @@ texto de reemplazo
 Los marcadores y sus significados:
 
 - `===` — nombre del código GML que se va a parchear.
-- `---` — inicio del patrón de búsqueda. Si va seguido de `#`, el parche se ignora silenciosamente cuando el patrón no aparece (útil para parches que solo aplican en ciertas versiones del juego).
+- `---` — inicio del patrón de búsqueda. Si va seguido **inmediatamente** de `#` (es decir, `---#`, sin espacio: el parser exige la `#` como cuarto carácter), el parche se ignora silenciosamente cuando el patrón no aparece (útil para parches que solo aplican en ciertas versiones del juego). Con `--- #` (con espacio) el flag NO se activa y el parche fallido mostrará un aviso.
 - `+++` — fin del patrón, inicio del reemplazo.
 - `%%%` — fin del bloque. A continuación se puede abrir otro `---`/`+++`/`%%%` para el mismo código, o saltar a otro código con `===`.
 

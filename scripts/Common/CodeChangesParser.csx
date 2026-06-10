@@ -25,7 +25,8 @@
 // Linea-por-linea, con marcadores de prefijo:
 //
 //   === gml_Object_obj_X_Step_0       <- nombre del codigo a parchear
-//   --- # (opcional: # = ignorar si no encuentra el patron)
+//   ---# (la # es opcional: ignorar si no encuentra el patron. Debe ir
+//         pegada al ---, sin espacio: el parser exige str[3] == '#')
 //   bloque                            <- texto a buscar (multilinea OK)
 //   ANTES
 //   +++
@@ -38,7 +39,7 @@
 //   otro_reemplazo
 //   %%%
 //   === gml_Object_obj_Y_Create_0     <- siguiente codigo
-//   --- # ...
+//   ---# ...
 //
 // Reglas:
 //
@@ -48,7 +49,7 @@
 //  - Si el flag de ignorar (---#) NO esta presente y el patron no se
 //    encuentra, se imprime un aviso (ScriptMessage) pero el script
 //    continua.
-//  - Si esta el flag --- # y el patron no se encuentra, se omite en
+//  - Si esta el flag ---# y el patron no se encuentra, se omite en
 //    silencio (util para parches que solo aplican en algunas versiones
 //    del juego).
 //  - Cada bloque empieza con --- (busqueda) y termina con %%%, con +++
