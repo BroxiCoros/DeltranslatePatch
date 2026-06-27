@@ -1,3 +1,6 @@
+if (!_video_enabled)
+    exit;
+
 var _video_data = video_draw();
 var _video_status = _video_data[0];
 
@@ -6,6 +9,7 @@ if (_video_status == 0)
     switch (video_get_format())
     {
         case 0:
+			_vid_surface = _video_data[1];
             draw_surface(_video_data[1], 0, 0);
             break;
         
@@ -101,13 +105,11 @@ if (_video_status == 0)
             scr_84_set_draw_font("mainbig");
             draw_set_halign(fa_center);
             draw_set_color(c_black);
-            draw_set_valign(fa_middle)
-            draw_text(camerax() + (view_wport[0] / 2) + 2, ((cameray() + view_hport[0]) - 60 + 16) + 2, text_list[text_index].caption_text);
-            draw_text(camerax() + (view_wport[0] / 2) + 4, ((cameray() + view_hport[0]) - 60 + 16) + 4, text_list[text_index].caption_text);
+            draw_text(camerax() + (view_wport[0] / 2) + 2, ((cameray() + view_hport[0]) - 60) + 2, text_list[text_index].caption_text);
+            draw_text(camerax() + (view_wport[0] / 2) + 4, ((cameray() + view_hport[0]) - 60) + 4, text_list[text_index].caption_text);
             draw_set_color(c_yellow);
-            draw_text_outline(camerax() + (view_wport[0] / 2), (cameray() + view_hport[0]) - 60 + 16, text_list[text_index].caption_text, 8388608);
+            draw_text_outline(camerax() + (view_wport[0] / 2), (cameray() + view_hport[0]) - 60, text_list[text_index].caption_text, 8388608);
             draw_set_color(c_white);
-            draw_set_valign(fa_top)
             draw_set_halign(fa_left);
         }
     }
