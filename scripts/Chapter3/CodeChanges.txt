@@ -661,7 +661,6 @@ c_var_instance(podium[0], "mystring", stringsetloc("FUN", "obj_ch3_GSA02_slash_S
     for (var i = 0; i < string_length(TP_str); i++)
         draw_text(x - 16 - (xoff * (string_length(TP_str) - i)), y + 70 + (20 * i), string_char_at(TP_str, i + 1));
 %%%
----
 
 === gml_Object_obj_tenna_minigame_ui_Draw_0
 ---

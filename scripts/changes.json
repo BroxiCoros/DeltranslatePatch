@@ -1,4 +1,8 @@
 {
+    "2.4.0": {
+        "description": "- 2025 -> 2026.\nSmall update for Ch3 Tenna tape.\nUpdate for Menu and settings.json.",
+        "description_ru": "- 2025 -> 2026.\nИсправление для кассеты Тенны в 3 главе.\nОбновление меню выбора глав и файла настроек."
+    },
     "2.3.0": {
         "description": "- Deltranslate now is a mod\nfor standalone translation.",
         "description_ru": "- Обновление структуры файлов\nи способа их подкачки."

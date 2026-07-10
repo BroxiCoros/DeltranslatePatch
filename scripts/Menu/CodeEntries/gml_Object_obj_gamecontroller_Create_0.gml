@@ -139,7 +139,7 @@ update_language = function() {
 
 update_language()
 
-var url = get_lang_setting("files_url", "")
+files_url = get_lang_setting("files_url", "")
 
 scr_init_localization()
 
@@ -150,8 +150,8 @@ if (os_type != os_windows) {
     exit;
 }
 
-if (url != "") {
-    lang_changes_call = http_get(url + "changes.json")
+if (files_url != "") {
+    lang_changes_call = http_get(files_url + "changes.json")
 }
 
 desc_folded = true;
@@ -187,18 +187,17 @@ load_datas = function() {
     loading_error = ""
 
     var datas = translation_version_changes_datas;
+    var datas_url = get_lang_setting("datas_url", files_url)
+    if (is_array(datas_url)) {
+        datas_url = string_copy(datas_url[0], 1, string_last_pos("/", datas_url[0]))
+    }
     for (var i = 0; i < array_length(datas); i++) {
-        var urls = get_lang_setting("datas_url", [])
-        if (datas[i] < array_length(urls)) {
-            var file = urls[datas[i]]
-            var path = ""
-            if (datas[i] > 0) {
-                path = "chapter" + string(datas[i])
-            }
-            variable_struct_set(datas_in_upload, datas[i], http_get_file(file, "\\\\?\\" + program_directory + "tmp/" + path + "/data.win"));
-        } else {
-            show_message(string("Index '{0}' out of range of 'datas_url'", string(datas[i])))
+        var file = datas_url + "data_ch" + string(datas[i]) + ".win"
+        var path = ""
+        if (datas[i] > 0) {
+            path = "chapter" + string(datas[i])
         }
+        variable_struct_set(datas_in_upload, datas[i], http_get_file(file, "\\\\?\\" + program_directory + "tmp/" + path + "/data.win"));
     }
 }
 

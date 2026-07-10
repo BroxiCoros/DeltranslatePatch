@@ -226,7 +226,6 @@ if (global.menuno == 5)
                         _xPos = xx + 460;
                     }
                     
-                    var icon_color = 16777215;
                     draw_sprite_ext(_sprite, 0, _xPos, _yPos + (i * (_sprite_height + line_padding)) + _yOffset, 2, 2, 0, c_white, 1);
                     
                     if (!global.is_console)
@@ -568,7 +567,7 @@ if (global.menuno == 4)
         draw_text(xx + 230, ch_y[4], string_hash_to_newline(boldness_amount));
     }
     
-    var cdw = string_width(string_hash_to_newline(char_desc))
+    var cdw = string_width(string_hash_to_newline(char_desc));
     draw_text(xx + 320 + min(0, 285 - cdw), yy + 105, string_hash_to_newline(char_desc));
     var guts_xoff = -max(0, guts_amount - 3) * 20;
     
@@ -659,9 +658,6 @@ if (global.menuno == 2)
     var ch_vspace = langopt(27, 28);
     var ln_xoff1 = 626;
     var ln_xoff2 = 636;
-    // var ch_vspace = langopt(27, 28);
-    // var ln_xoff1 = langopt(580, 626);
-    // var ln_xoff2 = langopt(590, 636);
     ossafe_fill_rectangle(xx + 60, yy + 90, xx + ln_xoff1, yy + 410, false);
     scr_darkbox(xx + 50, yy + 80, xx + ln_xoff2, yy + 420);
     draw_set_color(c_white);
@@ -1175,9 +1171,7 @@ if (global.menuno == 1)
     
     
     draw_set_color(c_white);
-    // var itemoff = [50 + 146, 50 + 226 + 42, 50 + 346];
     var itemoff = [158, 278, 398];
-    // var itemoff = langopt([180, 300, 420], [158, 278, 398]);
 
     var xx_off_heart_col1 = 50 + 20
     var xx_off_item_col1 = xx_off_heart_col1 + 22
@@ -1193,7 +1187,6 @@ if (global.menuno == 1)
             draw_set_color(c_gray);
     }
     
-    // draw_set_halign(fa_right)
     draw_text(xx + itemoff[0], yy + 110, string_hash_to_newline(stringsetloc("USE", "obj_darkcontroller_slash_Draw_0_gml_837_0")));
     
     if (global.submenu > 1)
@@ -1204,7 +1197,6 @@ if (global.menuno == 1)
             draw_set_color(c_gray);
     }
     
-    // draw_set_halign(fa_middle)
     draw_text(xx + itemoff[1], yy + 110, string_hash_to_newline(stringsetloc("TOSS", "obj_darkcontroller_slash_Draw_0_gml_839_0")));
     
     if (global.submenu > 1)
@@ -1215,7 +1207,6 @@ if (global.menuno == 1)
             draw_set_color(c_gray);
     }
     
-    // draw_set_halign(fa_left)
     draw_text(xx + itemoff[2], yy + 110, string_hash_to_newline(stringsetloc("KEY", "obj_darkcontroller_slash_Draw_0_gml_841_0")));
     
     if (global.submenu >= 2 && global.submenu <= 6 && global.submenu != 4)
@@ -1223,11 +1214,9 @@ if (global.menuno == 1)
         sm = global.submenucoord[2];
         yheart = (floor(sm / 2) * 30) + 162 + yy;
         xheart = xx_off_heart_col1 + xx;
-        // xheart = langopt(120, 72) + xx;
         
         if (sm == 1 || sm == 3 || sm == 5 || sm == 7 || sm == 9 || sm == 11)
             xheart = xx_off_heart_col2 + xx;
-            // xheart = langopt(330, 334) + xx;
         
         if (global.submenu == 2 || global.submenu == 3)
             draw_sprite(spr_heart, 0, xheart, yheart);

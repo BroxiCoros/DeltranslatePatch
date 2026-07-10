@@ -2,25 +2,31 @@
 ---#
 return (global.lang == "en") ? "The Beginning" : "はじまり";
 +++
-return scr_get_lang_string("The Beginning", "gml_GlobalScript_scr_init_0");
+return scr_get_lang_string("The Beginning", "gml_GlobalScript_scr_init_0_0");
 %%%
 
 ---#
 return (global.lang == "en") ? "A Cyber's World" : "サイバーワールド";
 +++
-return scr_get_lang_string("A Cyber's World", "gml_GlobalScript_scr_init_1");
+return scr_get_lang_string("A Cyber's World", "gml_GlobalScript_scr_init_0_1");
 %%%
 
 ---#
 return (global.lang == "en") ? "Late Night" : "レイトナイト";
 +++
-return scr_get_lang_string("Late Night", "gml_GlobalScript_scr_init_2");
+return scr_get_lang_string("Late Night", "gml_GlobalScript_scr_init_0_2");
 %%%
 
 ---#
 return (global.lang == "en") ? "Prophecy" : "予言";
 +++
-return scr_get_lang_string("Prophecy", "gml_GlobalScript_scr_init_3");
+return scr_get_lang_string("Prophecy", "gml_GlobalScript_scr_init_0_3");
+%%%
+
+---#
+return (global.lang == "en") ? "Festival Day" : "お祭り";
++++
+return scr_get_lang_string("Festival Day", "gml_GlobalScript_scr_init_0_4");
 %%%
 
 ---#

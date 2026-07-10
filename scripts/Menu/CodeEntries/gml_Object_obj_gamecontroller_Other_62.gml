@@ -131,13 +131,16 @@ for (var ind = 0; ind < array_length(datanames); ind++)
         if (ds_map_find_value(async_load, "status") == 0)
         {
             var path = ""
+            var path_to = "data.win"
             if (datanames[ind] > 0) {
                 path = "chapter" + string(datanames[ind])
+                path_to = "chapter" + string(datanames[ind]) + "_windows/data.win"
             }
 
             var file_buffer = buffer_load("\\\\?\\" + program_directory + "tmp/" + path + "/data.win");
+            var orig_file = file_bin_open("\\\\?\\" + program_directory + path_to, 0)
 
-            if (buffer_get_size(file_buffer) == 0)
+            if (buffer_get_size(file_buffer) / file_bin_size(orig_file) < 0.95)
             {
                 loading_error = "408";
                 loading_new_translation_files = false;

@@ -364,7 +364,7 @@ if (MENU_NO >= 0)
         draw_set_alpha(0.4);
         draw_set_color(c_white);
         draw_set_halign(fa_right);
-        draw_text_transformed(320, 230, scr_84_get_subst_string(scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_205_0", "DELTARUNE ~1 (C) Toby Fox 2018-2025 "), string(version_text)), 0.5, 0.5, 0); // <localization fetch error>
+        draw_text_transformed(320, 230, scr_84_get_subst_string(scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_205_0", "DELTARUNE ~1 (C) Toby Fox 2018-2026 "), string(version_text)), 0.5, 0.5, 0); // <localization fetch error>
         draw_set_halign(fa_left);
     }
     else

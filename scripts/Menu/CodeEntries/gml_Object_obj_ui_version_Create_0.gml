@@ -1,5 +1,5 @@
 _copyright_enabled = false;
-_copyright_text = scr_get_lang_string("(C) Toby Fox 2018-2025", "gml_Object_obj_ui_version_Create_0_0");
+_copyright_text = scr_get_lang_string("(C) Toby Fox 2018-2026", "gml_Object_obj_ui_version_Create_0_0");
 _version_text = scr_get_lang_string("DELTARUNE ", "gml_Object_obj_ui_version_Create_0_1") + get_version();
 _scale = 1;
 _alpha = 1;
