@@ -39,7 +39,6 @@ if (dialoguer == 1 && formatted == 0)
     if (global.fc == 0)
     {
         charline = originalcharline;
-        max_string_width = max_string_width_base;
         writingx = x;
     }
     else
@@ -47,12 +46,10 @@ if (dialoguer == 1 && formatted == 0)
         if (global.fc == 22)
         {
             charline = 30;
-            max_string_width = 30 * hspace
             vspace = 28;
         }
 
         charline = charline_face;
-        max_string_width = max_string_width_face;
         writingx = x + (58 * f);
     }
     
@@ -230,13 +227,11 @@ for (n = 1; n < pos; n += 1)
                 if (global.fc == 0)
                 {
                     charline = originalcharline;
-                    max_string_width = max_string_width_base;
                     wx = x;
                 }
                 else
                 {
                     charline = charline_face;
-                    max_string_width = max_string_width_face;
                     wx = x + (58 * f);
                 }
             }
@@ -480,7 +475,6 @@ for (n = 1; n < pos; n += 1)
                 if (global.fc == 0)
                 {
                     charline = originalcharline;
-                    max_string_width = max_string_width_base;
                     wx = x;
                 }
                 else

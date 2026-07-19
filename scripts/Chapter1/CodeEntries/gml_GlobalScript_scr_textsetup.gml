@@ -14,7 +14,6 @@ function scr_textsetup(argument0, argument1, argument2, argument3, argument4, ar
     xcolor = mycolor
     if (argument4 != 33 || global.fc == 0) {
         charline = argument4
-        max_string_width = charline * hspace
     }
 }
 

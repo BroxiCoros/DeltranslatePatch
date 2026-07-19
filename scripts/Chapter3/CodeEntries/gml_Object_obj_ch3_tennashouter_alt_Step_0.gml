@@ -15,7 +15,6 @@ if (!init)
         myfont = scr_84_get_font("dotumche");
         charline = 24;
         hspace = (global.lang == "ja") ? 12 : 9;
-        max_string_width = charline * hspace
         vspace = 18;
         skippable = other.skippable;
     }
