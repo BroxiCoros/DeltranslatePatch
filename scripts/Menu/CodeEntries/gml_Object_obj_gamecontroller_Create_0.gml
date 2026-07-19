@@ -130,14 +130,13 @@ update_language = function() {
 
         global.lang = lang_code
         global.lang_settings = settings
-
-        update_lang_version()
     } else {
         global.lang_settings = json_parse("{\"name\": \"English\"}");
     }
 }
 
 update_language()
+update_lang_version()
 
 files_url = get_lang_setting("files_url", "")
 
@@ -165,17 +164,19 @@ loading_error = ""
 
 settings_loaded = false
 
+add_file_to_upload_list = function(file) {
+    if (!variable_struct_exists(files_in_upload, file)) {
+        variable_struct_set(files_in_upload, file, http_get_file(get_lang_setting("files_url", "") + file, "\\\\?\\" + program_directory + "tmp/" + file));
+    }
+}
+
 load_settings = function() {
     files_in_upload = {}
     loaded_files = []
     loading_error = ""
 
-    if (!variable_struct_exists(files_in_upload, "settings.json")) {
-        variable_struct_set(files_in_upload, "settings.json", http_get_file(get_lang_setting("files_url", "") + "settings.json", "\\\\?\\" + program_directory + "tmp/settings.json"));
-    }
-    if (!variable_struct_exists(files_in_upload, "changes.json")) {
-        variable_struct_set(files_in_upload, "changes.json", http_get_file(get_lang_setting("files_url", "") + "changes.json", "\\\\?\\" + program_directory + "tmp/changes.json"));
-    }
+    add_file_to_upload_list("settings.json")
+    add_file_to_upload_list("changes.json")
 }
 
 load_files = function() {
@@ -239,6 +240,7 @@ update_changes_file = function() {
         "\\\\?\\" + program_directory + "tmp/changes.json",
         "\\\\?\\" + program_directory + "lang/changes.json",
     )
+    update_lang_version()
 }
 
 clear_tmp = function() {

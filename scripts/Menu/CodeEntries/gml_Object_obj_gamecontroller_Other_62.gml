@@ -108,7 +108,8 @@ for (var ind = 0; ind < array_length(filenames); ind++)
                 if (array_length(loaded_files) == array_length(filenames) && array_length(loaded_datas) == array_length(datanames)) {
                     if (settings_loaded) {
                         copy_files_from_tmp();
-                        update_changes_file()
+                        if (array_length(datanames) == 0)
+                            update_changes_file()
                         update_language();
                         scr_init_localization()
                         if (array_length(datanames) == 0) {
@@ -116,6 +117,7 @@ for (var ind = 0; ind < array_length(filenames); ind++)
                         }
                     } else {
                         settings_loaded = true;
+                        loaded_files = ["settings.json"]
                         copy_files_from_tmp();
                         update_language();
                         files_url = get_lang_setting("files_url", "")
@@ -166,6 +168,7 @@ for (var ind = 0; ind < array_length(datanames); ind++)
 
                 if (array_length(loaded_files) == array_length(filenames) && array_length(loaded_datas) == array_length(datanames)) {
                     copy_files_from_tmp();
+                    update_changes_file()
                     clear_tmp();
                 }
             } else {
