@@ -1,22 +1,17 @@
 {
-    "2.4.0": {
-        "description": "- 2025 -> 2026.\nSmall update for Ch3 Tenna tape.\nUpdate for Menu and settings.json.",
-        "description_ru": "- 2025 -> 2026.\nИсправление для кассеты Тенны в 3 главе.\nОбновление меню выбора глав и файла настроек."
+    "5.0.0": {
+        "description": "- Finally, chapter 5 files."
     },
     "2.3.0": {
-        "description": "- Deltranslate now is a mod\nfor standalone translation.",
-        "description_ru": "- Обновление структуры файлов\nи способа их подкачки."
+        "description": "- Deltranslate now is a mod\nfor standalone translation."
     },
     "2.2.0": {
-        "description": "- Numerous fixes and adjusts.",
-        "description_ru": "- Множество исправлений и\nнесколько небольших новвоведений."
+        "description": "- Numerous fixes and adjusts."
     },
     "2.0.1": {
-        "description": "- Fixed light world stat menu.",
-        "description_ru": "- Поправил меню статистик\nв главном меню."
+        "description": "- Fixed light world stat menu."
     },
     "2.0.0": {
-        "description": "- Finally, release.",
-        "description_ru": "- Наконец, релиз."
+        "description": "- Finally, release."
     }
 }

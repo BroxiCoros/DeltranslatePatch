@@ -1,0 +1,1436 @@
+=== gml_Object_obj_shop1_Draw_0
+---
+"$" + string_hash_to_newline(string(global.gold))
++++
+stringsetsubloc("$~1", string(global.gold), "obj_shop1_slash_Draw_0_gml_1_0")
+%%%
+
+---
+    for (i = 0; i < itemtotal; i += 1)
+    {
+        draw_text(60, 260 + (i * 40), string_hash_to_newline(shopitemname[i]));
+        draw_text(300, 260 + (i * 40), string_hash_to_newline(stringsetsubloc("$~1", string(buyvalue[i]), "obj_shop1_slash_Draw_0_gml_143_0")));
+    }
+
++++
+for (i = 0; i < itemtotal; i += 1)
+{
+    var text_scale = min(1, 250 / string_width(string_hash_to_newline(shopitemname[i])))
+    draw_text_transformed(60, 260 + (i * 40), string_hash_to_newline(shopitemname[i]), text_scale, 1, 0);
+    draw_set_halign(fa_right)
+    draw_text(300 + 32 + 54, 260 + (i * 40), string_hash_to_newline(stringsetsubloc("$~1", string(buyvalue[i]), "obj_shop1_slash_Draw_0_gml_143_0")));
+    draw_set_halign(fa_left)
+}
+%%%
+
+
+
+=== gml_Object_obj_shop2_Draw_0
+---
+"$" + string_hash_to_newline(string(global.gold))
++++
+stringsetsubloc("$~1", string(global.gold), "obj_shop2_slash_Draw_0_gml_1_0")
+%%%
+
+
+=== gml_Object_obj_initializer2_Create_0
+---
+global.screen_border_id = stringsetloc("Dynamic", "obj_initializer2_slash_Create_0_gml_22_0")
++++
+global.screen_border_id = "Dynamic"
+%%%
+
+
+
+=== gml_Object_obj_moneydisplay_Draw_0
+---
+"$" + string(global.gold)
++++
+stringsetsubloc("$~1", string(global.gold), "obj_moneydisplay_Draw_0_gml_1_0")
+%%%
+
+
+=== gml_GlobalScript_scr_shop_space_display
+---
+"$" + string(global.gold)
++++
+stringsetsubloc("$~1", string(global.gold), "obj_moneydisplay_Draw_0_gml_1_0")
+%%%
+
+=== gml_Object_obj_shop_music_Draw_0
+---
+"$" + string_hash_to_newline(string(global.gold))
++++
+stringsetsubloc("$~1", string(global.gold), "obj_moneydisplay_Draw_0_gml_1_0")
+%%%
+
+
+
+
+=== gml_Object_obj_climb_orb_Draw_0
+---
+"+" + string(other.value) + "$"
++++
+stringsetsubloc("+~1$", string(other.value), "obj_climb_orb_Draw_0_gml_1_0")
+%%%
+
+
+
+=== gml_Object_DEVICE_FAILURE_Step_0
+---
+NAMEX[0][0] = 80
++++
+scr_84_set_draw_font("main")
+NAMEX[0][0] = 80 - (string_width(NAME[0][0]) - string_width("CONTINUE"))
+%%%
+
+
+
+=== gml_Object_DEVICE_NAMER_Draw_0
+---
+FN_3 == "GASTER"
++++
+FN_3 == "GASTER" || FN_3 == stringsetloc("GASTER", "DEVICE_NAMER_slash_Draw_0_gml_00_0")
+%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=== gml_Object_obj_overworldc_Step_0
+---
+stringsetsubloc("* You bid a quiet farewell to the ~1.", global.litemname[global.menucoord[1]], "obj_overworldc_slash_Step_0_gml_34_0_b")
++++
+stringsetsubloc("* You bid a quiet farewell to the ~1.", scr_item_localized_name_acc(global.litem[global.menucoord[1]], 4), "obj_overworldc_slash_Step_0_gml_34_0_b")
+%%%
+
+---
+stringsetsubloc("* You put the ~1 on the ground and gave it a little pat.", global.litemname[global.menucoord[1]], "obj_overworldc_slash_Step_0_gml_34_0")
++++
+stringsetsubloc("* You put the ~1 on the ground and gave it a little pat.", scr_item_localized_name_acc(global.litem[global.menucoord[1]], 4), "obj_overworldc_slash_Step_0_gml_34_0")
+%%%
+
+---
+stringsetsubloc("* You threw the ~1 on the ground like the piece of trash it is.", global.litemname[global.menucoord[1]], "obj_overworldc_slash_Step_0_gml_36_0")
++++
+stringsetsubloc("* You threw the ~1 on the ground like the piece of trash it is.", scr_item_localized_name_acc(global.litem[global.menucoord[1]], 4), "obj_overworldc_slash_Step_0_gml_36_0")
+%%%
+
+---
+stringsetsubloc("* You abandoned the ~1.", global.litemname[global.menucoord[1]], "obj_overworldc_slash_Step_0_gml_38_0_b")
++++
+stringsetsubloc("* You abandoned the ~1.", scr_item_localized_name_acc(global.litem[global.menucoord[1]], 4), "obj_overworldc_slash_Step_0_gml_38_0_b")
+%%%
+
+---
+stringsetsubloc("* The ~1 was thrown away.", global.litemname[global.menucoord[1]], "obj_overworldc_slash_Step_0_gml_38_0")
++++
+stringsetsubloc("* The ~1 was thrown away.", scr_item_localized_name_acc(global.litem[global.menucoord[1]], 4), "obj_overworldc_slash_Step_0_gml_38_0")
+%%%
+
+
+
+=== gml_Object_obj_rhythmgame_Other_12
+---
+draw_set_font(scr_84_get_font("main"))
++++
+draw_set_font(scr_84_get_font("main_mono"))
+%%%
+
+---
+string_length(current_lyric)
++++
+string_length(string_replace_all(current_lyric, "-", ""))
+%%%
+
+
+
+
+=== gml_GlobalScript_scr_rhythmgame_lyrics
+---
+            if (_letter == " " || _letter == "　")
+            {
+                _length--;
+                _writex -= arg3;
+                continue;
+            }
++++
+            if (_letter == " " || _letter == "　" || _letter == "_")
+            {
+                _length--;
+                _writex -= arg3;
+                continue;
+            }
+%%%
+
+---
+        else
+        {
+            if (_ja)
+            {
++++
+        else if (_letter == "_")
+        {
+            // continue;
+        }
+        else
+        {
+            if (_ja)
+            {
+%%%
+
+=== gml_GlobalScript_scr_rhythmgame_draw
+---
+        draw_set_font(fnt_mainbig);
+        draw_text_outline(arg0 + 2, bottomy - 100, "DEMO", 2, 2, 0);
++++
+        draw_set_font(scr_84_get_font("mainbig"));
+        draw_text_outline(arg0 + 2, bottomy - 100, stringsetloc("DEMO", "scr_rhythmgame_draw_slash_scr_rhythmgame_draw_gml_128_0_b"), 2, 2, 0);
+%%%
+
+---
+        draw_set_font(fnt_main);
+        var _combotext = (combo > 999) ? stringsetloc("BIG", "scr_rhythmgame_draw_slash_scr_rhythmgame_draw_gml_125_0_b") : combo;
+        draw_text_transformed_color(arg0 + 2, bottomy - 121, _combotext, (combo >= 100) ? 3.5 : 5, 5, 0, #666666, #666666, #BBBBBB, #BBBBBB, 0.25);
++++
+        draw_set_font(scr_84_get_font("main"));
+        var _combotext = (combo > 999) ? stringsetloc("BIG", "scr_rhythmgame_draw_slash_scr_rhythmgame_draw_gml_125_0_b") : combo;
+        var _combotext_check = (combo > 999) ? "BIG" : combo;
+        var xscale = min(3.5, 3.5 * string_width(_combotext_check) / string_width(_combotext))
+        draw_text_transformed_color(arg0 + 2, bottomy - 121, _combotext, (combo >= 100) ? xscale : 5, 5, 0, #666666, #666666, #BBBBBB, #BBBBBB, 0.25);
+%%%
+
+
+
+
+
+
+=== gml_GlobalScript_scr_rhythmgame_notechart
+---
+        scr_rhythmgame_addnote(16.17, 0, 16.35);
+        scr_rhythmgame_addnote(16.35, 1, 16.47);
+        scr_rhythmgame_addnote(16.61, 2, 16.89);
+        scr_rhythmgame_addnote(16.96, 1, 17.22);
+        scr_rhythmgame_addnote(17.22, 1, 17.48);
+        scr_rhythmgame_addnote(17.48, 0, 17.74);
+        scr_rhythmgame_addnote(17.74, 1, 18);
+        scr_rhythmgame_addnote(18, 0, 18.26);
+        scr_rhythmgame_addnote(18.26, 2, 18.39);
+        scr_rhythmgame_addnote(18.39, 1, 18.52);
+        scr_rhythmgame_addnote(18.72, 2, 19.04);
+        scr_rhythmgame_addnote(19.04, 1, 19.24);
+        scr_rhythmgame_addnote(19.3, 1, 19.57);
+        scr_rhythmgame_addnote(19.57, 0, 19.83);
+        scr_rhythmgame_addnote(19.74, 2, 20.61);
+        scr_rhythmgame_addnote(21.04, 1, 21.39);
+        scr_rhythmgame_addnote(21.39, 1, 21.57);
+        scr_rhythmgame_addnote(21.57, 0, 21.78);
+        scr_rhythmgame_addnote(21.83, 1, 22.09);
+        scr_rhythmgame_addnote(22.09, 0, 22.17);
+        scr_rhythmgame_addnote(22.17, 1, 22.24);
+        scr_rhythmgame_addnote(22.35, 2, 22.57);
+        scr_rhythmgame_addnote(22.7, 1, 22.96);
+        scr_rhythmgame_addnote(22.96, 0, 24.26);
+        scr_rhythmgame_addnote(24.52, 0, 24.72);
+        scr_rhythmgame_addnote(24.7, 1, 24.78);
+        scr_rhythmgame_addnote(24.91, 2, 25.3);
+        scr_rhythmgame_addnote(25.3, 2, 25.57);
+        scr_rhythmgame_addnote(25.57, 1, 25.83);
+        scr_rhythmgame_addnote(25.83, 0, 26.09);
+        scr_rhythmgame_addnote(26.09, 1, 26.35);
+        scr_rhythmgame_addnote(26.35, 0, 26.61);
+        scr_rhythmgame_addnote(26.61, 2, 26.8);
+        scr_rhythmgame_addnote(26.8, 1, 27.04);
+        scr_rhythmgame_addnote(27.04, 2, 27.39);
+        scr_rhythmgame_addnote(27.39, 2, 27.65);
+        scr_rhythmgame_addnote(27.65, 1, 27.83);
+        scr_rhythmgame_addnote(27.83, 0, 28.04);
+        scr_rhythmgame_addnote(28.09, 2, 29.15);
+        scr_rhythmgame_addnote(29.39, 2, 29.74);
+        scr_rhythmgame_addnote(29.74, 1, 29.91);
+        scr_rhythmgame_addnote(29.91, 0, 30.17);
+        scr_rhythmgame_addnote(30.17, 1, 30.52);
+        scr_rhythmgame_addnote(30.52, 0, 30.78);
+        scr_rhythmgame_addnote(30.78, 0, 30.98);
+        scr_rhythmgame_addnote(30.98, 1, 31.17);
+        scr_rhythmgame_addnote(31.22, 1, 33.07);
+        scr_rhythmgame_addnote(33.57, 2, 33.91);
+        scr_rhythmgame_addnote(33.91, 1, 34.09);
+        scr_rhythmgame_addnote(34.09, 0, 34.26);
+        scr_rhythmgame_addnote(34.26, 1, 34.57);
+        scr_rhythmgame_addnote(34.57, 0, 34.89);
+        scr_rhythmgame_addnote(34.96, 0, 35.09);
+        scr_rhythmgame_addnote(35.15, 1, 35.35);
+        scr_rhythmgame_addnote(35.35, 2, 37.13);
+        scr_rhythmgame_addnote(100.43, 0, 100.63);
+        scr_rhythmgame_addnote(100.7, 0, 100.89);
+        scr_rhythmgame_addnote(100.96, 1, 101.15);
+        scr_rhythmgame_addnote(101.22, 2, 101.41);
+        scr_rhythmgame_addnote(101.48, 2, 101.67);
+        scr_rhythmgame_addnote(101.74, 1, 101.93);
+        scr_rhythmgame_addnote(102, 0, 102.2);
+        scr_rhythmgame_addnote(102.26, 2, 102.72);
+        scr_rhythmgame_addnote(102.78, 0, 102.98);
+        scr_rhythmgame_addnote(103.04, 0, 103.24);
+        scr_rhythmgame_addnote(103.3, 1, 103.76);
+        scr_rhythmgame_addnote(103.83, 0, 104.02);
+        scr_rhythmgame_addnote(104.09, 1, 104.28);
+        scr_rhythmgame_addnote(104.35, 1, 104.8);
+        scr_rhythmgame_addnote(104.87, 2, 105.07);
+        scr_rhythmgame_addnote(105.13, 1, 105.33);
+        scr_rhythmgame_addnote(105.39, 0, 105.72);
+        scr_rhythmgame_addnote(105.78, 2, 106.11);
+        scr_rhythmgame_addnote(106.17, 0, 106.37);
+        scr_rhythmgame_addnote(106.43, 1, 108.46);
+        scr_rhythmgame_addnote(108.78, 0, 108.98);
+        scr_rhythmgame_addnote(109.04, 0, 109.24);
+        scr_rhythmgame_addnote(109.3, 1, 109.5);
+        scr_rhythmgame_addnote(109.57, 2, 109.76);
+        scr_rhythmgame_addnote(109.83, 2, 110.02);
+        scr_rhythmgame_addnote(110.09, 1, 110.28);
+        scr_rhythmgame_addnote(110.35, 0, 110.54);
+        scr_rhythmgame_addnote(110.61, 2, 111.07);
+        scr_rhythmgame_addnote(111.13, 0, 111.33);
+        scr_rhythmgame_addnote(111.39, 0, 111.59);
+        scr_rhythmgame_addnote(111.65, 1, 112.04);
+        scr_rhythmgame_addnote(112.17, 0, 112.43);
+        scr_rhythmgame_addnote(112.43, 1, 112.7);
+        scr_rhythmgame_addnote(112.7, 1, 113.09);
+        scr_rhythmgame_addnote(113.09, 2, 113.48);
+        scr_rhythmgame_addnote(113.48, 1, 113.67);
+        scr_rhythmgame_addnote(113.74, 0, 114);
+        scr_rhythmgame_addnote(114, 2, 114.46);
+        scr_rhythmgame_addnote(114.46, 1, 114.65);
+        scr_rhythmgame_addnote(114.72, 1, 115.7);
+        scr_rhythmgame_addnote(115.7, 2, 115.76);
+        scr_rhythmgame_addnote(115.76, 1, 115.83);
+        scr_rhythmgame_addnote(115.83, 0, 116.8);
+        scr_rhythmgame_addnote(117.13, 0, 117.39);
+        scr_rhythmgame_addnote(117.39, 0, 117.65);
+        scr_rhythmgame_addnote(117.65, 1, 117.91);
+        scr_rhythmgame_addnote(117.91, 2, 118.17);
+        scr_rhythmgame_addnote(118.17, 2, 118.43);
+        scr_rhythmgame_addnote(118.43, 1, 118.7);
+        scr_rhythmgame_addnote(118.7, 0, 118.96);
+        scr_rhythmgame_addnote(118.96, 2, 119.48);
+        scr_rhythmgame_addnote(119.48, 0, 119.74);
+        scr_rhythmgame_addnote(119.74, 0, 120);
+        scr_rhythmgame_addnote(120, 1, 120.52);
+        scr_rhythmgame_addnote(120.52, 0, 120.78);
+        scr_rhythmgame_addnote(120.78, 1, 121.04);
+        scr_rhythmgame_addnote(121.04, 1, 121.43);
+        scr_rhythmgame_addnote(121.43, 2, 121.7);
+        scr_rhythmgame_addnote(121.83, 1, 122.09);
+        scr_rhythmgame_addnote(122.09, 0, 122.35);
+        scr_rhythmgame_addnote(122.35, 2, 122.87);
+        scr_rhythmgame_addnote(122.87, 0, 123.13);
+        scr_rhythmgame_addnote(123.13, 1, 125.22);
+        scr_rhythmgame_addnote(125.48, 0, 125.74);
+        scr_rhythmgame_addnote(125.74, 0, 126);
+        scr_rhythmgame_addnote(126, 1, 126.26);
+        scr_rhythmgame_addnote(126.26, 2, 126.52);
+        scr_rhythmgame_addnote(126.52, 2, 126.78);
+        scr_rhythmgame_addnote(126.78, 1, 127.04);
+        scr_rhythmgame_addnote(127.04, 0, 127.3);
+        scr_rhythmgame_addnote(127.3, 2, 127.83);
+        scr_rhythmgame_addnote(127.83, 0, 128.09);
+        scr_rhythmgame_addnote(128.09, 0, 128.35);
+        scr_rhythmgame_addnote(128.35, 1, 128.74);
+        scr_rhythmgame_addnote(128.87, 0, 129.13);
+        scr_rhythmgame_addnote(129.13, 1, 129.39);
+        scr_rhythmgame_addnote(129.39, 1, 129.78);
+        scr_rhythmgame_addnote(129.78, 2, 130.11);
+        scr_rhythmgame_addnote(130.17, 1, 130.37);
+        scr_rhythmgame_addnote(130.43, 0, 130.83);
+        scr_rhythmgame_addnote(130.83, 2, 131.15);
+        scr_rhythmgame_addnote(131.22, 2, 131.41);
+        scr_rhythmgame_addnote(131.48, 1, 132.39);
+        scr_rhythmgame_addnote(132.39, 2, 132.46);
+        scr_rhythmgame_addnote(132.46, 1, 132.52);
+        scr_rhythmgame_addnote(132.52, 0, 133.57);
+        scr_rhythmgame_addnote(149.74, 0, 149.91);
+        scr_rhythmgame_addnote(149.91, 1, 150.09);
+        scr_rhythmgame_addnote(150.17, 2, 150.52);
+        scr_rhythmgame_addnote(150.52, 2, 150.72);
+        scr_rhythmgame_addnote(150.78, 1, 150.98);
+        scr_rhythmgame_addnote(151.04, 0, 151.3);
+        scr_rhythmgame_addnote(151.3, 1, 151.57);
+        scr_rhythmgame_addnote(151.57, 0, 151.63);
+        scr_rhythmgame_addnote(151.83, 2, 152);
+        scr_rhythmgame_addnote(152, 0, 152.09);
+        scr_rhythmgame_addnote(152.26, 1, 152.61);
+        scr_rhythmgame_addnote(152.61, 1, 152.74);
+        scr_rhythmgame_addnote(152.87, 1, 153.07);
+        scr_rhythmgame_addnote(153.13, 0, 153.26);
+        scr_rhythmgame_addnote(153.3, 2, 154.26);
+        scr_rhythmgame_addnote(154.61, 1, 154.87);
+        scr_rhythmgame_addnote(154.96, 1, 155.13);
+        scr_rhythmgame_addnote(155.13, 0, 155.22);
+        scr_rhythmgame_addnote(155.39, 1, 155.65);
+        scr_rhythmgame_addnote(155.65, 0, 155.74);
+        scr_rhythmgame_addnote(155.74, 1, 155.83);
+        scr_rhythmgame_addnote(155.91, 2, 156.26);
+        scr_rhythmgame_addnote(156.26, 1, 156.46);
+        scr_rhythmgame_addnote(156.52, 0, 157.83);
+        scr_rhythmgame_addnote(158.09, 0, 158.26);
+        scr_rhythmgame_addnote(158.26, 1, 158.35);
+        scr_rhythmgame_addnote(158.48, 2, 158.87);
+        scr_rhythmgame_addnote(158.87, 2, 159);
+        scr_rhythmgame_addnote(159.13, 1, 159.39);
+        scr_rhythmgame_addnote(159.39, 0, 159.65);
+        scr_rhythmgame_addnote(159.65, 1, 159.91);
+        scr_rhythmgame_addnote(159.91, 0, 160.04);
+        scr_rhythmgame_addnote(160.17, 2, 160.35);
+        scr_rhythmgame_addnote(160.35, 0, 160.43);
+        scr_rhythmgame_addnote(160.61, 1, 160.96);
+        scr_rhythmgame_addnote(160.96, 1, 161.09);
+        scr_rhythmgame_addnote(161.22, 1, 161.39);
+        scr_rhythmgame_addnote(161.39, 0, 161.54);
+        scr_rhythmgame_addnote(161.65, 1, 162.7);
+        scr_rhythmgame_addnote(162.96, 1, 163.24);
+        scr_rhythmgame_addnote(163.3, 1, 163.48);
+        scr_rhythmgame_addnote(163.48, 0, 163.74);
+        scr_rhythmgame_addnote(163.74, 1, 164.09);
+        scr_rhythmgame_addnote(164.09, 0, 164.35);
+        scr_rhythmgame_addnote(164.35, 0, 164.52);
+        scr_rhythmgame_addnote(164.52, 1, 164.74);
+        scr_rhythmgame_addnote(164.74, 1, 166.7);
+        scr_rhythmgame_addnote(167.13, 2, 167.48);
+        scr_rhythmgame_addnote(167.48, 2, 167.65);
+        scr_rhythmgame_addnote(167.65, 1, 167.83);
+        scr_rhythmgame_addnote(167.83, 2, 168.13);
+        scr_rhythmgame_addnote(168.13, 1, 168.52);
+        scr_rhythmgame_addnote(168.52, 0, 168.7);
+        scr_rhythmgame_addnote(168.7, 0, 168.91);
+        scr_rhythmgame_addnote(168.91, 1, 170.7);
++++
+        var notes = get_chapter_lang_setting("lyrics_chart_raise_up_your_bat", [
+            [16.17, 0, 16.35],
+            [16.35, 1, 16.47],
+            [16.61, 2, 16.89],
+            [16.96, 1, 17.22],
+            [17.22, 1, 17.48],
+            [17.48, 0, 17.74],
+            [17.74, 1, 18],
+            [18, 0, 18.26],
+            [18.26, 2, 18.39],
+            [18.39, 1, 18.52],
+            [18.72, 2, 19.04],
+            [19.04, 1, 19.24],
+            [19.3, 1, 19.57],
+            [19.57, 0, 19.83],
+            [19.74, 2, 20.61],
+            [21.04, 1, 21.39],
+            [21.39, 1, 21.57],
+            [21.57, 0, 21.78],
+            [21.83, 1, 22.09],
+            [22.09, 0, 22.17],
+            [22.17, 1, 22.24],
+            [22.35, 2, 22.57],
+            [22.7, 1, 22.96],
+            [22.96, 0, 24.26],
+            [24.52, 0, 24.72],
+            [24.7, 1, 24.78],
+            [24.91, 2, 25.3],
+            [25.3, 2, 25.57],
+            [25.57, 1, 25.83],
+            [25.83, 0, 26.09],
+            [26.09, 1, 26.35],
+            [26.35, 0, 26.61],
+            [26.61, 2, 26.8],
+            [26.8, 1, 27.04],
+            [27.04, 2, 27.39],
+            [27.39, 2, 27.65],
+            [27.65, 1, 27.83],
+            [27.83, 0, 28.04],
+            [28.09, 2, 29.15],
+            [29.39, 2, 29.74],
+            [29.74, 1, 29.91],
+            [29.91, 0, 30.17],
+            [30.17, 1, 30.52],
+            [30.52, 0, 30.78],
+            [30.78, 0, 30.98],
+            [30.98, 1, 31.17],
+            [31.22, 1, 33.07],
+            [33.57, 2, 33.91],
+            [33.91, 1, 34.09],
+            [34.09, 0, 34.26],
+            [34.26, 1, 34.57],
+            [34.57, 0, 34.89],
+            [34.96, 0, 35.09],
+            [35.15, 1, 35.35],
+            [35.35, 2, 37.13],
+            [100.43, 0, 100.63],
+            [100.7, 0, 100.89],
+            [100.96, 1, 101.15],
+            [101.22, 2, 101.41],
+            [101.48, 2, 101.67],
+            [101.74, 1, 101.93],
+            [102, 0, 102.2],
+            [102.26, 2, 102.72],
+            [102.78, 0, 102.98],
+            [103.04, 0, 103.24],
+            [103.3, 1, 103.76],
+            [103.83, 0, 104.02],
+            [104.09, 1, 104.28],
+            [104.35, 1, 104.8],
+            [104.87, 2, 105.07],
+            [105.13, 1, 105.33],
+            [105.39, 0, 105.72],
+            [105.78, 2, 106.11],
+            [106.17, 0, 106.37],
+            [106.43, 1, 108.46],
+            [108.78, 0, 108.98],
+            [109.04, 0, 109.24],
+            [109.3, 1, 109.5],
+            [109.57, 2, 109.76],
+            [109.83, 2, 110.02],
+            [110.09, 1, 110.28],
+            [110.35, 0, 110.54],
+            [110.61, 2, 111.07],
+            [111.13, 0, 111.33],
+            [111.39, 0, 111.59],
+            [111.65, 1, 112.04],
+            [112.17, 0, 112.43],
+            [112.43, 1, 112.7],
+            [112.7, 1, 113.09],
+            [113.09, 2, 113.48],
+            [113.48, 1, 113.67],
+            [113.74, 0, 114],
+            [114, 2, 114.46],
+            [114.46, 1, 114.65],
+            [114.72, 1, 115.7],
+            [115.7, 2, 115.76],
+            [115.76, 1, 115.83],
+            [115.83, 0, 116.8],
+            [117.13, 0, 117.39],
+            [117.39, 0, 117.65],
+            [117.65, 1, 117.91],
+            [117.91, 2, 118.17],
+            [118.17, 2, 118.43],
+            [118.43, 1, 118.7],
+            [118.7, 0, 118.96],
+            [118.96, 2, 119.48],
+            [119.48, 0, 119.74],
+            [119.74, 0, 120],
+            [120, 1, 120.52],
+            [120.52, 0, 120.78],
+            [120.78, 1, 121.04],
+            [121.04, 1, 121.43],
+            [121.43, 2, 121.7],
+            [121.83, 1, 122.09],
+            [122.09, 0, 122.35],
+            [122.35, 2, 122.87],
+            [122.87, 0, 123.13],
+            [123.13, 1, 125.22],
+            [125.48, 0, 125.74],
+            [125.74, 0, 126],
+            [126, 1, 126.26],
+            [126.26, 2, 126.52],
+            [126.52, 2, 126.78],
+            [126.78, 1, 127.04],
+            [127.04, 0, 127.3],
+            [127.3, 2, 127.83],
+            [127.83, 0, 128.09],
+            [128.09, 0, 128.35],
+            [128.35, 1, 128.74],
+            [128.87, 0, 129.13],
+            [129.13, 1, 129.39],
+            [129.39, 1, 129.78],
+            [129.78, 2, 130.11],
+            [130.17, 1, 130.37],
+            [130.43, 0, 130.83],
+            [130.83, 2, 131.15],
+            [131.22, 2, 131.41],
+            [131.48, 1, 132.39],
+            [132.39, 2, 132.46],
+            [132.46, 1, 132.52],
+            [132.52, 0, 133.57],
+            [149.74, 0, 149.91],
+            [149.91, 1, 150.09],
+            [150.17, 2, 150.52],
+            [150.52, 2, 150.72],
+            [150.78, 1, 150.98],
+            [151.04, 0, 151.3],
+            [151.3, 1, 151.57],
+            [151.57, 0, 151.63],
+            [151.83, 2, 152],
+            [152, 0, 152.09],
+            [152.26, 1, 152.61],
+            [152.61, 1, 152.74],
+            [152.87, 1, 153.07],
+            [153.13, 0, 153.26],
+            [153.3, 2, 154.26],
+            [154.61, 1, 154.87],
+            [154.96, 1, 155.13],
+            [155.13, 0, 155.22],
+            [155.39, 1, 155.65],
+            [155.65, 0, 155.74],
+            [155.74, 1, 155.83],
+            [155.91, 2, 156.26],
+            [156.26, 1, 156.46],
+            [156.52, 0, 157.83],
+            [158.09, 0, 158.26],
+            [158.26, 1, 158.35],
+            [158.48, 2, 158.87],
+            [158.87, 2, 159],
+            [159.13, 1, 159.39],
+            [159.39, 0, 159.65],
+            [159.65, 1, 159.91],
+            [159.91, 0, 160.04],
+            [160.17, 2, 160.35],
+            [160.35, 0, 160.43],
+            [160.61, 1, 160.96],
+            [160.96, 1, 161.09],
+            [161.22, 1, 161.39],
+            [161.39, 0, 161.54],
+            [161.65, 1, 162.7],
+            [162.96, 1, 163.24],
+            [163.3, 1, 163.48],
+            [163.48, 0, 163.74],
+            [163.74, 1, 164.09],
+            [164.09, 0, 164.35],
+            [164.35, 0, 164.52],
+            [164.52, 1, 164.74],
+            [164.74, 1, 166.7],
+            [167.13, 2, 167.48],
+            [167.48, 2, 167.65],
+            [167.65, 1, 167.83],
+            [167.83, 2, 168.13],
+            [168.13, 1, 168.52],
+            [168.52, 0, 168.7],
+            [168.7, 0, 168.91],
+            [168.91, 1, 170.7]
+        ])
+
+        for (var i = 0; i < array_length(notes); i++) {
+            scr_rhythmgame_addnote(notes[i][0], notes[i][1], notes[i][2])
+        }
+%%%
+
+
+=== gml_Object_obj_initializer2_Create_0
+---
+scr_84_init_localization()
++++
+
+%%%
+
+---
+loadtex = -4;
++++
+loadtex = -4; scr_windowcaption("");
+%%%
+
+
+
+=== gml_Object_obj_initializer2_Other_72
+---
+scr_84_init_localization()
++++
+scr_init_localization()
+%%%
+
+
+
+=== gml_Object_obj_intro_ch5_Draw_0
+---
+"CHAPTER 5"
++++
+stringsetloc("CHAPTER 5", "obj_intro_ch5_slash_Draw_0_gml_1_0")
+%%%
+
+
+
+
+=== gml_GlobalScript_scr_armorinfo
+---#
+armorabilitytemp = stringset("Elegance")
++++
+armorabilitytemp = stringsetloc("Elegance", "scr_armorinfo_slash_scr_armorinfo_gml_782_0")
+%%%
+
+
+
+=== gml_GlobalScript_scr_weaponinfo
+---#
+weaponabilitytemp = "SlayDark"
++++
+weaponabilitytemp = stringsetloc("SlayDark", "scr_weaponinfo_slash_scr_weaponinfo_gml_624_0")
+%%%
+
+=== gml_Object_obj_dw_rhythm_scroller_Create_0
+---
+scrolling_text = "! " + _track_name + " ! " + "High Score (Normal) - " + _highscore + " ! " + "High Score (Hard) - " + _highscore_hard + " ! ";
++++
+scrolling_text = stringsetsubloc("! ~1 ! High Score (Normal) - ~2 ! High Score (Hard) - ~3 ! ", _track_name, _highscore, _highscore_hard, "obj_dw_rhythm_slash_scroller_Create_0_gml_1_0");
+%%%
+
+---
+text_x_pos[1] = 40 + _string_width;
++++
+draw_set_font(scr_84_get_font("mainbig"));
+text_x_pos[1] = 40 + _string_width;
+%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=== gml_Object_PROCESS_DOG_Create_0
+---
+window_set_caption("DOGTARUNE")
++++
+window_set_caption(stringsetloc("DOGTARUNE", "PROCESS_DOG_slash_Create_0_gml_1_0"))
+%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=== gml_Object_obj_room_castle_tv_rhythm_Create_0
+---
+    var _ranks = ["Z", "C", "B", "A", "S", "T"];
++++
+    var _ranks = [
+        stringsetloc("Z", "obj_round_evaluation_slash_Draw_0_gml_41_0"),
+        stringsetloc("C", "obj_round_evaluation_slash_Draw_0_gml_42_0"),
+        stringsetloc("B", "obj_round_evaluation_slash_Draw_0_gml_43_0"),
+        stringsetloc("A", "obj_round_evaluation_slash_Draw_0_gml_44_0"),
+        stringsetloc("S", "obj_round_evaluation_slash_Draw_0_gml_45_0"),
+        stringsetloc("T", "obj_round_evaluation_slash_Draw_0_gml_46_0")
+    ]
+%%%
+
+
+
+
+=== gml_Object_obj_fusionmenu_Step_0
+---
+menuX[0] = xx + 80
++++
+menuX[0] = xx + 80 - 32
+%%%
+
+---
+menuSpacingY[0] = 113
++++
+menuSpacingY[0] = 113;
+ menuTextXScale[0] = 216
+%%%
+
+---
+optionCommentAWidth[0][j] = 250
++++
+optionCommentAWidth[0][j] = 216
+%%%
+
+---
+optionCommentAXOffset[0][j] = 220
++++
+optionCommentAXOffset[0][j] = 236
+%%%
+
+---
+optionCommentBWidth[0][j] = 250
++++
+optionCommentBWidth[0][j] = 216
+%%%
+
+---
+optionCommentBXOffset[0][j] = 220
++++
+optionCommentBXOffset[0][j] = 236
+%%%
+
+---
+obj_npc_hammerguy.fusionResultName = fusionResultName[menuCoord[0]];
++++
+obj_npc_hammerguy.fusionResult = fusionResult[menuCoord[0]];
+obj_npc_hammerguy.fusionResultName = fusionResultName[menuCoord[0]];
+%%%
+
+
+
+
+=== gml_Object_obj_npc_hammerguy_Step_0
+---
+msgsetsubloc(0, "* (You got ~1!)/%", fusionResultName, "obj_npc_hammerguy_slash_Step_0_gml_251_0");
++++
+msgsetsubloc(0, "* (You got ~1!)/%", scr_item_localized_name_acc(fusionResult, fusionResultType, fusionResultName), "obj_npc_hammerguy_slash_Step_0_gml_251_0");
+%%%
+
+
+
+
+=== gml_Object_obj_choicer_neo_Step_0
+---
+var msg3width = string_width(string_hash_to_newline(global.choicemsg[3])) + (16 * dar);
++++
+var msg3width = 0;
+%%%
+
+---
+heartposx[3] = heartposx[2];
++++
+heartposx[3] = heartposx[2] + (string_width(string_hash_to_newline(global.choicemsg[2])) - string_width(string_hash_to_newline(global.choicemsg[3]))) / 2
+%%%
+
+
+
+
+=== gml_Object_DEVICE_MENU_Create_0
+---
+version_text = "1.00";
++++
+version_text = "1.00";
+prevemptyname = stringsetloc("[EMPTY]", "DEVICE_MENU_slash_Step_0_gml_105_0");
+%%%
+
+
+
+
+// Схема наряда Сьюзи
+=== gml_Object_obj_ch5_LW07_thrashfit_menu_Create_0
+---
+        new_option.init(id, label, option_names, flag, 170 + ja_offset);
++++
+        new_option.init(id, label, option_names, flag, 170 + ja_offset, 0, max_len);
+%%%
+
+---
+for (var i = 0; i < array_length(options_right); i++)
++++
+var max_len = 0;
+draw_set_font(scr_84_get_font("mainbig"));
+for (var i = 0; i < array_length(options_right); i++)
+{
+    var label = options_right[i][0];
+    max_len = max(max_len, string_width(label));
+}
+
+for (var i = 0; i < array_length(options_right); i++)
+%%%
+
+---
+end_option.init(id, stringsetloc("END", "obj_ch5_LW07_thrashfit_menu_slash_Create_0_gml_432_0"), [], -1, 170 + ja_offset);
++++
+end_option.init(id, stringsetloc("END", "obj_ch5_LW07_thrashfit_menu_slash_Create_0_gml_432_0"), [], -1, 170 + ja_offset, 0, 999);
+%%%
+
+
+=== gml_Object_obj_ch5_LW07_thrashfit_menu_Draw_0
+---
+draw_text(_header_text_x, cameray() + 60 + 80, _header_text);
++++
+var _scale = min(1, 520 / string_width(_header_text));
+draw_text_transformed(_header_text_x, cameray() + 60 + 80, _header_text, _scale, 1, 0);
+%%%
+
+---
+draw_text(_subheader_text_x, cameray() + 60 + 80 + 80, _subheader_text);
++++
+var _scale_sub = min(1, 520 / string_width(_subheader_text));
+draw_text_transformed(_subheader_text_x, cameray() + 60 + 80 + 80, _subheader_text, _scale_sub, 1, 0);
+%%%
+
+
+=== gml_Object_obj_ch5_LW07_thrashfit_menu_option_Create_0
+---
+init = function(arg0, arg1, arg2 = [], arg3 = -1, arg4 = 0, arg5 = 0)
+{
++++
+init = function(arg0, arg1, arg2 = [], arg3 = -1, arg4 = 0, arg5 = 0, arg6 = 70)
+{
+%%%
+
+---
+    _parent = arg0;
++++
+    _parent = arg0;
+    _max_label_width = max(70, arg6);
+%%%
+
+
+=== gml_Object_obj_ch5_LW07_thrashfit_menu_option_Draw_0
+---
+var _scroll_x = _x_pos + 60 + 70 + 30;
++++
+var _scroll_x = _x_pos + 60 + _max_label_width + 30;
+%%%
+
+---
+draw_text_ext(_x_pos + 60, _offset_y + cameray() + y, _label, 1, 999);
++++
+var _arrow_offset = 0;
+if (_offset_x > 0)
+    _arrow_offset = -30;
+var _text_scale = min(1, (_max_label_width + _arrow_offset) / string_width(_label))
+draw_text_transformed(_x_pos + 60, _offset_y + cameray() + y, _label, _text_scale, 1, 0);
+%%%
+
+
+=== gml_Object_obj_ch5_LW07_thrashfit_menu_Create_0
+---
+    var ja_offset = (global.lang == "ja") ? 9 : 0;
+    _description = instance_create(680 + ja_offset, 300, obj_writer);
++++
+    var _offset = 20;
+    _description = instance_create(680 + _offset, 300, obj_writer);
+%%%
+
+---
+    _description.charline = 14
++++
+    _description.charline = 14
+%%%
+
+
+=== gml_Object_obj_ch5_LW07_thrashfit_description_Draw_0
+---
+draw_text_ext(camerax() + 390, cameray() + 300, _text[_text_index], 30, 190);
++++
+var lines = string_split(_text[_text_index], "\n");
+var max_width = 0;
+
+for (var i = 0; i < array_length(lines); i++)
+{
+    max_width = max(max_width, string_width(lines[i]));
+}
+
+var _scale = min(1, 200 / max_width);
+draw_text_transformed(camerax() + 390, cameray() + 300, _text[_text_index], _scale, 1, 0);
+%%%
+// Конец схемы наряда Сьюзи
+
+
+
+
+
+
+// Магазы
+=== gml_Object_obj_shop_vending_Draw_0
+---
+    for (var i = 0; i < array_length(menu_list); i++) {
+        draw_text(cx + 480, cy + ((130 + (i * 20)) * 2), string_hash_to_newline(menu_list[i].option_text));
+    }
++++
+    for (var i = 0; i < array_length(menu_list); i++)
+    {
+        var _scale = min(1, 135 / string_width(string_hash_to_newline(menu_list[i].option_text)));
+        draw_text_transformed(cx + 480, cy + ((130 + (i * 20)) * 2), string_hash_to_newline(menu_list[i].option_text), _scale, 1, 0);
+    }
+%%%
+
+---
+draw_text_color(cx + 480, cy + 340, string_hash_to_newline(other.menu_list[2].option_text), col1, col1, col2, col2, 1);
++++
+var _scale = min(1, 135 / string_width(other.menu_list[2].option_text));
+draw_text_ext_transformed_color(cx + 480, cy + 340, string_hash_to_newline(other.menu_list[2].option_text), 9999, 9999, _scale, 1, 0, col1, col1, col2, col2, 1);
+%%%
+
+---
+"$" + string_hash_to_newline(string(global.gold))
++++
+stringsetsubloc("$~1", string(global.gold), "obj_moneydisplay_Draw_0_gml_1_0")
+%%%
+
+---
+string_hash_to_newline("$" + string(global.gold))
++++
+stringsetsubloc("$~1", string(global.gold), "obj_moneydisplay_Draw_0_gml_1_0")
+%%%
+
+---
+string_hash_to_newline(string(global.flag[1411])) + " F$"
++++
+stringsetsubloc("~1 F$", string(global.flag[1411]), "obj_flowermoneydisplay_Draw_0_gml_1_0")
+%%%
+
+
+=== gml_Object_obj_shop_ch5_Draw_0
+---
+"$" + string_hash_to_newline(string(global.gold))
++++
+stringsetsubloc("$~1", string(global.gold), "obj_moneydisplay_Draw_0_gml_1_0")
+%%%
+
+---
+"P$" + string_hash_to_newline(string(scr_flag_get(1312)))
++++
+stringsetsubloc("P$~1", string(scr_flag_get(1312)), "obj_pinkmoneydisplay_Draw_0_gml_1_0")
+%%%
+
+
+=== gml_Object_obj_dw_fcastle_pinkshop_Create_0
+---
+var strcost1 = "F$ " + string(global.flag[1411]);
++++
+var strcost1 = stringsetsubloc("F$ ~1", string(global.flag[1411]), "obj_darkcontroller_slash_Draw_0_gml_69_0");
+%%%
+
+---
+strcost1 = "P$ " + string(global.flag[1312]);
++++
+var strcost1 = stringsetsubloc("P$ ~1", string(global.flag[1312]), "obj_darkcontroller_slash_Draw_0_gml_70_0");
+%%%
+
+
+=== gml_Object_obj_plat_coin_Create_0
+---
+var str = "F$";
++++
+var str =  stringsetloc("F$", "obj_shop_vending_slash_Create_0_gml_34_1");
+%%%
+
+---
+str = "P$";
++++
+var str =  stringsetloc("P$", "obj_shop_vending_slash_Create_0_gml_34_2");
+%%%
+
+
+=== gml_Object_obj_climb_coin_Step_0
+---
+var str = "F$";
++++
+var str =  stringsetloc("F$", "obj_shop_vending_slash_Create_0_gml_34_1");
+%%%
+
+---
+str = "P$";
++++
+var str =  stringsetloc("P$", "obj_shop_vending_slash_Create_0_gml_34_2");
+%%%
+// Конец магазов
+
+
+
+
+
+// Тоби, ну ёбаный в рот
+=== gml_Object_obj_ch5_DW01_Step_0
+---
+    c_msgset(0, "\\\\E2\\\\VO* Ah^1, sorry^1, m'lady./%")
++++
+    c_msgsetloc(0, "\\E2\\VO* Ah^1, sorry^1, m'lady./%", "obj_ch5_DW01_slash_Step_0_gml_363_0")
+%%%
+
+---
+    c_msgset(0, "\\\\E0\\\\VH* ..^1. and best friend./")
++++
+    c_msgsetloc(0, "\\E0\\VH* ..^1. and best friend./", "obj_ch5_DW01_slash_Step_0_gml_377_0")
+%%%
+
+---
+    c_msgnext("\\\\E0\\\\V1* Heh^1. Sorry to keep you waiting^1, old pal./")
++++
+    c_msgnextloc("\\E0\\V1* Heh^1. Sorry to keep you waiting^1, old pal./", "obj_ch5_DW01_slash_Step_0_gml_510_1")
+%%%
+
+=== gml_GlobalScript_scr_text
+---
+            global.choicemsg[0] = stringset("#Yes");
+            global.choicemsg[1] = stringset("#No");
++++
+            global.choicemsg[0] =  stringsetloc("#Yes", "scr_text_slash_scr_text_gml_7030_1");
+            global.choicemsg[1] =  stringsetloc("#No", "scr_text_slash_scr_text_gml_7030_2");
+%%%
+
+---
+            stringset(0, "* Choice text./");
++++
+            stringsetloc("* Choice text./", "scr_text_slash_scr_text_gml_7030_3");
+%%%
+
+---
+        case 5001:
+            if (global.choice == 0) {
+                msgset(0, "* Result A./%");
+            } else {
+                msgset(0, "* Result B./%");
+            }
++++
+
+        case 5001:
+            if (global.choice == 0)
+            {
+                msgsetloc(0, "* Result A./%", "scr_text_slash_scr_text_gml_7030_4");
+            }
+            else
+            {
+                msgsetloc(0, "* Result B./%", "scr_text_slash_scr_text_gml_7030_5");
+            }
+%%%
+
+
+=== gml_Object_obj_climb_interact_Step_0
+---
+msgset(0, "* Text time!!/%");
++++
+msgsetloc(0, "* Text time!!/%", "obj_climb_interact_Step_0_0");
+%%%
+
+
+=== gml_Object_obj_shop_vending_Create_0
+---
+stringset("* (It's a vending&machine.)");
++++
+stringsetloc("* (It's a vending&machine.)", "obj_shop_vending_slash_Create_0_gml_33");
+%%%
+
+
+=== gml_Object_obj_shop_vending_Other_12
+---
+msgset(0, "\\\\E5* You don't get money for sticking stuff in the machine^1, dumbass!/");
++++
+msgsetloc(0, "\\E5* You don't get money for sticking stuff in the machine^1, dumbass!/", "obj_shop_vending_Other_12_0");
+%%%
+
+---
+msgset(0, "\\\\E2* Let's stick Ralsei in the machine and see how much money he costs./");
++++
+msgsetloc(0, "\\E2* Let's stick Ralsei in the machine and see how much money he costs./", "obj_shop_vending_Other_12_1");
+%%%
+
+---
+msgnext("\\\\EW* That's STILL not how it works!/%");
++++
+c_msgnextloc("\\EW* That's STILL not how it works!/%", "obj_shop_vending_Other_12_2");
+%%%
+
+---
+msgset(0, "* (The vending machine did not respond.)/%");
++++
+msgsetloc(0, "* (The vending machine did not respond.)/%", "obj_shop_vending_Other_12_3");
+%%%
+
+
+
+=== gml_Object_obj_dw_fcastle_cafe_Draw_0
+---
+    if (global.lang == "ja")
+    {
+        boxwid = 304;
+        mx -= 22;
+    }
++++
+boxwid = 304;
+mx -= 22;
+%%%
+
+
+---
+draw_text_color(mx, my + (space * i), thisMenuOpt.desc, col, col, col2, col2, 1);
++++
+var text_scale = min(1, 196 / string_width(string_hash_to_newline(thisMenuOpt.desc)))
+draw_text_transformed_color(mx, my + (space * i), thisMenuOpt.desc, text_scale, 1, 0, col, col, col2, col2, 1);
+%%%
+
+
+---
+draw_text_color((mx + boxwid) - 11, my + (space * i), str, c.a, c.a, c.b, c.b, 1);
++++
+var text_new_scale = min(1, 83 / string_width(string_hash_to_newline(str)))
+draw_text_transformed_color((mx + boxwid) - 11, my + (space * i), str, text_new_scale, 1, 0, c.a, c.a, c.b, c.b, 1);
+%%%
+
+
+=== gml_Object_obj_tensionbar_Draw_0
+---
+    draw_text(x - 28, y + 70, string_hash_to_newline(stringsetloc("M", "obj_tensionbar_slash_Draw_0_gml_25_0")));
+    draw_text(x - 24, y + 90, string_hash_to_newline(stringsetloc("A", "obj_tensionbar_slash_Draw_0_gml_26_0")));
+    draw_text(x - 20, y + 110, string_hash_to_newline(stringsetloc("X", "obj_tensionbar_slash_Draw_0_gml_27_0")));
++++
+    var TP_str = stringsetloc("MAX", "obj_tensionbar_slash_Draw_0_gml_1_0");
+    var xoff = 12 / string_length(TP_str);
+    
+    for (var i = 0; i < string_length(TP_str); i++)
+        draw_text(x - 16 - (xoff * (string_length(TP_str) - i)), y + 70 + (20 * i), string_char_at(TP_str, i + 1));
+%%%
+
+
+
+=== gml_Object_obj_plat_tomebullet_Step_2
+---
+    mystring = chr(65 + irandom_range(0, 25))
++++
+    {
+        arr_str = get_chapter_lang_setting("tome_bullet_letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        mystring = string_char_at(arr_str, irandom_range(0, string_length(arr_str) - 1) + 1)
+    }
+%%%
+
+=== gml_Object_obj_plat_tomebullet_Step_0
+---
+    mystring = chr(65 + mystring)
++++
+    
+%%%
+
+=== gml_Object_obj_plat_enm_bigtome_Create_0
+---
+    nextletter = irandom_range(0, 25)
++++
+    arr_str = get_chapter_lang_setting("tome_bullet_letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    nextletter = irandom_range(0, string_length(arr_str) - 1)
+%%%
+
+=== gml_Object_obj_plat_enm_bigtome_Step_0
+---
+    nextletter = (nextletter + 7) % 26
++++
+    nextletter = (nextletter + 7) % string_length(arr_str)
+%%%
+---
+    bul.mystring = nextletter
++++
+    bul.mystring = string_char_at(arr_str, nextletter + 1)
+%%%
+
+=== gml_Object_obj_plat_tomebullet_Create_0
+---#
+    font = 5;
++++
+    font = scr_84_get_font("mainbig")
+%%%
+
+=== gml_Object_obj_flowery_lyrics_Draw_0
+---
+    draw_set_font(scr_84_get_font("main"))
++++
+    draw_set_font(scr_84_get_font("main_mono"))
+%%%
+
+
+=== gml_GlobalScript_scr_gamestart_chapter_override
+---
+    scr_floweryvoiceclip_init();
++++
+
+%%%
+
+
+
+
+
+=== gml_Object_obj_yellow_trial_manager_Draw_0
+---
+            draw_sprite_ext(scr_getbuttonsprite(global.input_g[4]), 0, _x - 146, _y - 12, 2, 2, 0, c_white, 1);
+            draw_sprite_ext(scr_getbuttonsprite(global.input_g[5]), 0, _x - 14, _y - 12, 2, 2, 0, c_white, 1);
++++
+            draw_set_font(scr_84_get_font("mainbig"));
+            var choose_text = string_replace(stringsetloc("~1 Choose", "obj_yellow_trial_manager_slash_Draw_0_gml_107_0"),  "~1 ", "");
+            draw_sprite_ext(scr_getbuttonsprite(global.input_g[4]), 0, _x - 60 - string_width(choose_text), _y - 12, 2, 2, 0, c_white, 1);
+            draw_sprite_ext(scr_getbuttonsprite(global.input_g[5]), 0, _x - 14, _y - 12, 2, 2, 0, c_white, 1);
+            draw_set_font(scr_84_get_font("main"));
+%%%
+
+
+
+
+
+=== gml_Object_obj_dw_fcastle_cafe_Create_0
+---
+nameAnd = stringsetloc(" & ", "obj_dw_fcastle_cafe_slash_Create_0_gml_179_0");
+nameClearTable = stringsetloc("Exit", "obj_dw_fcastle_cafe_slash_Create_0_gml_180_0");
++++
+nameAnd = stringsetloc(" & ", "obj_dw_fcastle_cafe_slash_Create_0_gml_179_0");
+nameClearTable = stringsetloc("Exit", "obj_dw_fcastle_cafe_slash_Create_0_gml_180_0");
+
+nameAqua_gained = scr_item_localized_name_inst(1, "char");
+nameSeth_gained = scr_item_localized_name_inst(2, "char");
+nameYellow_gained = scr_item_localized_name_inst(3, "char");
+nameGreen_gained = scr_item_localized_name_inst(4, "char");
+nameBlue_gained = scr_item_localized_name_inst(5, "char");
+nameOrange_gained = scr_item_localized_name_inst(6, "char");
+namePink_gained = scr_item_localized_name_inst(7, "char");
+%%%
+
+---
+flowerNames = [nameSeth, nameYellow, nameGreen, nameAqua, nameBlue, nameOrange, namePink];
++++
+flowerNames = [nameSeth, nameYellow, nameGreen, nameAqua, nameBlue, nameOrange, namePink];
+flowerNames_gained = [nameSeth_gained, nameYellow_gained, nameGreen_gained, nameAqua_gained, nameBlue_gained, nameOrange_gained, namePink_gained];
+%%%
+
+---
+        if (currentresult[i] == 1) {
+            array_push(friendsgained, flowerNames[i]);
+        }
++++
+        if (currentresult[i] == 1) {
+            array_push(friendsgained, flowerNames_gained[i]);
+        }
+%%%
+
+
+
+=== gml_Object_obj_date_controller_Other_11
+---
+draw_box_selected = 0;
++++
+draw_box_selected = 0;
+
+function scr_update_full_choice_scale()
+{
+    for (var i = 0; i < array_length(choicetext); i++)
+    {
+        var breaks = 0;
+        var max_len = 0;
+        var cur_len = 0;
+
+        for (var j = 1; j <= string_length(choicetext[i]); j++)
+        {
+            if (string_char_at(choicetext[i], j) == "\n")
+            {
+                max_len = max(max_len, cur_len);
+                cur_len = 0;
+                breaks++;
+            }
+            else
+            {
+                cur_len++;
+            }
+
+            max_len = max(max_len, cur_len);
+        }
+
+        switch (breaks)
+        {
+            case 0:
+                choicetextxscale[i] = max(1, 3 - floor(max(0, max_len - 4) / 4));
+                choicetextyscale[i] = max(1, 3 - (max(0, max_len - 7) * 0.2));
+                break;
+
+            case 1:
+                choicetextxscale[i] = max(1, round(3 - floor(max(0, max_len - 4) / 4)));
+                choicetextyscale[i] = 76 / string_height(choicetext[i]);
+                break;
+
+            default:
+                choicetextxscale[i] = max(1, round(3 - floor(max(0, max_len - 4) / 4)));
+                choicetextyscale[i] = round(62 / string_height(choicetext[i]));
+                break;
+        }
+    }
+}
+%%%
+
+---
+        choiceiscorrect[0] = 0;
++++
+        scr_update_full_choice_scale();
+        choiceiscorrect[0] = 0;
+%%%
+
+
+---
+        choiceiscorrect[rand_array[0]]
++++
+        scr_update_full_choice_scale();
+        choiceiscorrect[rand_array[0]]
+%%%
+
+
+
+=== gml_GlobalScript_scr_dogcheck
+---
+    dog_check = true
++++
+    dog_check = !get_lang_setting("translator_mode", 0)
+%%%
+
+
+
+=== gml_Object_obj_ch5_LW01W_Step_0
+---
+    instance_create(90, 120, obj_writer);
++++
+    instance_create(120 - string_width(global.msg[0]) / 2, 120, obj_writer);
+%%%
+
+
+
+=== gml_Object_obj_room_garden_video_Create_0
+---
+    video_open("vid/" + video_file + ".mp4")
++++
+    if (file_exists(get_lang_folder_path() + "chapter5/vid/" + video_file + ".mp4"))
+        video_open(get_lang_folder_path() + "chapter5/vid/" + video_file + ".mp4")
+    else 
+        video_open("vid/" + video_file + ".mp4")
+%%%
+
+
+
+=== gml_Object_obj_heroparent_Draw_0
+---
+draw_text(x + 10 + _xoffset, (y - 16) + _yoffset, _mercystring);
++++
+draw_text((x + 10 + _xoffset + 18) - round(string_width(_mercystring) / 2), (y - 16) + _yoffset, _mercystring);
+%%%
+
+
+
+
+=== gml_Object_obj_kawkaw_enemy_Step_0
+---
+with (obj_writer)
+{
+    rate = 33;
+    pos = 60;
+}
++++
+
+%%%

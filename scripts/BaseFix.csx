@@ -10,12 +10,43 @@ using System.Text.RegularExpressions;
 
 #region Вспомогательные функции
 
+Version utmLibVer = System.Reflection.Assembly.GetAssembly(typeof(UndertaleData)).GetName().Version;
+bool isUTMLibDot8 = utmLibVer < new Version(0, 9, 0, 0);
+
 string gameFolder = Path.GetDirectoryName(FilePath) + Path.DirectorySeparatorChar;
 string scriptFolder = Path.GetDirectoryName(ScriptPath) + Path.DirectorySeparatorChar;
 
 var globalDecompileContext = new GlobalDecompileContext(Data);
 var decompilerSettings = Data.ToolInfo.DecompilerSettings;
-SyncBinding("Strings, Code, CodeLocals, Scripts, GlobalInitScripts, GameObjects, Functions, Variables", true);
+
+#region Обратная совместимость с UndertaleModLib 0.8
+
+object globalsInst = ((Action)IncrementProgress).Target;
+Type globalsType = globalsInst.GetType();
+
+Action<Action> ExecuteInUIThread;
+if (isUTMLibDot8)
+{
+    void DummyAction(Action act)
+    {
+        act();
+    }
+    ExecuteInUIThread = DummyAction;
+
+    // Если нужно было бы часто/много раз это выполнять, то нужно использовать `Delegate.CreateDelegate()`
+    void syncBinding(string resType, bool enable)
+    {
+        globalsType.GetMethod("SyncBinding").Invoke(globalsInst, [resType, enable]);
+    }
+    syncBinding("Strings, Code, CodeLocals, Scripts, GlobalInitScripts, GameObjects, Functions, Variables", true);
+}
+else
+{
+    var mainThreadAct = globalsType.GetProperty("MainThreadAction")?.GetValue(globalsInst) as Action<Action>;
+    ExecuteInUIThread = mainThreadAct;
+}
+
+#endregion
 
 var changedCodes = new Dictionary<string, string>();
 
@@ -73,19 +104,26 @@ bool ReplacePart(UndertaleCode code, List<(string, string)> changes, bool matchW
     var text = Decompile(code);
     foreach (var pair in changes)
     {
-        Regex rx = new Regex(pair.Item1);
+        Regex rx = new Regex(string.Format(@"(?<!""){0}(?!"")", pair.Item1));
         if (matchWordsBounds)
         {
-            rx = new Regex(string.Format(@"\b{0}\b", pair.Item1));
+            rx = new Regex(string.Format(@"(?<!"")\b{0}\b(?!"")", pair.Item1));
         }
 
         if (!rx.IsMatch(text))
         {
-            // ScriptMessage(text);
-            return false;
+            Regex rx_test = new Regex(string.Format(@"{0}", pair.Item1));
+            if (matchWordsBounds)
+            {
+                rx_test = new Regex(string.Format(@"\b{0}\b", pair.Item1));
+            }
+            if (!rx_test.IsMatch(text)) {
+                return false;
+            }
         }
         text = rx.Replace(text, pair.Item2);
     }
+    
     return ReplaceGML(code, text);
 }
 
@@ -128,7 +166,13 @@ bool AppendToEnd(string codeName, string append)
 
 void AddNewEvent(UndertaleGameObject obj, EventType evType, uint evSubtype, string codeGML)
 {
-    ReplaceGML(obj.EventHandlerFor(evType, evSubtype, Data), codeGML);
+    UndertaleCode evHandler = null;
+    ExecuteInUIThread(() =>
+    {
+        evHandler = obj.EventHandlerFor(evType, evSubtype, Data); 
+    });
+
+    ReplaceGML(evHandler, codeGML);
 }
 
 void AddNewEvent(string objName, EventType evType, uint evSubtype, string codeGML)
@@ -173,9 +217,12 @@ bool GetOrig(string codeName)
 
     if (oldCode == null)
     {
-        oldCode = new UndertaleCode();
-        oldCode.Name = Data.Strings.MakeString(codeName + "_old");
-        Data.Code.Add(oldCode);
+        ExecuteInUIThread(() =>
+        {
+            oldCode = new UndertaleCode();
+            oldCode.Name = Data.Strings.MakeString(codeName + "_old");
+            Data.Code.Add(oldCode);
+        });
     }
 
     var oldText = Decompile(oldCode);
@@ -212,8 +259,12 @@ void GetOrigSprite(string spriteName)
 {
     // if (Data.Sprites.ByName(spriteName + "_old") == null)
     // {
-    //     var new_spr = new UndertaleSprite();
-    //     Data.Sprites.Add(new_spr);
+    //     ExecuteInUIThread(() =>
+    //     {
+    //         var new_spr = new UndertaleSprite();
+    //         Data.Sprites.Add(new_spr);
+    //     });
+    //     
     // }
 
     // var code = Data.Code.ByName(codeName);
@@ -221,12 +272,15 @@ void GetOrigSprite(string spriteName)
 
     // if (oldCode == null)
     // {
-    //     oldCode = new UndertaleCode();
-    //     oldCode.Name = Data.Strings.MakeString(codeName + "_old");
-    //     if (ReplaceGML(oldCode, "var code = \"" + Decompile(code).Replace("\\", "\\\\").Replace("\\n", "\\_n").Replace("\n", "\\n").Replace("\"", "\\\"") + "\""))
+    //     ExecuteInUIThread(() =>
     //     {
-    //         Data.Code.Add(oldCode);
-    //     }
+    //         oldCode = new UndertaleCode();
+    //         oldCode.Name = Data.Strings.MakeString(codeName + "_old");
+    //         if (ReplaceGML(oldCode, "var code = \"" + Decompile(code).Replace("\\", "\\\\").Replace("\\n", "\\_n").Replace("\n", "\\n").Replace("\"", "\\\"") + "\""))
+    //         {
+    //             Data.Code.Add(oldCode);
+    //         }
+    //     });
     // }
 
     // var oldText = Decompile(oldCode).Substring(12);
@@ -239,25 +293,29 @@ void GetOrigSprite(string spriteName)
 UndertaleCode AddCreationCodeEntryForInstance(UndertaleRoom.GameObject inst) {
     UndertaleCode code = inst.PreCreateCode;
     if (code == null) {
-        var name = Data.Strings.MakeString("gml_Instance_" + inst.InstanceID.ToString());
-        code = new UndertaleCode()
+        ExecuteInUIThread(() =>
         {
-            Name = name,
-            LocalsCount = 1
-        };
-        Data.Code.Add(code);
+            var name = Data.Strings.MakeString("gml_Instance_" + inst.InstanceID.ToString());
+            code = new UndertaleCode()
+            {
+                Name = name,
+                LocalsCount = 1
+            };
+            Data.Code.Add(code);
 
-        UndertaleCodeLocals.LocalVar argsLocal = new UndertaleCodeLocals.LocalVar();
-        argsLocal.Name = Data.Strings.MakeString("arguments");
-        argsLocal.Index = 0;
+            UndertaleCodeLocals.LocalVar argsLocal = new UndertaleCodeLocals.LocalVar();
+            argsLocal.Name = Data.Strings.MakeString("arguments");
+            argsLocal.Index = 0;
 
-        var locals = new UndertaleCodeLocals()
-        {
-            Name = name
-        };
-        locals.Locals.Add(argsLocal);
-        Data.CodeLocals.Add(locals);
+            var locals = new UndertaleCodeLocals()
+            {
+                Name = name
+            };
+            locals.Locals.Add(argsLocal);
+            Data.CodeLocals.Add(locals);
+        });
     }
+
     return code;
 }
 
@@ -268,7 +326,11 @@ async Task SaveEntries()
     {
         SetProgressBar(null, "Final compiling", 0, maxCount);
 
-        CompileGroup group = new(Data);
+        CompileGroup group = new(Data)
+        {
+            MainThreadAction = ExecuteInUIThread
+        };
+
         foreach (var c in changedCodes)
         {
             var codeName = c.Key;
@@ -294,8 +356,10 @@ async Task SaveEntries()
         //     var codeName = c.Key;
         //     var text = c.Value;
         //     var code = Data.Code.ByName(codeName);
-
-        //     CompileGroup group = new(Data);
+        //     CompileGroup group = new(Data)
+        //     {
+        //         ExecuteInUIThread = ExecuteInUIThread
+        //     };
         //     group.QueueCodeReplace(code, text);
         //     CompileResult result = group.Compile();
 
@@ -343,32 +407,42 @@ int maxCount = 0;
 #endregion
 
 #region Считывание кусков кода
-
 var codeEntrs = new List<(string, string)>();
-
-foreach (string fileName in Directory.GetFiles(scriptFolder + "CodeEntries"))
+void IterateOverCodeEntries(string curPath)
 {
-    if (!fileName.EndsWith(".gml"))
-        continue;
-    var codeName = Path.GetFileNameWithoutExtension(fileName);
-    codeEntrs.Add((codeName, File.ReadAllText(fileName)));
-    if (codeName.Contains("GlobalScript") && Data.Code.ByName(codeName) == null)
+    foreach (string fileName in Directory.GetFiles(curPath, "*", SearchOption.AllDirectories))
     {
-        CreateBlankFunction(codeName.Substring(17));
-    }
+        if (!fileName.EndsWith(".gml"))
+            continue;
+        var codeName = Path.GetFileNameWithoutExtension(fileName);
+        codeEntrs.Add((codeName, File.ReadAllText(fileName)));
+        if (codeName.Contains("GlobalScript") && Data.Code.ByName(codeName) == null)
+        {
+            CreateBlankFunction(codeName.Substring(17));
+        }
+    }        
 }
+
+// Дичайший костыль
+if (!ScriptPath.Contains("Menu")) {
+    IterateOverCodeEntries(scriptFolder + "../SharedCodeEntries");
+}
+
+IterateOverCodeEntries(scriptFolder + "CodeEntries");
 
 #endregion
 
 #region Замена кусков кода 
 
 var codesWithSpritesIds = new Dictionary<string, List<string>>();
+var spriteIdDict = Data.Sprites.Select((item, index) => (item, index))
+                               .ToDictionary(x => x.item.Name.Content, x => x.index);
 
 if (File.Exists(scriptFolder + "CodesWithSpritesIds.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "CodesWithSpritesIds.json");
     string json = r.ReadToEnd();
-    codesWithSpritesIds = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+    codesWithSpritesIds = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
 }
 
 
@@ -378,7 +452,7 @@ if (File.Exists(scriptFolder + "CodeUpdates.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "CodeUpdates.json");
     string json = r.ReadToEnd();
-    jsonCodeUpdates = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(json);
+    jsonCodeUpdates = JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(json);
 }
 
 var codeChanges = new Dictionary<string, List<(string, string, bool)>>();
@@ -423,7 +497,7 @@ if (File.Exists(scriptFolder + "CodeChanges.txt")) {
         else if (flag == 2)
             cur_to += str + "\n";
     }
-    // jsonCodeUpdates = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(json);
+    // jsonCodeUpdates = JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(json);
 }
 
 maxCount = codesWithSpritesIds.Count + codeEntrs.Count + codeChanges.Count;
@@ -450,7 +524,14 @@ await Task.Run(() =>
             
         foreach (var spr in code.Value)
         {
-            if (!ReplacePart(code.Key, Data.Sprites.IndexOf(Data.Sprites.ByName(spr)).ToString(), spr))
+            int sprId = spriteIdDict.TryGetValue(spr, out int id) ? id : -1;
+            if (sprId == -1)
+            {
+                ScriptMessage($"Не удалось найти спрайт с именем \"{spr}\"");
+            }
+
+            // Не забыть дублировать спрайты в CodesWithSprites, этот кусок кода просто вместо айдишников имена подставляет
+            if (!ReplacePart(code.Key, sprId.ToString(), spr))
             {
                 // ScriptMessage(string.Format("Ошибка при изменении айдишника \"{0}\" в \"{1}\".", spr, code.Key));
             }
@@ -499,7 +580,7 @@ await Task.Run(() =>
 #region Внедрение спрайтов и звуков
 
 
-var jsonSpritesAssgned = new Dictionary<string, string>();
+var jsonSpritesAssigned = new Dictionary<string, string>();
 var jsonObjSprDraws = new Dictionary<string, List <string>>();
 var jsonRooms = new Dictionary<string, List<Dictionary<string, string>>>();
 var jsonObjSounds = new Dictionary<string, List <string>>();
@@ -508,51 +589,48 @@ if (File.Exists(scriptFolder + "ObjectsWithAssignedSprites.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "ObjectsWithAssignedSprites.json");
     string json = r.ReadToEnd();
-    jsonSpritesAssgned = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+    jsonSpritesAssigned = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 }
 if (File.Exists(scriptFolder + "CodesWithSprites.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "CodesWithSprites.json");
     string json = r.ReadToEnd();
-    jsonObjSprDraws = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+    jsonObjSprDraws = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
 }
 if (File.Exists(scriptFolder + "RoomsWithBacksLayers.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "RoomsWithBacksLayers.json");
     string json = r.ReadToEnd();
-    jsonRooms = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(json);
+    jsonRooms = JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(json);
 }
 if (File.Exists(scriptFolder + "CodesWithSounds.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "CodesWithSounds.json");
     string json = r.ReadToEnd();
-    jsonObjSounds = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+    jsonObjSounds = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
 }
 
-maxCount = jsonObjSprDraws.Count + jsonSpritesAssgned.Count + jsonRooms.Count + jsonObjSounds.Count;
+maxCount = jsonObjSprDraws.Count + jsonSpritesAssigned.Count + jsonRooms.Count + jsonObjSounds.Count;
 await Task.Run(() =>
 {
     SetProgressBar(null, "Sprites and sounds injecting", 0, maxCount);
 
     foreach (var code in jsonObjSprDraws)
     {
-        // var lst = new List<(string, string)>();
+        GetOrig(code.Key);
         foreach (var spr in code.Value)
         {
             if (!ReplacePart(code.Key, spr, string.Format("scr_84_get_sprite(\"{0}\")", spr), true)) // scr_84_get_sprite
             {
                 ScriptMessage(string.Format("Ошибка при добавлении спрайта \"{0}\" в \"{1}\".", spr, code.Key));
             }
-            // lst.Add((spr, )));
         }
-        GetOrig(code.Key);
-
 
         IncrementProgress();
         UpdateProgressValue(GetProgress());
     }
 
-    foreach (var obj in jsonSpritesAssgned)
+    foreach (var obj in jsonSpritesAssigned)
     {
         if (Data.Code.ByName("gml_Object_" + obj.Key + "_Create_0") == null)
         {
@@ -592,7 +670,7 @@ if (File.Exists(scriptFolder + "new_sprites.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "new_sprites.json");
     string json = r.ReadToEnd();
-    jsonNewSprites = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, int>>>(json);
+    jsonNewSprites = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, int>>>(json);
 }
 
 foreach (var spr in jsonNewSprites)
@@ -656,7 +734,7 @@ if (File.Exists(scriptFolder + "CodesWithFonts.json"))
 {
     using StreamReader r = new StreamReader(scriptFolder + "CodesWithFonts.json");
     string json = r.ReadToEnd();
-    jsonFonts = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+    jsonFonts = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
 }
 
 maxCount = Math.Max(1, jsonFonts.Sum(e => e.Value.Count));

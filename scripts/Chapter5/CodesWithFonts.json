@@ -1,0 +1,55 @@
+{
+    "fnt_8bit": [
+        "gml_GlobalScript_scr_shop_space_display",
+        "gml_Object_obj_minigame_evaluation_Draw_0",
+        "gml_Object_obj_choicer_neo_Draw_0"
+    ],
+    "fnt_mainbig": [
+        "gml_Object_obj_intro_ch4_Draw_0",
+        "gml_GlobalScript_scr_shop_space_display",
+        "gml_Object_obj_yourlong_Draw_0",
+        "gml_Object_obj_dw_ralsei_castle_basketball_Create_0",
+        "gml_Object_obj_plat_player_Draw_0",
+        "gml_Object_obj_plat_hbx_Draw_0",
+        "gml_Object_obj_dw_fcastle_cafe_Draw_0",
+        "gml_Object_obj_dw_fcastle_pinkshop_Create_0",
+        "gml_Object_obj_intro_ch5_Draw_0",
+        "gml_Object_obj_rhythmgame_jackenstein_events_Draw_0",
+        "gml_Object_obj_title_placeholder_Draw_0",
+        "gml_Object_obj_plat_tomebullet_Create_0"
+    ],
+    "fnt_main": [
+        "gml_GlobalScript_scr_rhythmgame_draw",
+        "gml_GlobalScript_scr_shop_space_display",
+        "gml_Object_obj_time_Draw_64",
+        "gml_Object_obj_title_placeholder_Draw_0",
+        "gml_Object_obj_dw_rhythm_symbol_Draw_0",
+        "gml_Object_obj_dw_countdown_Draw_0",
+        "gml_GlobalScript_scr_exportsprites",
+        "gml_Object_obj_flowery_enemy_Draw_0",
+        "gml_Object_obj_plat_player_Draw_0",
+        "gml_Object_obj_time_Draw_0",
+        "gml_Object_obj_rhythmgame_jackenstein_events_Draw_0",
+        "gml_Object_obj_snd_maker_Draw_0"
+    ],
+    "fnt_dotumche": [
+        "gml_Object_obj_dw_cliff_precipice_Create_0",
+        "gml_Object_obj_ch5_DWC_Onsen_Step_0",
+        "gml_Object_obj_talkbubble_Draw_0",
+        "gml_Object_obj_dw_fcastle_sandtrap_shijoke_Step_0"
+    ],
+    "fnt_small": [
+        "gml_Object_obj_mainchara_Draw_0",
+        "gml_Object_obj_overworldc_Draw_0",
+        "gml_Object_obj_title_placeholder_Draw_0",
+        "gml_Object_obj_bullettester_enemy_new_Draw_0",
+        "gml_GlobalScript_scr_exportsprites",
+        "gml_Object_obj_flowery_sparkler_Draw_73",
+        "gml_Object_obj_bullettester_enemy_Draw_0"
+    ],
+    "fnt_comicsans": [
+        
+    ]
+}
+
+

@@ -13,20 +13,6 @@ if (formatted == 0)
     additional_sprites = [];
     additional_sounds = [];
     
-    // if (global.fc == 0)
-    // {
-    //     charline = originalcharline;
-    //     max_string_width = max_string_width_base;
-    // } else {
-    //     charline = charline_face;
-    //     max_string_width = max_string_width_face;
-    //      if (global.fc == 22)
-    //     {
-    //         charline = 30;
-    //         max_string_width = 30 * hspace;
-    //     }
-    // }
-    
     for (i = 1; i < (length + 1); i += 1)
     {
         skip = 0;
@@ -40,33 +26,10 @@ if (formatted == 0)
         }
         else if (thischar == "/" || thischar == "%")
         {
-            // if (charpos > -1)
-            // {
-            //     charpos -= 1;
-                
-            //     if (get_lang_setting("monospace_fonts", false))
-            //         cur_string_width -= hspace;
-            //     else
-            //         cur_string_width -= (string_width(thischar) * textscale);
-            // }
             skip = 1
         }
         else if (thischar == "^")
         {
-            // if (charpos > -1)
-            // {
-            //     if (get_lang_setting("monospace_fonts", false))
-            //     {
-            //         cur_string_width -= (hspace * 2);
-            //     }
-            //     else
-            //     {
-            //         cur_string_width -= (string_width(thischar) * textscale);
-            //         cur_string_width -= (string_width(string_char_at(mystring, i + 1)) * textscale);
-            //     }
-                
-            //     charpos -= 2;
-            // }
             skip = 1
             i++
         }
@@ -139,12 +102,12 @@ if (formatted == 0)
                     if (global.fc == 0)
                     {
                         charline = originalcharline;
-                        max_string_width = max_string_width_base;
+                        writingx = x;
                     }
                     else
                     {
                         charline = charline_face;
-                        max_string_width = max_string_width_face;
+                        writingx = x + (58 * f);
                     }
                 }
                 
@@ -157,16 +120,16 @@ if (formatted == 0)
                         if (global.darkzone == 1)
                             global.typer = 6;
                     }
-                    
+
                     if (nextchar2 == "1")
                         global.typer = 2;
-                    
+
                     if (nextchar2 == "A")
                         global.typer = 18;
-                    
+
                     if (nextchar2 == "a")
                         global.typer = 20;
-                    
+
                     if (nextchar2 == "N")
                     {
                         global.typer = 12;
@@ -177,10 +140,10 @@ if (formatted == 0)
                         if (global.fighting == 1)
                             global.typer = 59;
                     }
-                    
+
                     if (nextchar2 == "n")
                         global.typer = 23;
-                    
+
                     if (nextchar2 == "B")
                     {
                         global.typer = 13;
@@ -191,7 +154,7 @@ if (formatted == 0)
                         if (global.fighting == 1)
                             global.typer = 77;
                     }
-                    
+
                     if (nextchar2 == "S")
                     {
                         global.typer = 10;
@@ -204,7 +167,7 @@ if (formatted == 0)
                                 global.typer = 47;
                         }
                     }
-                    
+
                     if (nextchar2 == "R")
                     {
                         global.typer = 31;
@@ -215,7 +178,7 @@ if (formatted == 0)
                         if (global.flag[30] == 1)
                             global.typer = 6;
                     }
-                    
+
                     if (nextchar2 == "L")
                     {
                         global.typer = 32;
@@ -223,19 +186,19 @@ if (formatted == 0)
                         if (global.fighting == 1)
                             global.typer = 46;
                     }
-                    
+
                     if (nextchar2 == "X")
                         global.typer = 40;
-                    
+
                     if (nextchar2 == "r")
                         global.typer = 55;
-                    
+
                     if (nextchar2 == "T")
                         global.typer = 7;
-                    
+
                     if (nextchar2 == "J")
                         global.typer = 35;
-                    
+
                     if (nextchar2 == "K")
                     {
                         global.typer = 33;
@@ -249,19 +212,19 @@ if (formatted == 0)
                         if (global.fighting == 1)
                             global.typer = 48;
                     }
-                    
+
                     if (nextchar2 == "q")
                         global.typer = 62;
-                    
+
                     if (nextchar2 == "Q")
                         global.typer = 58;
-                    
+
                     if (nextchar2 == "s")
                         global.typer = 14;
-                    
+
                     if (nextchar2 == "U")
                         global.typer = 17;
-                    
+
                     if (nextchar2 == "p")
                     {
                         global.typer = 67;
@@ -290,27 +253,11 @@ if (formatted == 0)
                         charpos += ceil(spr_w / hspace);
                         cur_string_width += spr_w;
                         
-                        if ((spr_w + (hspace * 2)) >= max_string_width)
+                        if ((spr_w + (hspace * 2)) >= charline * hspace)
                             wide_image = 1;
                     }
                 }
             }
-            
-            // if (charpos > -1)
-            // {
-            //     charpos -= 3;
-                
-            //     if (get_lang_setting("monospace_fonts", false))
-            //     {
-            //         cur_string_width -= (hspace * 3);
-            //     }
-            //     else
-            //     {
-            //         cur_string_width -= string_width(thischar) * textscale;
-            //         cur_string_width -= string_width(string_char_at(mystring, i + 1)) * textscale;
-            //         cur_string_width -= string_width(string_char_at(mystring, i + 2)) * textscale;
-            //     }
-            // }
 
             i += 2
             skip = 1
@@ -329,17 +276,11 @@ if (formatted == 0)
             
             if (aster == 1 && autoaster == 1 && nextchar != "*" && global.lang != "ja")
             {
-                // if (flag) {
-                //     show_message(string(i) + " " + mystring)
-                // }
                 charpos = 2;
                 cur_string_width += (hspace * 2);
                 length += 2;
                 mystring = string_insert("||", mystring, i + 1);
                 i += 2;
-                // if (flag) {
-                //     show_message(string(i) + " " + mystring)
-                // }
             }
         } else if (thischar == "{") {
             var nextchar = string_char_at(mystring, i + 1);
@@ -366,7 +307,7 @@ if (formatted == 0)
                     cur_string_width += sprite_get_width(spr)
                     i--
                     skip = 1
-                    if ((sprite_get_width(spr) + (hspace * 2)) >= max_string_width)
+                    if ((sprite_get_width(spr) + (hspace * 2)) >= charline * hspace)
                         wide_image = 1;
                 }
             } else if (nextchar == "S") {
@@ -405,26 +346,20 @@ if (formatted == 0)
             if (thischar == "*")
                 aster = 1;
             
-            if (thischar == " " || thischar == "*" || get_lang_setting("monospace_fonts", false))
+            if (thischar == " " || thischar == "*" || thischar == "\t" || get_lang_setting("monospace_fonts", false))
                 cur_string_width += hspace;
             else
                 cur_string_width += string_width(thischar) * textscale;
             charpos += 1;
         }
             
-        if (!wide_image && ((!limit_by_width && charpos > charline) || (limit_by_width && cur_string_width > max_string_width)))
+        if (!wide_image && ((!limit_by_width && charpos > charline) || (limit_by_width && cur_string_width > charline * hspace)))
         {
             if (remspace > 2)
             {
-                // if (flag) {
-                //     show_message(string(i) + " " + mystring)
-                // }
                 mystring = string_delete(mystring, remspace, 1);
                 mystring = string_insert("&", mystring, remspace);
                 i = remspace + 1;
-                // if (flag) {
-                //     show_message(string(i) + " " + mystring + " " + string(i))
-                // }
                 
                 stringmax = max(stringmax, charpos);
                 widthmax = max(widthmax, cur_string_width)
@@ -437,9 +372,6 @@ if (formatted == 0)
             }
             else
             {
-                // if (flag) {
-                //     show_message(string(i) + " " + mystring)
-                // }
                 stringmax = max(stringmax, charpos);
                 widthmax = max(widthmax, cur_string_width)
                 
@@ -451,9 +383,6 @@ if (formatted == 0)
                 linecount += 1;
                 i += 1;
                 scr_asterskip();
-                // if (flag) {
-                //     show_message(string(i) + " " + mystring)
-                // }
             }
         }
     }

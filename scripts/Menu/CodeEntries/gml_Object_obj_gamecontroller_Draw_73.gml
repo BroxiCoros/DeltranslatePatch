@@ -10,6 +10,10 @@ var can_tr_be_loaded = false;
 last_folded_text = scr_get_lang_string("List of changes. Press [Q] to expand.\n", "obj_gamecontroller_Create_1_0");
 last_unfolded_text = scr_get_lang_string("List of changes. Press [Q] to fold.\n", "obj_gamecontroller_Create_2_0");
 
+if (loading_new_translation_files) {
+    update_string = scr_get_lang_string("Loading", "obj_gamecontroller_Draw_73_5_0");
+}
+
 if ((array_length(loaded_files) > 0 && !loading_new_translation_files) || loading_error != "")
 {
     if (loading_error == "")
@@ -64,15 +68,17 @@ if (update_string != "")
 
         loading_string += "\n";
 
-        for (var i = 0; i < array_length(translation_version_changes_datas); i++) {
-            var path = ""
-            if (translation_version_changes_datas[i] > 0) {
-                path = "chapter" + string(translation_version_changes_datas[i]) + "/"
+        if (settings_loaded) {
+            for (var i = 0; i < array_length(translation_version_changes_datas); i++) {
+                var path = ""
+                if (translation_version_changes_datas[i] > 0) {
+                    path = "chapter" + string(translation_version_changes_datas[i]) + "/"
+                }
+                loading_string += (string(scr_get_lang_string("Loading {0}: {1}%", "obj_gamecontroller_Draw_73_8_0"), path + "data.win", string(variable_struct_get(datas_loading, translation_version_changes_datas[i]))) + "\n");
             }
-            loading_string += (string(scr_get_lang_string("Loading {0}: {1}%", "obj_gamecontroller_Draw_73_8_0"), path + "data.win", string(variable_struct_get(datas_loading, translation_version_changes_datas[i]))) + "\n");
-        }
 
-        loading_string += string(scr_get_lang_string("Loaded {0}/{1} translation_files", "obj_gamecontroller_Draw_73_7_0"), string(array_length(loaded_files)), string(array_length(variable_struct_get_names(files_in_upload)))) + "\n";
+            loading_string += string(scr_get_lang_string("Loaded {0}/{1} translation_files", "obj_gamecontroller_Draw_73_7_0"), string(array_length(loaded_files)), string(array_length(variable_struct_get_names(files_in_upload)))) + "\n";
+        }
 
         update_string = loading_string;
     }
@@ -134,9 +140,8 @@ if (update_string != "")
 
         if (panel_visible && can_tr_be_loaded && keyboard_check_pressed(ord("G")))
         {
+            load_settings();
             loading_new_translation_files = true;
-            load_datas();
-            load_files();
         }
     }
 }

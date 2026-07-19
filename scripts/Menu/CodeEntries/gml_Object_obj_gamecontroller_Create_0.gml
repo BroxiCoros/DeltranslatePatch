@@ -163,6 +163,21 @@ loaded_files = []
 loaded_datas = []
 loading_error = ""
 
+settings_loaded = false
+
+load_settings = function() {
+    files_in_upload = {}
+    loaded_files = []
+    loading_error = ""
+
+    if (!variable_struct_exists(files_in_upload, "settings.json")) {
+        variable_struct_set(files_in_upload, "settings.json", http_get_file(get_lang_setting("files_url", "") + "settings.json", "\\\\?\\" + program_directory + "tmp/settings.json"));
+    }
+    if (!variable_struct_exists(files_in_upload, "changes.json")) {
+        variable_struct_set(files_in_upload, "changes.json", http_get_file(get_lang_setting("files_url", "") + "changes.json", "\\\\?\\" + program_directory + "tmp/changes.json"));
+    }
+}
+
 load_files = function() {
     files_in_upload = {}
     loaded_files = []
@@ -172,12 +187,6 @@ load_files = function() {
     for (var i = 0; i < array_length(files); i++) {
         var file = string_replace_all(files[i], "..", "")
         variable_struct_set(files_in_upload, file, http_get_file(get_lang_setting("files_url", "") + files[i], "\\\\?\\" + program_directory + "tmp/" + file));
-    }
-    if (!variable_struct_exists(files_in_upload, "settings.json")) {
-        variable_struct_set(files_in_upload, "settings.json", http_get_file(get_lang_setting("files_url", "") + "settings.json", "\\\\?\\" + program_directory + "tmp/settings.json"));
-    }
-    if (!variable_struct_exists(files_in_upload, "changes.json")) {
-        variable_struct_set(files_in_upload, "changes.json", http_get_file(get_lang_setting("files_url", "") + "changes.json", "\\\\?\\" + program_directory + "tmp/changes.json"));
     }
 }
 
@@ -220,15 +229,16 @@ copy_files_from_tmp = function() {
             "\\\\?\\" + program_directory + "tmp/" + path_from,
             "\\\\?\\" + program_directory + path_to,
         )
-
     }
 
-    update_language()
-
     loading_new_translation_files = false
-    scr_init_localization()
+}
 
-    directory_destroy("\\\\?\\" + program_directory + "tmp")
+update_changes_file = function() {
+    file_copy(
+        "\\\\?\\" + program_directory + "tmp/changes.json",
+        "\\\\?\\" + program_directory + "lang/changes.json",
+    )
 }
 
 clear_tmp = function() {

@@ -1,0 +1,371 @@
+{
+  "room_town_north": [
+    {
+      "sprite": "spr_lw_flowerking_shadow",
+      "type": "sprite",
+      "layer": "ASSETS_Evening_buildings_shadows",
+      "spr_name": "graphic_54F67CB3"
+    },
+    {
+      "sprite": "bg_darkbuilding_cattyhouse",
+      "type": "sprite",
+      "layer": "ASSETS_Shadows_buildings",
+      "spr_name": "graphic_6DD61053"
+    },
+    {
+      "sprite": "bg_darkbuilding_flowerking",
+      "type": "sprite",
+      "layer": "ASSETS_Shadows_buildings",
+      "spr_name": "graphic_61009930"
+    },
+    {
+      "sprite": "bg_building_flowershop",
+      "type": "sprite",
+      "layer": "ASSETS_Buildings_1",
+      "spr_name": "graphic_46476F3F"
+    },
+    {
+      "sprite": "bg_building_cattyhouse",
+      "type": "sprite",
+      "layer": "ASSETS_Buildings_1",
+      "spr_name": "graphic_6DF228AC"
+    }
+  ],
+  "room_town_mid": [
+    {
+      "sprite": "spr_festival_arch",
+      "type": "sprite",
+      "layer": "Town_Shadows_evening_cutout",
+      "spr_name": "graphic_5ED0A2D3"
+    },
+    {
+      "sprite": "bg_building_icee_sign_ch5",
+      "type": "sprite",
+      "layer": "Town_Shadows_evening_cutout",
+      "spr_name": "graphic_4F94F716"
+    },
+    {
+      "sprite": "bg_building_diner",
+      "type": "sprite",
+      "layer": "Town_Shadows_evening_cutout",
+      "spr_name": "graphic_1C1904E5"
+    },
+    {
+      "sprite": "bg_building_icee_sign_ch5",
+      "type": "sprite",
+      "layer": "ASSETS_Buildings_Depth_5000",
+      "spr_name": "graphic_5F0877C2"
+    },
+    {
+      "sprite": "bg_darkbuilding_diner",
+      "type": "sprite",
+      "layer": "ASSETS_Shadows_buildings",
+      "spr_name": "graphic_18275436"
+    },
+    {
+      "sprite": "bg_building_diner",
+      "type": "tile",
+      "x": "500",
+      "y": "-20",
+      "depth": "994000",
+      "layer": "ASSETS_Buildings_Depth_994000",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10001067",
+      "hmm": "bg_building_diner (UndertaleSprite)"
+    },
+    {
+      "sprite": "bg_building_store",
+      "type": "tile",
+      "x": "940",
+      "y": "-50",
+      "depth": "994000",
+      "layer": "ASSETS_Buildings_Depth_994000",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10001068",
+      "hmm": "bg_building_store (UndertaleSprite)"
+    }
+  ],
+  "room_town_south": [
+    {
+      "sprite": "spr_lw_fix_barricade",
+      "type": "sprite",
+      "layer": "Town_Shadows_evening_cutout",
+      "spr_name": "graphic_3C261C2F"
+    },
+    {
+      "sprite": "spr_lw_library_shadow",
+      "type": "sprite",
+      "layer": "ASSETS_Evening_buildings_shadows",
+      "spr_name": "graphic_61FE2FCD"
+    },
+    {
+      "sprite": "spr_lw_fix_barricade",
+      "type": "sprite",
+      "layer": "Town_Shadows_evening_cutout",
+      "spr_name": "graphic_7363BF20"
+    },
+    {
+      "sprite": "spr_lw_fix_barricade",
+      "type": "sprite",
+      "layer": "ASSETS_Depth_980000",
+      "spr_name": "graphic_22519D37"
+    },
+    {
+      "sprite": "spr_lw_fix_barricade",
+      "type": "sprite",
+      "layer": "ASSETS_Depth_980000",
+      "spr_name": "graphic_6EA1F79C"
+    },
+    {
+      "sprite": "spr_lw_hospital_shadow",
+      "type": "sprite",
+      "layer": "ASSETS_Evening_buildings_shadows",
+      "spr_name": "graphic_38B0CD00"
+    },
+    {
+      "sprite": "spr_lw_police_shadow",
+      "type": "sprite",
+      "layer": "ASSETS_Evening_buildings_shadows",
+      "spr_name": "graphic_12756C9A"
+    },
+    {
+      "sprite": "bg_darkbuilding_library",
+      "type": "sprite",
+      "layer": "ASSETS_Shadows_buildings",
+      "spr_name": "graphic_616C24E5"
+    },
+    {
+      "sprite": "bg_darkbuilding_hospital",
+      "type": "sprite",
+      "layer": "ASSETS_Shadows_buildings",
+      "spr_name": "graphic_5A9F7FF3"
+    },
+    {
+      "sprite": "bg_building_police",
+      "type": "tile",
+      "x": "230",
+      "y": "0",
+      "depth": "982000",
+      "layer": "ASSETS_Buildings_Depth_982000",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10002551",
+      "hmm": "bg_building_police (UndertaleSprite)"
+    },
+    {
+      "sprite": "bg_building_hospital",
+      "type": "tile",
+      "x": "504",
+      "y": "-4",
+      "depth": "982000",
+      "layer": "ASSETS_Buildings_Depth_982000",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10002552",
+      "hmm": "bg_building_hospital (UndertaleSprite)"
+    },
+    {
+      "sprite": "bg_building_library",
+      "type": "tile",
+      "x": "960",
+      "y": "0",
+      "depth": "982000",
+      "layer": "ASSETS_Buildings_Depth_982000",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10002553",
+      "hmm": "bg_building_library (UndertaleSprite)"
+    }
+  ],
+  "room_town_school": [
+    {
+      "sprite": "spr_lw_school_shadow",
+      "type": "sprite",
+      "layer": "ASSETS_Evening_buildings_shadows",
+      "spr_name": "graphic_7F1B219C"
+    },
+    {
+      "sprite": "bg_building_school",
+      "type": "tile",
+      "x": "209",
+      "y": "-55",
+      "depth": "955000",
+      "layer": "ASSETS_Depth_955000",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10003406",
+      "hmm": "bg_building_school (UndertaleSprite)"
+    }
+  ],
+  "room_town_church": [
+    {
+      "sprite": "spr_lw_townhall_top_shadow",
+      "type": "sprite",
+      "layer": "ASSETS_Evening_buildings_shadow_fore",
+      "spr_name": "graphic_5A1681E"
+    },
+    {
+      "sprite": "bg_building_townhall_layer2",
+      "type": "tile",
+      "x": "480",
+      "y": "0",
+      "depth": "5020",
+      "layer": "ASSETS_Buildings_4900",
+      "source_x": "0",
+      "source_y": "0",
+      "id": "10004094",
+      "hmm": "bg_building_townhall_layer2 (UndertaleSprite)"
+    }
+  ],
+  "room_torielclass": [
+    {
+      "sprite": "bg_torielclass_ch2",
+      "type": "background",
+      "layer": "Compatibility_Background_0_bg_torielclass"
+    }
+  ],
+  "room_dw_castle_restaurant": [
+    {
+      "sprite": "bg_dw_bakery",
+      "type": "background",
+      "layer": "Backgrounds_1"
+    }
+  ],
+  "room_dw_castle_cafe": [
+    {
+      "sprite": "bg_dw_castle_cafe",
+      "type": "background",
+      "layer": "BG_Image"
+    }
+  ],
+  "room_dw_ralsei_castle_3f": [
+    {
+      "sprite": "spr_dw_door_queen",
+      "type": "sprite",
+      "layer": "ASSETS_DOORS",
+      "spr_name": "graphic_6AF92392"
+    },
+    {
+      "sprite": "spr_dw_door_tenna",
+      "type": "sprite",
+      "layer": "ASSETS_DOORS",
+      "spr_name": "graphic_92DC6E3"
+    }
+  ],
+  "room_dw_castle_tv": [
+    {
+      "sprite": "spr_dw_ranking_doors_narrow_mike_unlocked",
+      "type": "sprite",
+      "layer": "ASSETS",
+      "spr_name": "graphic_1A1BF77F"
+    }
+  ],
+  "room_dw_ralsei_castle_basketball": [
+    {
+      "sprite": "spr_dw_ralsei_castle_basketball_background",
+      "type": "sprite",
+      "layer": "BG",
+      "spr_name": "graphic_6A046352"
+    }
+  ],
+  "room_dw_garden_aquadash": [
+    {
+      "sprite": "spr_dw_garden_exit",
+      "type": "sprite",
+      "layer": "SIGN",
+      "spr_name": "graphic_68EDC6B6"
+    }
+  ],
+  "room_dw_garden_aquadash_plat": [
+    {
+      "sprite": "spr_dw_garden_exit",
+      "type": "plat",
+      "layer": "Plat_Assets",
+      "spr_name": "graphic_4E06F3E0"
+    }
+  ],
+  "room_dw_cliff_shop": [
+    {
+      "sprite": "spr_flowershop",
+      "type": "sprite",
+      "layer": "SHADOWCUT_LAYER",
+      "spr_name": "graphic_2876A002"
+    },
+    {
+      "sprite": "spr_flowershop",
+      "type": "sprite",
+      "layer": "ASSETS_Flowers",
+      "spr_name": "graphic_16F502F"
+    }
+  ],
+  "room_dw_cliff_shicave": [
+    {
+      "sprite": "spr_dw_scarecrow_not_enemy_sign",
+      "type": "marker",
+      "layer": "NPCs",
+      "spr_name": "graphic_47D6C43B"
+    }
+  ],
+  "room_dw_fcastle_foyer": [
+    {
+      "sprite": "spr_dw_fcastle_foyer_sign",
+      "type": "marker",
+      "layer": "NPCs",
+      "spr_name": "graphic_14139241"
+    }
+  ],
+  "room_dw_fcastle_left_twodoors": [
+    {
+      "sprite": "spr_fcastle_left_twodoors_label_blue_en",
+      "type": "marker",
+      "layer": "ASSETS_REF",
+      "spr_name": "graphic_1124BC45"
+    },
+    {
+      "sprite": "spr_fcastle_left_twodoors_label_yellow_en",
+      "type": "marker",
+      "layer": "ASSETS_REF",
+      "spr_name": "graphic_307A393F"
+    }
+  ],
+  "room_dw_fcastle_sandtrap": [
+    {
+      "sprite": "spr_fcastle_sandtrap_doorlabel_en",
+      "type": "marker",
+      "layer": "ASSETS_REF",
+      "spr_name": "graphic_5D6545C5"
+    }
+  ],
+  "room_dw_fcastle_second_diner": [
+    {
+      "sprite": "spr_dw_fcastle_second_diner_sign_en",
+      "type": "marker",
+      "layer": "SIGN",
+      "spr_name": "graphic_59B1A2"
+    }
+  ],
+  "room_dw_fcastle_bromides": [
+    {
+      "sprite": "spr_dw_fcastle_bromides_moa_lick",
+      "type": "marker",
+      "layer": "NPCs",
+      "spr_name": "graphic_7C529EC0"
+    },
+    {
+      "sprite": "spr_dw_fcastle_bromides_yuka_idle",
+      "type": "marker",
+      "layer": "NPCs",
+      "spr_name": "graphic_47F2B5AE"
+    }
+  ],
+  "room_lw_noellehouse_dess": [
+    {
+      "sprite": "bg_noellehouse_dess",
+      "type": "sprite",
+      "layer": "BACKGROUND",
+      "spr_name": "graphic_50AA3D26"
+    }
+  ]
+}

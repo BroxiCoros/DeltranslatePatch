@@ -52,20 +52,16 @@ if (global.translator_mode) {
     }
 }
 
-
-
 if (dialoguer == 1 && formatted == 0)
 {
     if (global.fc == 0)
     {
         charline = originalcharline;
-        max_string_width = max_string_width_base;
         writingx = x;
     }
     else
     {
         charline = charline_face;
-        max_string_width = max_string_width_face;
         writingx = x + (58 * f);
         
         if (global.lang == "ja")
@@ -200,13 +196,11 @@ if (formatted == 0)
                     if (global.fc == 0)
                     {
                         charline = originalcharline;
-                        max_string_width = max_string_width_base;
                         writingx = x;
                     }
                     else
                     {
                         charline = charline_face;
-                        max_string_width = max_string_width_face;
                         writingx = x + (58 * f);
                     }
                 }
@@ -225,22 +219,22 @@ if (formatted == 0)
                                 global.typer = 4;
                         }
                     }
-                    
+
                     if (nextchar2 == "1")
                         global.typer = 2;
-                    
+
                     if (nextchar2 == "A")
                         global.typer = 18;
-                    
+
                     if (nextchar2 == "a")
                         global.typer = 20;
-                    
+
                     if (nextchar2 == "N")
                         global.typer = 12;
                     
                     if (nextchar2 == "n")
                         global.typer = 23;
-                    
+
                     if (nextchar2 == "B")
                         global.typer = 13;
                     
@@ -256,7 +250,7 @@ if (formatted == 0)
                                 global.typer = 47;
                         }
                     }
-                    
+
                     if (nextchar2 == "R")
                     {
                         global.typer = 31;
@@ -267,7 +261,7 @@ if (formatted == 0)
                         if (global.flag[30] == 1)
                             global.typer = 6;
                     }
-                    
+
                     if (nextchar2 == "L")
                     {
                         global.typer = 32;
@@ -275,19 +269,19 @@ if (formatted == 0)
                         if (global.fighting == 1)
                             global.typer = 46;
                     }
-                    
+
                     if (nextchar2 == "X")
                         global.typer = 40;
-                    
+
                     if (nextchar2 == "r")
                         global.typer = 55;
-                    
+
                     if (nextchar2 == "T")
                         global.typer = 7;
-                    
+
                     if (nextchar2 == "J")
                         global.typer = 35;
-                    
+
                     if (nextchar2 == "K")
                     {
                         global.typer = 33;
@@ -327,7 +321,7 @@ if (formatted == 0)
                 charpos = 2;
                 cur_string_width += (hspace * 2);
                 length += 2;
-                mystring = string_insert(scr_84_get_lang_string("obj_writer_slash_Draw_0_gml_147_0"), mystring, i + 1); // ||
+                mystring = string_insert("||", mystring, i + 1);
                 i += 2;
             }
         }
@@ -339,46 +333,47 @@ if (formatted == 0)
                 remspace = i;
                 remchar = charpos;
             }
-            else if (thischar == "*")
-            {
-                aster = 1;
-            }
             
-            if (thischar == " " || thischar == "*" || get_lang_setting("monospace_fonts", false))
+            if (thischar == "*")
+                aster = 1;
+            
+            if (thischar == " " || thischar == "*" || thischar == "\t" || get_lang_setting("monospace_fonts", false))
                 cur_string_width += hspace;
             else
-                cur_string_width += (string_width(thischar) * textscale);
-
-            charpos++
+                cur_string_width += string_width(thischar) * textscale;
+            charpos += 1;
+        }
             
-            if ((!limit_by_width && charpos > charline) || (limit_by_width && cur_string_width > max_string_width))
+        if ((!limit_by_width && charpos > charline) || (limit_by_width && cur_string_width > charline * hspace))
+        {
+            if (remspace > 2)
             {
-                if (remspace > 2)
-                {
-                    mystring = string_delete(mystring, remspace, 1);
-                    mystring = string_insert("&", mystring, remspace);
-                    i = remspace + 1;
-                    stringmax = max(stringmax, charpos);
-                    widthmax = max(widthmax, cur_string_width);
-                    remspace = -1;
-                    charpos = 1;
-                    cur_string_width = 0;
-                    linecount += 1;
-                    scr_asterskip();
-                }
-                else
-                {
-                    stringmax = max(stringmax, charpos);
-                    widthmax = max(widthmax, cur_string_width);
-                    mystring = string_insert("&", mystring, i);
-                    length += 1;
-                    charpos = 1;
-                    cur_string_width = 0;
-                    remspace = -1;
-                    linecount += 1;
-                    i += 1;
-                    scr_asterskip();
-                }
+                mystring = string_delete(mystring, remspace, 1);
+                mystring = string_insert("&", mystring, remspace);
+                i = remspace + 1;
+                
+                stringmax = max(stringmax, charpos);
+                widthmax = max(widthmax, cur_string_width);
+                
+                remspace = -1;
+                charpos = 1;
+                cur_string_width = 0;
+                linecount += 1;
+                scr_asterskip();
+            }
+            else
+            {
+                stringmax = max(stringmax, charpos);
+                widthmax = max(widthmax, cur_string_width)
+                
+                mystring = string_insert("&", mystring, i);
+                length += 1;
+                charpos = 1;
+                cur_string_width = 0;
+                remspace = -1;
+                linecount += 1;
+                i += 1;
+                scr_asterskip();
             }
         }
     }
@@ -409,6 +404,8 @@ if (skipme == 1)
     alarm[1] = -1;
 }
 
+
+
 for (n = 1; n < pos; n += 1)
 {
     accept = 1;
@@ -424,20 +421,17 @@ for (n = 1; n < pos; n += 1)
         
         wy += vspace;
     }
-    
-    if (mychar == "|")
+    else if (mychar == "|")
     {
         accept = 0;
         wx += hspace;
     }
-    
-    if (mychar == "^")
+    else if (mychar == "^")
     {
         accept = 0;
         n += 1;
     }
-    
-    if (mychar == "/")
+    else if (mychar == "/")
     {
         halt = 1;
         
@@ -446,8 +440,7 @@ for (n = 1; n < pos; n += 1)
         
         accept = 0;
     }
-    
-    if (mychar == "%")
+    else if (mychar == "%")
     {
         accept = 0;
         
@@ -455,12 +448,13 @@ for (n = 1; n < pos; n += 1)
             halt = 2;
         
         if (string_char_at(mystring, n + 1) == "%")
+        {
             instance_destroy();
+        }
         else if (halt != 2)
             scr_nextmsg();
     }
-    
-    if (mychar == "\\")
+    else if (mychar == "\\")
     {
         nextchar = string_char_at(mystring, n + 1);
         nextchar2 = string_char_at(mystring, n + 2);
@@ -556,13 +550,11 @@ for (n = 1; n < pos; n += 1)
                 if (global.fc == 0)
                 {
                     charline = originalcharline;
-                    max_string_width = max_string_width_base;
                     wx = x;
                 }
                 else
                 {
                     charline = charline_face;
-                    max_string_width = max_string_width_face;
                     wx = x + (58 * f);
                 }
             }
@@ -730,7 +722,6 @@ for (n = 1; n < pos; n += 1)
                 if (global.fc == 0)
                 {
                     charline = originalcharline;
-                    max_string_width = max_string_width_base;
                     wx = x;
                 }
                 else
@@ -864,7 +855,7 @@ for (n = 1; n < pos; n += 1)
             draw_set_color(xcolor);
         
         if (special == 0)
-            draw_text_transformed(wx + random(shake), wy + random(shake), string_hash_to_newline(mychar), textscale, textscale, 0);
+            draw_text_transformed(wx + random(shake), wy + random(shake), mychar, textscale, textscale, 0);
         
         if (special >= 1)
         {
@@ -872,30 +863,30 @@ for (n = 1; n < pos; n += 1)
             {
                 if (draw_get_color() != 16777215 && draw_get_color() != 0)
                 {
-                    draw_text_color(wx + random(shake) + 1, wy + random(shake) + 1, string_hash_to_newline(mychar), xcolor, xcolor, xcolor, xcolor, 0.3);
-                    draw_text_color(wx + random(shake), wy + random(shake), string_hash_to_newline(mychar), c_white, c_white, xcolor, xcolor, 1);
+                    draw_text_color(wx + random(shake) + 1, wy + random(shake) + 1, mychar, xcolor, xcolor, xcolor, xcolor, 0.3);
+                    draw_text_color(wx + random(shake), wy + random(shake), mychar, c_white, c_white, xcolor, xcolor, 1);
                 }
                 else
                 {
-                    draw_text_color(wx + random(shake) + 1, wy + random(shake) + 1, string_hash_to_newline(mychar), c_dkgray, c_dkgray, c_navy, c_navy, 1);
-                    draw_text(wx + random(shake), wy + random(shake), string_hash_to_newline(mychar));
+                    draw_text_color(wx + random(shake) + 1, wy + random(shake) + 1, mychar, c_dkgray, c_dkgray, c_navy, c_navy, 1);
+                    draw_text(wx + random(shake), wy + random(shake), mychar);
                 }
             }
             
             if (special == 2)
             {
                 draw_set_alpha(1 * specfade);
-                draw_text(wx, wy, string_hash_to_newline(mychar));
+                draw_text(wx, wy, mychar);
                 draw_set_alpha((0.3 + (sin(siner / 14) * 0.1)) * specfade);
-                draw_text(wx + 1, wy, string_hash_to_newline(mychar));
-                draw_text(wx - 1, wy, string_hash_to_newline(mychar));
-                draw_text(wx, wy + 1, string_hash_to_newline(mychar));
-                draw_text(wx, wy - 1, string_hash_to_newline(mychar));
+                draw_text(wx + 1, wy, mychar);
+                draw_text(wx - 1, wy, mychar);
+                draw_text(wx, wy + 1, mychar);
+                draw_text(wx, wy - 1, mychar);
                 draw_set_alpha((0.08 + (sin(siner / 14) * 0.04)) * specfade);
-                draw_text(wx + 1, wy + 1, string_hash_to_newline(mychar));
-                draw_text(wx - 1, wy - 1, string_hash_to_newline(mychar));
-                draw_text(wx - 1, wy + 1, string_hash_to_newline(mychar));
-                draw_text(wx + 1, wy - 1, string_hash_to_newline(mychar));
+                draw_text(wx + 1, wy + 1, mychar);
+                draw_text(wx - 1, wy - 1, mychar);
+                draw_text(wx - 1, wy + 1, mychar);
+                draw_text(wx + 1, wy - 1, mychar);
                 draw_set_alpha(1);
             }
             
@@ -903,11 +894,11 @@ for (n = 1; n < pos; n += 1)
             {
                 draw_set_color(c_white);
                 draw_set_alpha(1);
-                draw_text(wx + sin(siner / 4), wy + cos(siner / 4), string_hash_to_newline(mychar));
+                draw_text(wx + sin(siner / 4), wy + cos(siner / 4), mychar);
                 draw_set_alpha(0.5);
-                draw_text(wx + sin(siner / 5), wy + cos(siner / 5), string_hash_to_newline(mychar));
-                draw_text(wx + sin(siner / 7), wy + cos(siner / 7), string_hash_to_newline(mychar));
-                draw_text(wx + sin(siner / 9), wy + cos(siner / 9), string_hash_to_newline(mychar));
+                draw_text(wx + sin(siner / 5), wy + cos(siner / 5), mychar);
+                draw_text(wx + sin(siner / 7), wy + cos(siner / 7), mychar);
+                draw_text(wx + sin(siner / 9), wy + cos(siner / 9), mychar);
                 
                 for (i = 0; i < 7; i += 1)
                 {
@@ -926,16 +917,16 @@ for (n = 1; n < pos; n += 1)
                     }
                     
                     draw_set_alpha(((40 - specx[i]) / 40) * 0.7);
-                    draw_text(wx + specx[i], wy + specy[i], string_hash_to_newline(mychar));
+                    draw_text(wx + specx[i], wy + specy[i], mychar);
                 }
                 
                 draw_set_alpha(1);
             }
         }
-        
+
         if (!get_lang_setting("monospace_fonts", false))
         {
-            if (mychar == " " || mychar == "*")
+            if (mychar == " " || mychar == "*" || mychar == "\t")
             {
                 wx += hspace;
             }

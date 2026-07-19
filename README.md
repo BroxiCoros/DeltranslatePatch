@@ -93,6 +93,19 @@ Chapter 3:
 Chapter 4:
 `AUDIO_INTRONOISE.ogg`, `snd_alt_takingtoolong.ogg`, `snd_jackolantern_laugh.ogg`, `snd_jackolantern_laugh_small.ogg`, `snd_long_only.ogg`, `snd_pumpkin_scream_mama.ogg`, `snd_pumpkin_scream_mama_end.ogg`, `snd_takingtoolongtoolong.ogg`, `snd_taking_too_lol.ogg`, `snd_taking_too_long.ogg`, `snd_taking_too_long_fast.ogg`, `snd_taking_too_long_small.ogg`, `snd_taking_too_long_small_fast.ogg`, `snd_taking_tutu.ogg`, `snd_tem_sing_1.ogg`, `snd_tem_sing_2.ogg`, `snd_tem_sing_3.ogg`, `snd_tem_sing_4.ogg`, `snd_tutu_fast.ogg`, `snd_your_long.ogg`, `snd_your_too_bright.ogg`, `snd_your_tutu.ogg`, `snd_statue_left.ogg`, `snd_statue_right.ogg`, `snd_statue_up.ogg`, `snd_statue_down.ogg`
 
+
+
+Chapter 4:
+`AUDIO_INTRONOISE.ogg`, `snd_alt_takingtoolong.ogg`, `snd_jackolantern_laugh.ogg`, `snd_jackolantern_laugh_small.ogg`, `snd_long_only.ogg`, `snd_pumpkin_scream_mama.ogg`, `snd_pumpkin_scream_mama_end.ogg`, `snd_takingtoolongtoolong.ogg`, `snd_taking_too_lol.ogg`, `snd_taking_too_long.ogg`, `snd_taking_too_long_fast.ogg`, `snd_taking_too_long_small.ogg`, `snd_taking_too_long_small_fast.ogg`, `snd_taking_tutu.ogg`, `snd_tem_sing_1.ogg`, `snd_tem_sing_2.ogg`, `snd_tem_sing_3.ogg`, `snd_tem_sing_4.ogg`, `snd_tutu_fast.ogg`, `snd_your_long.ogg`, `snd_your_too_bright.ogg`, `snd_your_tutu.ogg`, `snd_statue_left.ogg`, `snd_statue_right.ogg`, `snd_statue_up.ogg`, `snd_statue_down.ogg`
+
+
+
+Chapter 5:
+`AUDIO_INTRONOISE.ogg`, `deltarune_logo_ch5_itoki.ogg`, `pink.ogg`, `snd_flowery_voiceclip_all_according_to_all_according_to_plant.ogg`, `snd_flowery_voiceclip_calling_for_help.ogg`, `snd_flowery_voiceclip_dont_you_like_serving_humans.ogg`, `snd_flowery_voiceclip_flowers_blooms_in_your_heart.ogg`, `snd_flowery_voiceclip_flowery2.ogg`, `snd_flowery_voiceclip_forget_it.ogg`, `snd_flowery_voiceclip_get_a_chance_1.ogg`, `snd_flowery_voiceclip_get_a_chance_2.ogg`, `snd_flowery_voiceclip_give_to_you.ogg`, `snd_flowery_voiceclip_glue.ogg`, `snd_flowery_voiceclip_go_home.ogg`, `snd_flowery_voiceclip_goodbye.ogg`, `snd_flowery_voiceclip_great_style.ogg`, `snd_flowery_voiceclip_grown_like_a_turnip.ogg`, `snd_flowery_voiceclip_heh_it_s_my_jarona.ogg`, `snd_flowery_voiceclip_hereicomesanfrandisc.ogg`, `snd_flowery_voiceclip_hereicomesanfrandisco_strong.ogg`, `snd_flowery_voiceclip_hey.ogg`, `snd_flowery_voiceclip_hey_boys.ogg`, `snd_flowery_voiceclip_hey_raly.ogg`, `snd_flowery_voiceclip_heyguys.ogg`, `snd_flowery_voiceclip_heyguysithinkifoundaglue.ogg`, `snd_flowery_voiceclip_heytherelittleguy.ogg`, `snd_flowery_voiceclip_hoo.ogg`, `snd_flowery_voiceclip_huh.ogg`, `snd_flowery_voiceclip_im_falling.ogg`, `snd_flowery_voiceclip_im_only_trying_to_help_you.ogg`, `snd_flowery_voiceclip_imsorryonceagainikeptaladyinwaiting.ogg`, `snd_flowery_voiceclip_its_all_in_a_name.ogg`, `snd_flowery_voiceclip_its_all_yours.ogg`, `snd_flowery_voiceclip_its_so_human.ogg`, `snd_flowery_voiceclip_itsme.ogg`, `snd_flowery_voiceclip_itsmeflowery.ogg`, `snd_flowery_voiceclip_jarona1.ogg`, `snd_flowery_voiceclip_jarona2.ogg`, `snd_flowery_voiceclip_jarona3.ogg`, `snd_flowery_voiceclip_jarona4.ogg`, `snd_flowery_voiceclip_kris.ogg`, `snd_flowery_voiceclip_last_jarona.ogg`, `snd_flowery_voiceclip_leaf_it_to_me.ogg`, `snd_flowery_voiceclip_lend_me_your_power.ogg`, `snd_flowery_voiceclip_minipeppers.ogg`, `snd_flowery_voiceclip_mostlys.ogg`, `snd_flowery_voiceclip_my_favorite_two.ogg`, `snd_flowery_voiceclip_my_human.ogg`, `snd_flowery_voiceclip_my_king.ogg`, `snd_flowery_voiceclip_mysterious_wind.ogg`, `snd_flowery_voiceclip_no_way_its_your_children.ogg`, `snd_flowery_voiceclip_nonono.ogg`, `snd_flowery_voiceclip_omega_flowery.ogg`, `snd_flowery_voiceclip_prism_blow.ogg`, `snd_flowery_voiceclip_say_that_again.ogg`, `snd_flowery_voiceclip_smile_again.ogg`, `snd_flowery_voiceclip_sorryaboutthatguys.ogg`, `snd_flowery_voiceclip_sorryaboutthatlittleguy.ogg`, `snd_flowery_voiceclip_sorryabouttheguy.ogg`, `snd_flowery_voiceclip_sorrytokeepaladyinwaiting.ogg`, `snd_flowery_voiceclip_sorrytokeepyouladies.ogg`, `snd_flowery_voiceclip_sorrytokeepyouwaiting1.ogg`, `snd_flowery_voiceclip_sorrytokeepyouwaiting2.ogg`, `snd_flowery_voiceclip_stingus.ogg`, `snd_flowery_voiceclip_suckle_it_up.ogg`, `snd_flowery_voiceclip_susie.ogg`, `snd_flowery_voiceclip_take_that.ogg`, `snd_flowery_voiceclip_thats_my_dreams.ogg`, `snd_flowery_voiceclip_thatsgreat.ogg`, `snd_flowery_voiceclip_the_boys.ogg`, `snd_flowery_voiceclip_the_diner.ogg`, `snd_flowery_voiceclip_theyre_eating_my_flesh.ogg`, `snd_flowery_voiceclip_thisguysyourbestfriend.ogg`, `snd_flowery_voiceclip_try_my_flavor.ogg`, `snd_flowery_voiceclip_what_a_predictable_creature.ogg`, `snd_flowery_voiceclip_with_your_powers_combined.ogg`, `snd_flowery_voiceclip_wow.ogg`, `snd_flowery_voiceclip_yes.ogg`, `snd_flowery_voiceclip_your_dad.ogg`, `snd_flowery_voiceclip_yourdadsmybestfriend.ogg`, `snd_flowery_voiceclip_youre_a_hero.ogg`, `snd_flowery_voicenoise_1.ogg`, `snd_flowery_voicenoise_2.ogg`, `snd_flowery_voicenoise_3.ogg`, `snd_flowery_voicenoise_loop.ogg`, `snd_forthefans.ogg`, `snd_ja_kidding.ogg`, `snd_jarona_orange1.ogg`, `snd_jarona_orange2.ogg`, `snd_joker_laugh0.ogg`, `snd_lo.ogg`, `snd_ol.ogg`, `snd_pink_stretch_2_fixed.ogg`, `snd_pink_stretch_2_troubled.ogg`, `snd_ruoy.ogg`, `snd_your.ogg`, `snd_your_long.ogg`
+    
+
+
+
 If some strings or sprites depends on voices switch, you can add `spm_` prefixed ones that would be used instead of base ones if translated voices are disabled. For example, it can be used for using different strings in Jackenstein battle if you adapt tutu jokes for your language but they wouldn't make sense without translated voices.
 
  ![spm_ usage image](https://imgur.com/Km06Xbf.png)
@@ -110,14 +123,17 @@ If true, allows you to switch to translate mode (U) that allows you:
 - (H) Heal each party member for 1000
 - (Q) Change language*
 - (R) Reload language strings without reloading a game
+- (G) Go to selected room
+- (I) Insert your translation for the current dialogue string**. Translations saved to `new_translations_chX.json` in the save folder.
 
 *Be careful, as it also reloads sprites and sounds that sometimes can lead to unexpected results. Althought, it fixes by re-entering the room.
+**This function sometimes do not work fully as intended, beware.
 
 `files_url` 
 Link to root for your language files pack, including pack folder. For example, if settings file in your language pack accessed via `https://example.com/lang/en/setting.json` and chapter 1 strings via `https://example.com/lang/en/chapter1/strings.json`, you should put `https://example.com/lang/en/` in `files_url`.
 
 `datas_url` 
-Links to data.win's in case you want to update them by yourself. 
+Link to data.win's base path in case you want to update them by yourself. 
 
 `line_height_factor`
 Multiplies line height in dialogues by this value. Can be used for adding forth line in dialogues if you need so.
@@ -300,8 +316,19 @@ Jackenstein phrases. You can use more or less words in one phrase, just do not f
 `jack_timings`
 Jackenstein phases' timings. So, yet again, do not forget to change them if you translate original voices.
 
+Chapter 5:
 
-Chapter 3&4:
+`tome_bullet_letters`
+Array of letters of the tome bullet attack if you want to change it from default english alphabet.
+
+`additional_voicelines`
+You can add additional voicelines to use in dialogues. The use is following:
+1) Add a line like `"ඞ": "snd_flowery_amogus"` to the setting. Beware, you can't use default english letters or numbers as they are already used by the original game.
+2) Place corresponding `snd_flowery_amogus.ogg` in the `chapter5/sounds` folder.
+3) Add `\Vඞ` to the wanted string.
+
+
+Chapter 3&5:
 ```json
 "translators_credits": [
 	[
@@ -336,7 +363,7 @@ Chapter 3&4:
 	]
 ]
 ```
-↑ Two pages for your localization team credits. Working for chapter 3 and 4, for chapter 1 and 2 change corresponding lines in `strings.json`
+↑ Two pages for your localization team credits. Working for chapter 3-5, for chapter 1 and 2 change corresponding lines in `strings.json`
 
 
 

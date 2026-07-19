@@ -2,15 +2,11 @@ skipme = 0;
 textsound = snd_text;
 charline = 33;
 charline_face = 26;
+cur_string_width = 0;
 originalcharline = charline;
 hspace = 8;
-vspace = 18 * get_lang_setting("line_height_factor", 1);
+vspace = floor(18 * get_lang_setting("line_height_factor", 1));
 limit_by_width = !get_lang_setting("monospace_fonts", 0);
-f = 1;
-
-if (global.darkzone == 1)
-    f = 2;
-
 rate = 1;
 mycolor = c_white;
 myfont = scr_84_get_font("main");
@@ -22,18 +18,17 @@ automash_timer = 0;
 if (global.flag[6] == 1)
     skippable = 0;
 
+f = 1;
+
+if (global.darkzone == 1)
+    f = 2;
+xcolor = c_black;
 scr_texttype();
-
-max_string_width_base = charline * hspace;
-max_string_width_face = ((charline_face * hspace) - 2);
-max_string_width = max_string_width_base;
-
 autoaster = 1;
 pos = 2;
 lineno = 0;
 aster = 0;
 halt = 0;
-xcolor = c_black;
 wxskip = 0;
 msgno = 0;
 first_alarm = 0;

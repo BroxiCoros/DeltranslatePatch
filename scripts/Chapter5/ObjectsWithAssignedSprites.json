@@ -1,0 +1,12 @@
+{
+  "obj_flowerking": "bg_building_flowershop",
+  "obj_mewers_live": "spr_pink_mewers_live",
+  "obj_castle_music": "bg_dw_castle_music_shop",
+  "obj_castle_tv": "spr_dw_castle_tv",
+  "obj_actor_tenna": "spr_tenna_point_up",
+  "obj_enemy_wave": "spr_btfight",
+  "obj_fieldmuslogo": "spr_gardenmuslogo",
+  "obj_castle_shop": "spr_castle_shop_new",
+  "obj_recruitanim": "spr_battlemsg",
+  "obj_gameoverbg": "spr_gameoverbg_neo"
+}

@@ -74,23 +74,11 @@ if (dialoguer == 1 && formatted == 0)
     if (global.fc == 0)
     {
         charline = originalcharline;
-        max_string_width = max_string_width_base;
         writingx = x;
     }
     else
     {
         charline = charline_face;
-        max_string_width = max_string_width_face;
-        // if (global.fc == 22)
-        // {
-        //     charline = 30;
-        //     max_string_width = 30 * hspace
-        //     vspace = 28;
-            
-        //     if (i_ex(obj_writer))
-        //         vspace = 30;
-        // }
-        
         writingx = x + (58 * f);
     }
     
@@ -98,10 +86,11 @@ if (dialoguer == 1 && formatted == 0)
     {
         if (obj_dialoguer.zurasucon == 2)
         {
-            writingx = camerax() + obj_dialoguer.remwriterx;
+            var _camerax = camerax();
+            writingx = _camerax + obj_dialoguer.remwriterx;
             
             if (global.fc > 0)
-                writingx = camerax() + obj_dialoguer.remwriterx + (58 * f);
+                writingx = _camerax + obj_dialoguer.remwriterx + (58 * f);
         }
     }
 }
@@ -221,7 +210,9 @@ for (n = 1; n < pos; n += 1)
             halt = 2;
         
         if (string_char_at(mystring, n + 1) == "%")
+        {
             instance_destroy();
+        }
         else if (halt != 2)
             scr_nextmsg();
     }
@@ -574,7 +565,6 @@ for (n = 1; n < pos; n += 1)
                 if (global.fc == 0)
                 {
                     charline = originalcharline;
-                    max_string_width = max_string_width_base;
                     wx = x;
                 }
                 else
@@ -863,7 +853,7 @@ for (n = 1; n < pos; n += 1)
 
         if (!get_lang_setting("monospace_fonts", false))
         {
-            if (mychar == " " || mychar == "*")
+            if (mychar == " " || mychar == "*" || mychar == "\t")
             {
                 wx += hspace;
             }

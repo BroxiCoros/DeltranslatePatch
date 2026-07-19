@@ -7,7 +7,11 @@ text_list = [new scr_video_caption(stringsetloc("It's now time for our feature p
 text_index = 0;
 house_index = 2;
 var file_name = "tennaIntroF1_compressed_28";
-video_open(get_lang_folder_path() + "chapter3/vid/" + file_name + ".mp4");
+if (file_exists(get_lang_folder_path() + "chapter3/vid/" + file_name + ".mp4"))
+    video_open(get_lang_folder_path() + "chapter3/vid/" + file_name + ".mp4");
+else 
+    video_open("vid/" + file_name + ".mp4");
+
 video_enable_loop(false);
 video_set_volume(global.flag[17]);
 var orig_path = "vid/" + file_name + ".mp4";

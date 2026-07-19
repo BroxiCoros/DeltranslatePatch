@@ -1,0 +1,39 @@
+{
+  "gml_Object_obj_dw_garden_enemyrush_Step_0": [
+    "snd_flowery_voiceclip_heh_it_s_my_jarona",
+    "snd_flowery_voiceclip_stingus"
+  ],
+  "gml_Object_obj_dw_garden_fishingspot_Step_0": [
+    "snd_flowery_voiceclip_minipeppers"
+  ],
+  "gml_Object_obj_pink_enemy_CleanUp_0": [
+    "snd_pink_stretch_2_fixed",
+    "snd_pink_stretch_2_troubled"
+  ],
+  "gml_Object_obj_plat_pumpkin_Step_0": [
+    "snd_lo",
+    "snd_ol",
+    "snd_ruoy",
+    "snd_your",
+    "snd_your_long"
+  ],
+  "gml_Object_obj_ch5_DW05_Step_0": [
+    "snd_flowery_voiceclip_stingus"
+  ],
+  "gml_Object_obj_spell_scythemare_Draw_0": [
+    "snd_joker_laugh0"
+  ],
+  "gml_Object_obj_date_controller_Create_0": [
+    "snd_pink_stretch_2_fixed"
+  ],
+  "gml_Object_obj_date_controller_Step_0": [
+    "snd_pink_stretch_2_fixed",
+    "snd_pink_stretch_2_troubled"
+  ],
+  "gml_Object_obj_dw_garden_diner_Step_0": [
+    "snd_flowery_voiceclip_its_all_yours"
+  ],
+  "gml_Object_obj_ch5_DW29_Step_0": [
+    "snd_flowery_voiceclip_lend_me_your_power"
+  ]
+}

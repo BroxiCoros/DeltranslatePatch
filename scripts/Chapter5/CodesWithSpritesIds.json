@@ -1,0 +1,60 @@
+{
+  "gml_Object_obj_dw_fcastle_bromides_Step_0": [
+    "spr_dw_fcastle_bromides_moa_idle",
+    "spr_dw_fcastle_bromides_moa_idle_reflect",
+    "spr_dw_fcastle_bromides_moa_lick",
+    "spr_dw_fcastle_bromides_moa_lick_reflect",
+    "spr_dw_fcastle_bromides_yuka_draw",
+    "spr_dw_fcastle_bromides_yuka_draw_reflect",
+    "spr_dw_fcastle_bromides_yuka_idle",
+    "spr_dw_fcastle_bromides_yuka_idle_reflect"
+  ],
+  "gml_Object_obj_dog_balloon_Create_0": [
+    "spr_string_littlebee_en"
+  ],
+  "gml_Object_obj_intro_ch5_Create_0": [
+    "IMAGE_LOGO_CENTER_SEPARATE_GLOW_3",
+    "IMAGE_LOGO_256"
+  ],
+  "gml_Object_obj_green_enemy_Step_0": [
+    "spr_susie_cook"
+  ],
+  "gml_Object_obj_orange_enemy_Step_0": [
+    "spr_susie_cook"
+  ],
+  "gml_Object_obj_flowery_enemy_Step_0": [
+    "spr_susie_cook"
+  ],
+  "gml_Object_obj_town_mid_conbini_Step_0": [
+    "spr_town_conbini_sign_nope"
+  ],
+  "gml_Object_obj_dw_garden_aquadash_Step_0": [
+    "spr_dw_garden_exit"
+  ],
+  "gml_Object_obj_dw_fcastle_second_diner_Step_0": [
+    "spr_dw_fcastle_second_diner_sign_en"
+  ],
+  "gml_GlobalScript_scr_rhythmgame_draw": [
+    "spr_bnamekris",
+    "spr_bnameralsei",
+    "spr_bnamesusie"
+  ],
+  "gml_GlobalScript_scr_funnytext_init": [
+    "spr_funnytext_dump_her"
+  ],
+  "gml_Object_obj_room_castle_tv_mike_b_Step_0": [
+    "spr_tenna_frightened",
+    "spr_tenna_hooray",
+    "spr_tenna_laugh_pose",
+    "spr_tenna_laugh_right",
+    "spr_tenna_pose_headlowered_nose",
+    "spr_tenna_pose_headraised_nose",
+    "spr_tenna_pose_podium_evil",
+    "spr_tenna_sad",
+    "spr_tenna_tie_adjust_a",
+    "spr_tenna_whisper"
+  ],
+  "gml_Object_obj_dw_ralsei_castle_basketball_Create_0": [
+    "spr_gameshow_pushingbuddies"
+  ]
+}

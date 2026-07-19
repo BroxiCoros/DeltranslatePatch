@@ -1,0 +1,218 @@
+{
+  "gml_GlobalScript_scr_rhythmgame_draw": [
+    "spr_bnamekris",
+    "spr_bnameralsei",
+    "spr_bnamesusie"
+  ],
+  "gml_GlobalScript_scr_funnytext_init": [
+    "spr_funnytext_dump_her"
+  ],
+  "gml_GlobalScript_draw_item_icon": [
+    "spr_dmenu_items"
+  ],
+  "gml_GlobalScript_scr_gamestart": [
+    "spr_btact"
+  ],
+  "gml_Object_obj_town_mid_conbini_Create_0": [
+    "bg_building_store",
+    "spr_festival_icecreams",
+    "spr_lw_conbini_open",
+    "spr_lw_conbini_open_sign"
+  ],
+  "gml_Object_obj_ch5_LW21_Create_0": [
+    "bg_building_flowershop",
+    "spr_lw_flowerking_shadow"
+  ],
+  "gml_Object_obj_green_enemy_Step_0": [
+    "spr_battleblcon_v_thanks_green",
+    "spr_susie_cook",
+    "spr_tea_party_cake"
+  ],
+  "gml_Object_obj_orange_enemy_Step_0": [
+    "spr_susie_cook"
+  ],
+  "gml_Object_obj_flowery_enemy_Step_0": [
+    "spr_susie_cook"
+  ],
+  "gml_Object_obj_heroparent_Draw_0": [
+    "spr_susie_cook"
+  ],
+  "gml_Object_obj_yellow_enemy_Step_0": [
+    "spr_green_sign_big"
+  ],
+  "gml_Object_obj_face_Draw_0": [
+    "spr_face_single_susie_alt_bushes"
+  ],
+  "gml_Object_obj_seth_shinobeetle_controller_Step_0": [
+    "spr_checkers_milk"
+  ],
+  "gml_Object_obj_dw_castle_town_cafe_Draw_0": [
+    "bg_dw_castle_cafe"
+  ],
+  "gml_Object_obj_victory_rhythm_Step_0": [
+    "spr_tenna_laugh_pose"
+  ],
+  "gml_Object_obj_gameover_band_Step_0": [
+    "spr_tenna_point_up",
+    "spr_tenna_whisper"
+  ],
+  "gml_Object_obj_castle_music_Create_0": [
+    "bg_dw_castle_music_shop_closed"
+  ],
+  "gml_Object_obj_spell_scythemare_Draw_0": [
+    "spr_spare_z",
+    "spr_spare_z_split"
+  ],
+  "gml_Object_obj_ch5_DW19A_Create_0": [
+    "bg_building_flowershop",
+    "spr_lw_flowerking_shadow"
+  ],
+  "gml_Object_obj_multiboss_enemy1_Step_0": [
+    "spr_checkers_milk"
+  ],
+  "gml_Object_obj_dw_ralsei_castle_basketball_Other_11": [
+    "spr_tenna_hooray_armsup",
+    "spr_tenna_point_up",
+    "spr_tenna_pose",
+    "spr_tenna_tie_adjust_b"
+  ],
+  "gml_Object_obj_actor_tenna_Step_0": [
+    "spr_tenna_tie_adjust_a",
+    "spr_tenna_tie_adjust_b"
+  ],
+  "gml_Object_obj_actor_tenna_Draw_0": [
+    "spr_tenna_point_up",
+    "spr_tenna_sad"
+  ],
+  "gml_Object_obj_yellow_trial_manager_Create_0": [
+    "spr_green_sign_big"
+  ],
+  "gml_Object_obj_room_castle_tv_mike_b_Step_0": [
+    "spr_tenna_frightened",
+    "spr_tenna_hooray",
+    "spr_tenna_laugh_pose",
+    "spr_tenna_laugh_right",
+    "spr_tenna_pose",
+    "spr_tenna_pose_headlowered_nose",
+    "spr_tenna_pose_headraised_nose",
+    "spr_tenna_pose_podium_evil",
+    "spr_tenna_sad",
+    "spr_tenna_tie_adjust_a",
+    "spr_tenna_whisper"
+  ],
+  "gml_Object_obj_dw_fcastle_bromides_Other_11": [
+    "spr_dw_fcastle_bromides_moa_idle",
+    "spr_dw_fcastle_bromides_moa_lick",
+    "spr_dw_fcastle_bromides_yuka_draw",
+    "spr_dw_fcastle_bromides_yuka_idle"
+  ],
+  "gml_Object_obj_dw_garden_susiechase_darknessexplanation_Draw_0": [
+    "spr_battleui_centered"
+  ],
+  "gml_Object_obj_ch5_LW20W_end_Draw_0": [
+    "spr_chapter_insert_prompt_letters"
+  ],
+  "gml_Object_obj_trashy_trio_Draw_0": [
+    "spr_checkers_milk"
+  ],
+  "gml_Object_obj_multiboss_controller_Step_0": [
+    "spr_checkers_milk"
+  ],
+  "gml_Object_obj_npc_castle_addison_Create_0": [
+    "spr_dw_ads_small_ad"
+  ],
+  "gml_Object_obj_dw_fcastle_cafe_Other_13": [
+    "spr_cafe_cheese_bank",
+    "spr_cafe_cheese_money"
+  ],
+  "gml_Object_obj_castle_cafe_Draw_0": [
+    "spr_castle_cafe_base"
+  ],
+  "gml_Object_obj_castle_dojo_Draw_0": [
+    "spr_castle_dojo_base",
+    "spr_castle_dojo_discoball"
+  ],
+  "gml_Object_obj_castle_restaurant_Draw_0": [
+    "spr_castle_bakery_base"
+  ],
+  "gml_Object_obj_attackpress_Draw_0": [
+    "spr_pressfront_b"
+  ],
+  "gml_Object_obj_initializer_Create_0": [
+    "spr_numbersfontbig_gold"
+  ],
+  "gml_Object_obj_tensionbar_Draw_0": [
+    "spr_tplogo"
+  ],
+  "gml_Object_obj_pacifyspell_Step_0": [
+    "spr_spare_z"
+  ],
+  "gml_Object_obj_dummyenemy_Step_0": [
+    "spr_btact",
+    "spr_btdefend",
+    "spr_btfight",
+    "spr_btitem",
+    "spr_btspare",
+    "spr_bttech"
+  ],
+  "gml_Object_obj_checkers_enemy_Step_0": [
+    "spr_checkers_milk"
+  ],
+  "gml_Object_obj_plat_finalflowery_Create_0": [
+    "spr_pressfront_b"
+  ],
+  "gml_Object_obj_recruitanim_Draw_0": [
+    "spr_numbersfontbig_gold"
+  ],
+  "gml_Object_obj_room_castle_dojo_Create_0": [
+    "spr_castle_dojo_sign_love"
+  ],
+  "gml_Object_obj_room_castle_town_Create_0": [
+    "spr_dw_castle_tv_closed"
+  ],
+  "gml_Object_obj_visualEffect_pacify_Step_0": [
+    "spr_spare_z"
+  ],
+  "gml_Object_obj_intro_ch5_Create_0": [
+    "IMAGE_LOGO_CENTER",
+    "IMAGE_LOGO_CENTER_SEPARATE_GLOW_3",
+    "IMAGE_LOGO_256"
+  ],
+  "gml_Object_obj_initializer2_Create_0": [
+    "spr_numbersfontbig_gold",
+    "spr_numbersfontbig_pink"
+  ],
+  "gml_Object_obj_initializer2_Other_72": [
+    "spr_numbersfontbig_gold",
+    "spr_numbersfontbig_pink"
+  ],
+  "gml_Object_obj_dog_balloon_Create_0": [
+    "spr_string_littlebee_en"
+  ],
+  "gml_Object_obj_dw_fcastle_bromides_Step_0": [
+    "spr_dw_fcastle_bromides_moa_idle",
+    "spr_dw_fcastle_bromides_moa_idle_reflect",
+    "spr_dw_fcastle_bromides_moa_lick",
+    "spr_dw_fcastle_bromides_moa_lick_reflect",
+    "spr_dw_fcastle_bromides_yuka_draw",
+    "spr_dw_fcastle_bromides_yuka_draw_reflect",
+    "spr_dw_fcastle_bromides_yuka_idle",
+    "spr_dw_fcastle_bromides_yuka_idle_reflect"
+  ],
+  "gml_Object_obj_town_mid_conbini_Step_0": [
+    "spr_town_conbini_sign_nope"
+  ],
+  "gml_Object_obj_dw_fcastle_second_diner_Step_0": [
+    "spr_dw_fcastle_second_diner_sign_en"
+  ],
+  "gml_GlobalScript_scr_recruit_info": [
+    "spr_bibliox_spare"
+  ],
+  "gml_Object_obj_sheary_enemy_Step_0": [
+    "spr_sheary_balloon",
+    "spr_sheary_balloon2"
+  ],
+  "gml_Object_obj_dw_ralsei_castle_basketball_Create_0": [
+    "spr_gameshow_pushingbuddies"
+  ]
+}
