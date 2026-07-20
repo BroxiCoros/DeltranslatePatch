@@ -75,18 +75,36 @@ function scr_init_localization()
         for (var i = 0; i < array_length(additional_funny_words); i++)
             add_sprite(additional_funny_words[i]);
         
-        var sndm = global.chemg_sound_map;
-        
-        for (var i = 0; i < array_length(global.sounds_list); i++)
-            add_sound(global.sounds_list[i]);
-        
-        var additional_funny_sounds = get_chapter_lang_setting("additional_funny_sounds", []);
-        
-        for (var i = 0; i < array_length(additional_funny_sounds); i++)
-            add_sound(additional_funny_sounds[i]);
-        
+        // Sonidos diferidos: en el boot se cargan aqui; en un cambio de
+        // idioma en caliente el loop se salta (pending) y los carga
+        // `scr_load_lang_sounds_only` de forma perezosa. El loader se
+        // registra siempre para que el codigo compartido pueda invocarlo.
+        global.lang_sounds_loader = scr_load_lang_sounds_only;
+        if (!(variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending))
+            scr_load_lang_sounds_only();
+
         global.lang_map = ds_map_create();
         scr_lang_load();
         scr_ascii_input_names();
     }
+}
+
+// Carga (o recarga) los streams de sonido del idioma activo al
+// `chemg_sound_map`. Contiene el bloque de sonidos especifico del Cap.4
+// (sounds_list + funny sounds). Lo llaman `scr_init_localization` (boot)
+// y `scr_apply_pending_sound_reload` (recarga diferida tras un cambio de
+// idioma en caliente).
+function scr_load_lang_sounds_only()
+{
+    if (variable_global_exists("chemg_sound_map"))
+        ds_map_clear(global.chemg_sound_map);
+    else
+        global.chemg_sound_map = ds_map_create();
+
+    for (var i = 0; i < array_length(global.sounds_list); i++)
+        add_sound(global.sounds_list[i]);
+
+    var additional_funny_sounds = get_chapter_lang_setting("additional_funny_sounds", []);
+    for (var i = 0; i < array_length(additional_funny_sounds); i++)
+        add_sound(additional_funny_sounds[i]);
 }

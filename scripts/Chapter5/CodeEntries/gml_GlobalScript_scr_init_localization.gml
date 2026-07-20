@@ -70,24 +70,47 @@ function scr_init_localization()
                 add_sprite(additional_funny_words[i]);
         }
         
-        var sndm = global.chemg_sound_map;
-        
-        for (var i = 0; i < array_length(global.sounds_list); i++)
-            add_sound(global.sounds_list[i]);
-        
-        var additional_voicelines = get_chapter_lang_setting("additional_voicelines", {});
-        var letters = variable_struct_get_names(additional_voicelines)
-        for (var i = 0; i < array_length(letters); i++)
-        {
-            var letter = letters[i];
-            var voice = variable_struct_get(additional_voicelines, letter);
-            add_sound(voice);
-        }
-        
+        // Sonidos diferidos: en el boot se cargan aqui; en un cambio de
+        // idioma en caliente el loop se salta (pending) y los carga
+        // `scr_load_lang_sounds_only` de forma perezosa. El loader se
+        // registra siempre para que el codigo compartido pueda invocarlo.
+        global.lang_sounds_loader = scr_load_lang_sounds_only;
+        if (!(variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending))
+            scr_load_lang_sounds_only();
+
         global.lang_map = ds_map_create();
         scr_lang_load();
         scr_ascii_input_names();
-
-        scr_floweryvoiceclip_init();
     }
+}
+
+// Carga (o recarga) los streams de sonido del idioma activo al
+// `chemg_sound_map`. Contiene el bloque de sonidos especifico del Cap.5
+// (sounds_list + voicelines adicionales) y re-cachea las voces de Flowery
+// justo despues, para que `global.flowery_txtsnd` apunte a los streams
+// del idioma nuevo. Lo llaman `scr_init_localization` (boot) y
+// `scr_apply_pending_sound_reload` (recarga diferida tras un cambio de
+// idioma en caliente). En la ruta diferida `scr_apply_pending_sound_reload`
+// ya puso `lang_sounds_pending = false` antes de llamar aqui, asi que el
+// `scr_84_get_sound` interno de flowery no vuelve a disparar el reload.
+function scr_load_lang_sounds_only()
+{
+    if (variable_global_exists("chemg_sound_map"))
+        ds_map_clear(global.chemg_sound_map);
+    else
+        global.chemg_sound_map = ds_map_create();
+
+    for (var i = 0; i < array_length(global.sounds_list); i++)
+        add_sound(global.sounds_list[i]);
+
+    var additional_voicelines = get_chapter_lang_setting("additional_voicelines", {});
+    var letters = variable_struct_get_names(additional_voicelines)
+    for (var i = 0; i < array_length(letters); i++)
+    {
+        var letter = letters[i];
+        var voice = variable_struct_get(additional_voicelines, letter);
+        add_sound(voice);
+    }
+
+    scr_floweryvoiceclip_init();
 }

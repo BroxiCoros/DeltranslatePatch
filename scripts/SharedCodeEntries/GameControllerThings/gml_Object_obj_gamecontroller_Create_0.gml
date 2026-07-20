@@ -188,6 +188,12 @@ add_new_translation = function(arg0, arg1)
 // los chequeos defensivos en scr_84_get_sprite no fallen.
 global.outdated_sprites = [];
 global.lang_sprites_pending = false;
+// Mismo mecanismo diferido para sonidos: los streams del idioma viejo
+// se preservan en `outdated_sounds` y se borran tras cambiar de sala
+// (con guard de audio_is_playing). `lang_sounds_loader` lo registra
+// cada capitulo con su propio bloque de carga de sonidos.
+global.outdated_sounds = [];
+global.lang_sounds_pending = false;
 last_room_for_lang = room;
 
 file_find_close();
