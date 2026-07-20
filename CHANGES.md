@@ -56,5 +56,3 @@ del upstream, entra correctamente.
   fuentes quedó *eager* como el upstream (es la última pieza síncrona del switch;
   es optimización de rendimiento, no de correctitud; se puede añadir si el cambio
   a japonés resulta lento).
-
-Detalle completo y decisiones de diseño en [`docs/migracion-upstream.md`](docs/migracion-upstream.md).
