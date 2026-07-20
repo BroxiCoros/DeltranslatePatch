@@ -58,19 +58,38 @@ function scr_init_localization()
                 add_sprite(additional_funny_words[i]);
         }
         
-        var sndm = global.chemg_sound_map;
-        sound_symbols = get_chapter_lang_setting("button_sounds_symbols", ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "!", "?"]);
-        
-        set_chapter_lang_setting("button_sounds_symbols", sound_symbols);
-        
-        for (var i = 0; i < array_length(sound_symbols); i++)
-            add_sound("snd_speak_and_spell_" + sound_symbols[i], 1);
-        
-        for (var i = 0; i < array_length(global.sounds_list); i++)
-            add_sound(global.sounds_list[i]);
-        
+        // Sonidos diferidos: en el boot se cargan aqui; en un cambio de
+        // idioma en caliente el loop se salta (pending) y los carga
+        // `scr_load_lang_sounds_only` de forma perezosa. El loader se
+        // registra siempre para que el codigo compartido pueda invocarlo.
+        global.lang_sounds_loader = scr_load_lang_sounds_only;
+        if (!(variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending))
+            scr_load_lang_sounds_only();
+
         global.lang_map = ds_map_create();
         scr_lang_load();
         scr_ascii_input_names();
     }
+}
+
+// Carga (o recarga) los streams de sonido del idioma activo al
+// `chemg_sound_map`. Contiene el bloque de sonidos especifico del Cap.2
+// (button sounds del speak-and-spell + sounds_list). Lo llaman
+// `scr_init_localization` (boot) y `scr_apply_pending_sound_reload`
+// (recarga diferida tras un cambio de idioma en caliente).
+function scr_load_lang_sounds_only()
+{
+    if (variable_global_exists("chemg_sound_map"))
+        ds_map_clear(global.chemg_sound_map);
+    else
+        global.chemg_sound_map = ds_map_create();
+
+    var sound_symbols = get_chapter_lang_setting("button_sounds_symbols", ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "!", "?"]);
+    set_chapter_lang_setting("button_sounds_symbols", sound_symbols);
+
+    for (var i = 0; i < array_length(sound_symbols); i++)
+        add_sound("snd_speak_and_spell_" + sound_symbols[i], 1);
+
+    for (var i = 0; i < array_length(global.sounds_list); i++)
+        add_sound(global.sounds_list[i]);
 }

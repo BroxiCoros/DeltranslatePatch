@@ -6,23 +6,26 @@
 // original en inglés). Por eso aquí se define una función nueva.
 //
 // Estrategia: reutilizamos `scr_init_localization` pero difiriendo la
-// parte pesada (los ~120-300 sprites del capítulo):
+// parte pesada (los ~120-300 sprites y los streams de sonido del capítulo,
+// ~100 clips de voz en el Cap.5):
 //
-//   1. Recarga inmediata de fuentes, sonidos y strings vía
-//      `scr_init_localization` (que ademas cubre la carga especifica de
-//      cada capitulo: button sounds, flowery, etc.). El loop de sprites
-//      de `init` esta guardado por `global.lang_sprites_pending`, asi que
-//      NO se recargan sprites aqui.
-//   2. Un diferido de sprites: los del idioma viejo se mueven al array
-//      `global.outdated_sprites`, y se marca un flag
-//      `global.lang_sprites_pending`. La carga real de los sprites del
-//      idioma nuevo se dispara cuando algún objeto pide un sprite
-//      (lazy, vía `scr_84_get_sprite`) o cuando se cambie de sala
-//      (vía detector en el Step de `obj_gamecontroller`).
+//   1. Recarga inmediata de fuentes y strings vía `scr_init_localization`.
+//      Los loops de sprites y de sonidos de `init` estan guardados por
+//      `global.lang_sprites_pending` / `global.lang_sounds_pending`, asi
+//      que NO se recargan ni sprites ni sonidos aqui (se difieren).
+//   2. Un diferido de sprites y otro de sonidos: los recursos del idioma
+//      viejo se mueven a `global.outdated_sprites` / `global.outdated_sounds`,
+//      y se marcan los flags de pendiente. La carga real del idioma nuevo
+//      se dispara de forma perezosa cuando algún objeto pide un sprite
+//      (`scr_84_get_sprite`) o un sonido (`scr_84_get_sound`), o al cambiar
+//      de sala (detector en el Step de `obj_gamecontroller`).
 //   3. Tras cambiar de sala, los sprites viejos se borran con
-//      `scr_cleanup_outdated_sprites`. Los persistentes que aún
-//      tuvieran sprite_index a un sprite viejo no deberían existir,
-//      ya que la lista incluye solo props/UI/batalla, no Kris/etc.
+//      `scr_cleanup_outdated_sprites` y los streams viejos con
+//      `scr_cleanup_outdated_sounds`. Los sprites persistentes que aún
+//      tuvieran sprite_index a un sprite viejo no deberían existir (la
+//      lista incluye solo props/UI/batalla, no Kris/etc.). Los streams que
+//      aún estén sonando NO se destruyen: se conservan para el siguiente
+//      cleanup (guard `audio_is_playing`), evitando cortar una voz a mitad.
 //
 // No toca `global.orig_en` ni el modo traductor: son variables de
 // gameplay independientes del idioma.
@@ -69,12 +72,30 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     // cambio de sala.
     global.lang_sprites_pending = true
 
-    // ----- Recarga inmediata de fuentes, sonidos y strings -----
-    // Reutilizamos `scr_init_localization` (que recarga fuentes, sonidos
-    // y strings, incluyendo la carga especifica de cada capitulo: button
-    // sounds, flowery, etc.). Los sprites NO se recargan aqui: el loop de
-    // sprites de `init` esta guardado por `global.lang_sprites_pending`,
-    // asi que se difieren y los carga `scr_load_lang_sprites_only` despues.
+    // ----- Defer sonidos: misma estrategia que los sprites -----
+    // Los streams del idioma viejo se preservan en `outdated_sounds`
+    // (siguen sonando si una voz estaba en curso) y se borran despues,
+    // en `scr_cleanup_outdated_sounds`, cuando ya no se reproducen.
+    if (!variable_global_exists("outdated_sounds"))
+        global.outdated_sounds = []
+    if (variable_global_exists("loaded_sounds"))
+    {
+        for (var i = 0; i < array_length(global.loaded_sounds); i++)
+            array_push(global.outdated_sounds, global.loaded_sounds[i])
+    }
+    global.loaded_sounds = []
+
+    // Marcar reload de sonidos pendiente. La carga real (los ~100
+    // `audio_create_stream`) se difiere al primer `scr_84_get_sound` o al
+    // cambio de sala, igual que los sprites.
+    global.lang_sounds_pending = true
+
+    // ----- Recarga inmediata de fuentes y strings -----
+    // Reutilizamos `scr_init_localization`. Los sprites y los sonidos NO
+    // se recargan aqui: sus loops en `init` estan guardados por los flags
+    // `lang_sprites_pending` / `lang_sounds_pending`, asi que se difieren
+    // y los cargan `scr_load_lang_sprites_only` / el `lang_sounds_loader`
+    // del capitulo despues.
     scr_init_localization()
 
     // Persistir la elección para próximas sesiones y para que el menú
