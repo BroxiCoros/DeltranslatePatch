@@ -43,8 +43,15 @@ function scr_init_localization()
         for (var i = 0; i < array_length(global.fonts_list); i++)
             add_font(global.fonts_list[i][0], global.fonts_list[i][1]);
         
-        for (var i = 0; i < array_length(global.sprites_list); i++)
-            add_sprite(global.sprites_list[i]);
+        // El loop de sprites se salta cuando hay una recarga de idioma en
+        // caliente pendiente: los sprites se difieren y los carga
+        // `scr_load_lang_sprites_only`. En el boot (pending = false) se
+        // cargan normalmente aqui.
+        if (!(variable_global_exists("lang_sprites_pending") && global.lang_sprites_pending))
+        {
+            for (var i = 0; i < array_length(global.sprites_list); i++)
+                add_sprite(global.sprites_list[i]);
+        }
         
         var sndm = global.chemg_sound_map;
         sound_symbols = get_chapter_lang_setting("button_sounds_symbols", ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "!", "?"]);

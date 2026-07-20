@@ -5,12 +5,14 @@
 // `global.orig_en` (el "modo traductor" que compara el texto con el
 // original en inglés). Por eso aquí se define una función nueva.
 //
-// Diferencia respecto a versiones anteriores: en lugar de llamar a
-// `scr_init_localization` (que recarga TODO de una vez, incluyendo
-// los ~120-300 sprites del capítulo), aquí hacemos:
+// Estrategia: reutilizamos `scr_init_localization` pero difiriendo la
+// parte pesada (los ~120-300 sprites del capítulo):
 //
-//   1. Una recarga parcial inmediata (`scr_lang_reload_partial`) que
-//      cubre fuentes, sonidos y strings. Estos cambian al instante.
+//   1. Recarga inmediata de fuentes, sonidos y strings vía
+//      `scr_init_localization` (que ademas cubre la carga especifica de
+//      cada capitulo: button sounds, flowery, etc.). El loop de sprites
+//      de `init` esta guardado por `global.lang_sprites_pending`, asi que
+//      NO se recargan sprites aqui.
 //   2. Un diferido de sprites: los del idioma viejo se mueven al array
 //      `global.outdated_sprites`, y se marca un flag
 //      `global.lang_sprites_pending`. La carga real de los sprites del
@@ -68,7 +70,12 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     global.lang_sprites_pending = true
 
     // ----- Recarga inmediata de fuentes, sonidos y strings -----
-    scr_lang_reload_partial()
+    // Reutilizamos `scr_init_localization` (que recarga fuentes, sonidos
+    // y strings, incluyendo la carga especifica de cada capitulo: button
+    // sounds, flowery, etc.). Los sprites NO se recargan aqui: el loop de
+    // sprites de `init` esta guardado por `global.lang_sprites_pending`,
+    // asi que se difieren y los carga `scr_load_lang_sprites_only` despues.
+    scr_init_localization()
 
     // Persistir la elección para próximas sesiones y para que el menú
     // principal arranque en el mismo idioma.
