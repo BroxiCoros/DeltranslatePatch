@@ -9,7 +9,7 @@
 > - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
 > - **Bordes** opcionales (basados en [NXRUNE](https://github.com/IruzzArcana/NXRUNE) de IRUZZ): ejecutar `ChapterN/Borders.csx` tras el `Fix.csx`.
 >
-> Detalle de la migración a esta arquitectura y decisiones de diseño: [`docs/migracion-upstream.md`](docs/migracion-upstream.md). Cambios por versión: [`CHANGES.md`](CHANGES.md).
+> Cambios por versión: [`CHANGES.md`](CHANGES.md).
 >
 > La documentación de abajo es la del **mod base de Neprim** (formato de los *packs* de idioma: `lang/`, `settings.json`, fuentes, sonidos por capítulo, etc.).
 
