@@ -13,13 +13,29 @@ function add_sprite(argument0, argument1) //gml_Script_add_sprite
         var sprite = _create_sprite(filename, orig_sprite, spr_name, argument1)
         array_push(global.loaded_sprites, sprite)
 
-        var sp_filename = get_lang_folder_path() + "chapter" + string(global.chapter) + "/sprites/sp_" + spr_name + ".png"
-        if (!file_exists(sp_filename)) {
-            sp_filename = get_lang_folder_path() + "shared/sprites/sp_" + spr_name + ".png"
-        }
-        if file_exists(sp_filename) {
-            var sp_sprite = _create_sprite(sp_filename, orig_sprite, "sp_" + spr_name, argument1)
-            ds_map_add(global.chemg_sprite_map, "sp_" + spr_name, sp_sprite)
+        // ----- Variantes por modo especial -----
+        // En vez de un unico `sp_`, iteramos los modos declarados por el
+        // pack (`global.special_modes`) y para cada prefijo intentamos
+        // cargar `<prefix>_<name>.png`. El modo legacy `special_mode: true`
+        // lo sintetiza `scr_load_special_modes` como un modo con prefijo
+        // "sp", asi que este loop tambien cubre el comportamiento antiguo.
+        var sp_modes = variable_global_exists("special_modes") ? global.special_modes : []
+        for (var sp_i = 0; sp_i < array_length(sp_modes); sp_i++)
+        {
+            var sp_prefix = get_struct_field(sp_modes[sp_i], "prefix", "")
+            if (sp_prefix == "")
+                continue
+
+            var sp_key = sp_prefix + "_" + spr_name
+            var sp_filename = get_lang_folder_path() + "chapter" + string(global.chapter) + "/sprites/" + sp_key + ".png"
+            if (!file_exists(sp_filename)) {
+                sp_filename = get_lang_folder_path() + "shared/sprites/" + sp_key + ".png"
+            }
+            if (!file_exists(sp_filename))
+                continue
+
+            var sp_sprite = _create_sprite(sp_filename, orig_sprite, sp_key, argument1)
+            ds_map_add(global.chemg_sprite_map, sp_key, sp_sprite)
         }
 
         var spm_filename = get_lang_folder_path() + "chapter" + string(global.chapter) + "/sprites/spm_" + spr_name + ".png"
