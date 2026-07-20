@@ -8,6 +8,7 @@ if (ds_map_find_value(async_load, "id") == lang_changes_call)
     {
         var lang_change;
 
+
         try
         {
             lang_change = json_parse(ds_map_find_value(async_load, "result"));
@@ -122,27 +123,11 @@ for (var ind = 0; ind < array_length(filenames); ind++)
                 array_push(loaded_files, filenames[ind]);
 
                 if (array_length(loaded_files) == array_length(filenames) && array_length(loaded_datas) == array_length(datanames)) {
-                    if (settings_loaded) {
-                        copy_files_from_tmp();
-                        if (array_length(datanames) == 0)
-                            update_changes_file()
-                        update_language();
-                        scr_init_localization()
-                        if (array_length(datanames) == 0) {
-                            clear_tmp();
-                        }
-                    } else {
-                        settings_loaded = true;
-                        loaded_files = ["settings.json"]
-                        copy_files_from_tmp();
-                        update_language();
-                        files_url = get_lang_setting("files_url", "")
-                        loading_new_translation_files = true
-                        load_datas();
-                        load_files();
-                    }
+                    copy_files_from_tmp();
                 }
-            } else {
+            }
+            else
+            {
                 clear_tmp();
             }
         }
@@ -184,10 +169,10 @@ for (var ind = 0; ind < array_length(datanames); ind++)
 
                 if (array_length(loaded_files) == array_length(filenames) && array_length(loaded_datas) == array_length(datanames)) {
                     copy_files_from_tmp();
-                    update_changes_file()
-                    clear_tmp();
                 }
-            } else {
+            }
+            else
+            {
                 clear_tmp();
             }
         }
