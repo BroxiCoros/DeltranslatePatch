@@ -219,19 +219,22 @@ killfloweryshine = function()
 
 floweryshine = function()
 {
-    snd_stop(snd_flowery_voiceclip_nonono);
+    snd_stop(scr_84_get_sound("snd_flowery_voiceclip_nonono"));
     snd_play_flowery(187);
     killfloweryshine();
     var cam = scr_getcam();
     var _xloc = camera_get_view_x(view_camera[0]) + 208;
     var _yloc = camera_get_view_y(view_camera[0]) + 184;
     
-    if (global.submenu == 10)
-        _xloc -= 22;
-    
-    if (global.submenu == 20)
-        _xloc -= 15;
-    
+    if (global.lang == "ja")
+    {
+        if (global.submenu == 10)
+            _xloc -= 22;
+
+        if (global.submenu == 20)
+            _xloc -= 15;
+    }
+
     var smile = scr_marker_ext(_xloc, _yloc, spr_flowery_teethshine_mouthonly, 2, 2, undefined, undefined, undefined, depth - 1, undefined, 15);
     
     with (smile)
