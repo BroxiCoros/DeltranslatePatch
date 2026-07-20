@@ -49,8 +49,15 @@ function scr_init_localization()
         if (is_undefined(ds_map_find_value(global.font_map, "fnt_8bit_mixed")) || ds_map_find_value(global.font_map, "fnt_8bit_mixed") == -1)
             ds_map_set(global.font_map, "fnt_8bit_mixed", ds_map_find_value(global.font_map, "fnt_8bit"));
         
-        for (var i = 0; i < array_length(global.sprites_list); i++)
-            add_sprite(global.sprites_list[i]);
+        // El loop de sprites se salta cuando hay una recarga de idioma en
+        // caliente pendiente: los sprites se difieren y los carga
+        // `scr_load_lang_sprites_only`. En el boot (pending = false) se
+        // cargan normalmente aqui.
+        if (!(variable_global_exists("lang_sprites_pending") && global.lang_sprites_pending))
+        {
+            for (var i = 0; i < array_length(global.sprites_list); i++)
+                add_sprite(global.sprites_list[i]);
+        }
         
         var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
         
