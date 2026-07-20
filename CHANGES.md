@@ -21,7 +21,7 @@ del upstream, entra correctamente.
 - **Multi-idioma:** escaneo de `lang/<código>/`, selección persistida en
   `true_config.ini` (`LANG.LANG_DT`), selector con ←/→ en el Menu raíz y en
   Ajustes in-game, y **cambio de idioma en caliente** dentro de los capítulos
-  (sprites diferidos para no cortar el render).
+  (sprites **y sonidos** diferidos para no cortar el render ni el audio).
 - **Modos especiales rediseñados:** número arbitrario de modos con `prefix`
   (`sp_1`, `sp_2`…) para sprites, strings y sonidos; índice persistido por
   idioma; compatible con `special_mode: true` heredado.
@@ -40,11 +40,21 @@ del upstream, entra correctamente.
 
 ### Notas
 
-- El cambio de idioma en caliente reutiliza `scr_init_localization` con el bucle
-  de sprites diferido (no hay `scr_lang_reload_partial` separado): reusa la carga
-  específica de cada capítulo sin duplicarla.
+- El cambio de idioma en caliente reutiliza `scr_init_localization` con los
+  bucles de sprites **y sonidos** diferidos (no hay `scr_lang_reload_partial`
+  separado): reusa la carga específica de cada capítulo sin duplicarla.
+- **Sonidos diferidos:** los sprites usan un cargador compartido (listas
+  genéricas), pero el bloque de sonidos es específico de cada capítulo
+  (button sounds en Ch2/3, funny sounds en Ch3/4, voicelines + Flowery en Ch5).
+  Por eso cada capítulo define su propio `scr_load_lang_sounds_only` y lo
+  registra en `global.lang_sounds_loader`; el código compartido lo invoca por
+  referencia (así el Menu, que no carga sonidos, no rompe el enlazado). Al
+  limpiar los streams viejos se salta con `audio_is_playing` los que aún suenan,
+  para no cortar una voz a mitad. En Ch5 el loader re-cachea las voces de
+  Flowery tras recargar.
 - La caché/carga diferida de fuentes del refactor **no** se portó: el sistema de
-  fuentes quedó *eager* como el upstream (es optimización de rendimiento, no de
-  correctitud; se puede añadir si el cambio a japonés resulta lento).
+  fuentes quedó *eager* como el upstream (es la última pieza síncrona del switch;
+  es optimización de rendimiento, no de correctitud; se puede añadir si el cambio
+  a japonés resulta lento).
 
 Detalle completo y decisiones de diseño en [`docs/migracion-upstream.md`](docs/migracion-upstream.md).
