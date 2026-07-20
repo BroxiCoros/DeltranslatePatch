@@ -1,3 +1,20 @@
+// Hook del cambio de idioma en caliente (sprites diferidos):
+// al detectar cambio de sala, aplicamos la recarga pendiente ANTES
+// de que los objetos de la sala nueva pidan un sprite (por si nadie
+// llamó a scr_84_get_sprite todavía) y luego limpiamos los sprites
+// del idioma viejo (los objetos de la sala anterior ya se destruyeron,
+// asi que es seguro borrarlos).
+if (variable_global_exists("lang_sprites_pending")) {
+    if (!variable_instance_exists(self, "last_room_for_lang"))
+        last_room_for_lang = room
+    if (room != last_room_for_lang) {
+        last_room_for_lang = room
+        if (global.lang_sprites_pending)
+            scr_apply_pending_sprite_reload()
+        scr_cleanup_outdated_sprites()
+    }
+}
+
 if global.translator_mode
 {
     if keyboard_check_released(ord("U"))
