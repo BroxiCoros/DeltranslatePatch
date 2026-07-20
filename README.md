@@ -1,3 +1,20 @@
+> **Fork de [BroxiCoros](https://github.com/BroxiCoros/DeltranslatePatch)**, base de *scripts* del proyecto **[LetraDelta](https://github.com/BroxiCoros/LetraDelta)** (traducción al español americano de *DELTARUNE*).
+>
+> **Arquitectura:** este fork se basa directamente en el *patcher* del **upstream de [Neprim](https://github.com/Lazy-Desman/DeltranslatePatch)** (lógica de idioma compartida en `scripts/SharedCodeEntries/`, importada recursivamente por `BaseFix.csx`). Las funciones propias se aplican como *overlay* fino sobre esa base, no como una copia plana. Traer cambios del upstream es un `git merge` normal.
+>
+> **Añade sobre el mod de Neprim:**
+> - **Multi-idioma:** varios *packs* en `lang/<código>/` a la vez, con selector (←/→) en el Menu raíz y en Ajustes, y **cambio de idioma en caliente** dentro de los capítulos.
+> - **Modos especiales rediseñados:** número arbitrario de modos con `prefix` (`sp_1`, `sp_2`…), aplicados a sprites, strings y sonidos; compatible con el `special_mode: true` heredado.
+> - **`font_settings`:** tamaño y rango de glifos por fuente desde `settings.json` / `chapter_settings.json`.
+> - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
+> - **Bordes** opcionales (basados en [NXRUNE](https://github.com/IruzzArcana/NXRUNE) de IRUZZ): ejecutar `ChapterN/Borders.csx` tras el `Fix.csx`.
+>
+> Detalle de la migración a esta arquitectura y decisiones de diseño: [`docs/migracion-upstream.md`](docs/migracion-upstream.md). Cambios por versión: [`CHANGES.md`](CHANGES.md).
+>
+> La documentación de abajo es la del **mod base de Neprim** (formato de los *packs* de idioma: `lang/`, `settings.json`, fuentes, sonidos por capítulo, etc.).
+
+---
+
 # Deltranslate Mod v2.0 by Neprim
 ```
 Contacts: 
