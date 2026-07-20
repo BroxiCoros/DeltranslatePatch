@@ -63,6 +63,11 @@ function scr_init_localization()
         {
             for (var i = 0; i < array_length(global.sprites_list); i++)
                 add_sprite(global.sprites_list[i]);
+
+            // Sprites adicionales declarados por el pack para esta lengua.
+            var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
+            for (var i = 0; i < array_length(additional_funny_words); i++)
+                add_sprite(additional_funny_words[i]);
         }
         
         var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
