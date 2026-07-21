@@ -47,18 +47,11 @@ for (var i = 0; i < options_count; i++) {
 
     if (options[i] == "special_mode") {
         draw_text_transformed(xx_options, yy_options + yyoff_options * i, spec_mode_text, scale, scale, 0)
-
-        // Texto del valor actual. "< nombre >" cuando hay más de un modo
-        // real (default + ≥1). Cuando solo hay 2 entradas (formato
-        // heredado: default + "sp") también, porque sigue habiendo ciclo.
-        var sp_value = get_sp_mode_name()
-        var sp_display = (array_length(global.special_modes) > 1) ? ("< " + sp_value + " >") : sp_value
-        draw_text_transformed(xx_options + string_width(spec_mode_text) * scale, yy_options + yyoff_options * i, sp_display, scale, scale, 0)
-
+        draw_text_transformed(xx_options + string_width(spec_mode_text) * scale, yy_options + yyoff_options * i, (global.special_mode ? yes_text : no_text), scale, scale, 0)
         if (option == i) {
             draw_set_halign(fa_center)
             draw_set_color(c_gray)
-            draw_text_transformed(xx_mid, yy_options + yyoff_options * options_count, get_sp_mode_desc(), scale, scale, 0)
+            draw_text_transformed(xx_mid, yy_options + yyoff_options * options_count, (global.special_mode ? spec_mode_desc_enabled : spec_mode_desc_disabled), scale, scale, 0)
             draw_set_halign(fa_left)
         }
     } else

@@ -4,7 +4,6 @@
 >
 > **Añade sobre el mod de Neprim:**
 > - **Multi-idioma:** varios *packs* en `lang/<código>/` a la vez, con selector (←/→) en el Menu raíz y en Ajustes, y **cambio de idioma en caliente** dentro de los capítulos.
-> - **Modos especiales rediseñados:** número arbitrario de modos con `prefix` (`sp_1`, `sp_2`…), aplicados a sprites, strings y sonidos; compatible con el `special_mode: true` heredado.
 > - **`font_settings`:** tamaño y rango de glifos por fuente desde `settings.json` / `chapter_settings.json`.
 > - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
 > - **Bordes** opcionales (basados en [NXRUNE](https://github.com/IruzzArcana/NXRUNE) de IRUZZ): ejecutar `ChapterN/Borders.csx` tras el `Fix.csx`.

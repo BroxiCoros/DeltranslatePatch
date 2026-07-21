@@ -17,16 +17,15 @@ update_strings = function() {
     lang_choice_text = stringsetloc("Language", "obj_lang_settings_5_0") + ": "
     spec_mode_text = stringsetloc("Special Mode", "obj_lang_settings_6_0") + ": "
     tr_songs_text = stringsetloc("Translated Voices", "obj_lang_settings_7_0") + ": "
-    spec_mode_desc_fallback_off = stringsetloc("", "obj_lang_settings_8_0")
-    spec_mode_desc_fallback_on  = stringsetloc("", "obj_lang_settings_9_0")
+    spec_mode_desc_disabled = stringsetloc("Special Mode disabled\ndescription (leave space\nif no need)", "obj_lang_settings_8_0")
+    spec_mode_desc_enabled = stringsetloc("Special Mode enabled\ndescription (leave space\nif no need)", "obj_lang_settings_9_0")
 
     options = ["language"]
 
     spec_mode_switch = false
     translated_songs_switch = false
 
-    // Mostrar la opción solo si hay al menos un modo real además del default.
-    if (array_length(global.special_modes) > 1) {
+    if (get_lang_setting("special_mode")) {
         array_push(options, "special_mode")
         spec_mode_switch = true
     }
@@ -37,28 +36,6 @@ update_strings = function() {
     }
 
     options_count = array_length(options)
-}
-
-// Texto del valor actual al lado de "Special Mode: ".
-get_sp_mode_name = function() {
-    if (array_length(global.special_modes) == 0)
-        return no_text
-    var m = global.special_modes[global.special_mode_index]
-    var nm = get_struct_field(m, "name", "")
-    if (nm == "")
-        return (global.special_mode_index == 0) ? no_text : yes_text
-    return nm
-}
-
-// Descripción del modo activo.
-get_sp_mode_desc = function() {
-    if (array_length(global.special_modes) == 0)
-        return spec_mode_desc_fallback_off
-    var m = global.special_modes[global.special_mode_index]
-    var d = get_struct_field(m, "description", "")
-    if (d != "")
-        return d
-    return (global.special_mode_index == 0) ? spec_mode_desc_fallback_off : spec_mode_desc_fallback_on
 }
 
 // ¿Cuántos idiomas hay?

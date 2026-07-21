@@ -55,24 +55,10 @@ if (option < options_count) {
     } else
 
     if (options[option] == "special_mode") {
-        // El ring es el tamaño del array (default está en la posición 0).
-        // Necesitamos al menos 2 entradas para poder ciclar.
-        var modes_len = array_length(global.special_modes)
-
-        if (modes_len > 1 && (left_p() || right_p() || button1_p())) {
-            if (left_p()) {
-                global.special_mode_index = ((global.special_mode_index - 1) + modes_len) mod modes_len
-            } else {
-                global.special_mode_index = (global.special_mode_index + 1) mod modes_len
-            }
-
-            global.special_mode = (global.special_mode_index > 0)
-            global.active_sp_prefix = get_struct_field(global.special_modes[global.special_mode_index], "prefix", "")
-
+        if (left_p() || right_p() || button1_p()) {
             ossafe_ini_open("true_config.ini")
-            ini_write_string("LANG", "special_mode_index_" + global.lang, global.special_mode_index)
-            ini_write_string("LANG", "special_mode_index", global.special_mode_index)
-            ini_write_string("LANG", "special_mode", global.special_mode ? 1 : 0)
+            global.special_mode = !global.special_mode
+            ini_write_string("LANG", "special_mode", global.special_mode)
             ossafe_ini_close()
             ossafe_savedata_save()
 

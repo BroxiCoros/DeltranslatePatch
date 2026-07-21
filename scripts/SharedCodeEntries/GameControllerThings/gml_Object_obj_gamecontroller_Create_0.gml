@@ -34,22 +34,15 @@ init_global_vars();
 // ---------------------------------------------------------------
 // Configuración persistida (true_config.ini)
 // ---------------------------------------------------------------
-// `special_mode_index` lo carga `scr_load_special_modes` más abajo,
-// una vez que ya sabemos el idioma activo (porque el índice es por
-// idioma). Solo leemos aquí lo que no depende del pack.
+// `saved_lang` es lo único añadido aquí: el idioma que el jugador
+// eligió la última vez, para el escaneo multi-idioma de más abajo.
 ossafe_ini_open("true_config.ini");
 global.translator_mode = 0;
 speed_mode = 0;
+global.special_mode = ini_read_real("LANG", "special_mode", 0);
 global.translated_songs = ini_read_real("LANG", "translated_songs", 1);
 var saved_lang = ini_read_string("LANG", "LANG_DT", "");
 ossafe_ini_close();
-
-// Inicializar globales de modos especiales para que cualquier función
-// que las consulte antes de `scr_load_special_modes()` no truene.
-global.special_mode_index = 0;
-global.special_mode = false;
-global.active_sp_prefix = "";
-global.special_modes = [];
 
 global.lang_sprites = ds_map_create();
 global.lang_sounds = ds_map_create();
@@ -130,10 +123,6 @@ if (file_exists(get_lang_folder_path() + "settings.json")) {
 } else {
     global.lang_settings = json_parse("{\"name\": \"English\"}")
 }
-
-// Los modos especiales vienen del pack de idioma activo, así que solo
-// podemos leerlos DESPUÉS de fijar `global.lang` y `global.lang_settings`.
-scr_load_special_modes();
 
 // ----- Modo traductor (dev) -----
 // Se conserva el soporte completo del upstream: mapas de strings usadas,

@@ -22,9 +22,6 @@ del upstream, entra correctamente.
   `true_config.ini` (`LANG.LANG_DT`), selector con ←/→ en el Menu raíz y en
   Ajustes in-game, y **cambio de idioma en caliente** dentro de los capítulos
   (sprites **y sonidos** diferidos para no cortar el render ni el audio).
-- **Modos especiales rediseñados:** número arbitrario de modos con `prefix`
-  (`sp_1`, `sp_2`…) para sprites, strings y sonidos; índice persistido por
-  idioma; compatible con `special_mode: true` heredado.
 - **`font_settings`:** override de tamaño y rango de glifos por fuente desde
   `settings.json` / `chapter_settings.json` (el de capítulo gana).
 - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.

@@ -1,6 +1,5 @@
 // Cambia el idioma activo al `target_lang` indicado. Esto:
 //   - actualiza `global.lang` y `global.lang_settings`
-//   - recarga la tabla de modos especiales (pueden diferir entre packs)
 //   - recarga strings, sprites, sonidos y fuentes del nuevo pack
 //   - resetea el estado de versiones del controlador y dispara una
 //     nueva consulta HTTP a `files_url + "changes.json"` para que el
@@ -30,11 +29,6 @@ function change_language(argument0) //gml_Script_change_language
         if (file_exists(settings_path))
             global.lang_settings = scr_load_json(settings_path)
     }
-
-    // Los modos especiales son específicos del pack de idioma: por eso
-    // se recargan aquí. Esto también clampea el índice activo si el
-    // pack nuevo tiene menos modos.
-    scr_load_special_modes()
 
     // Recarga strings.json, sprites, sonidos y fuentes para el idioma
     // nuevo. `scr_init_localization` ya se encarga de destruir los maps
