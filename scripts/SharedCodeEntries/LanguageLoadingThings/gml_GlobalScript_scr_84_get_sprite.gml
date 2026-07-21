@@ -21,12 +21,9 @@ function scr_84_get_sprite(argument0) //gml_Script_scr_84_get_sprite
             return ret
     }
 
-    // Modo especial activo: intenta `<prefix>_<sprite_name>`. El prefijo
-    // lo pone `scr_load_special_modes` (p. ej. "sp" en compat, o
-    // "sp_1", "sp_2"... cuando el pack declara varios modos).
-    if (variable_global_exists("special_mode_index") && global.special_mode_index > 0) {
-        var sp_key = global.active_sp_prefix + "_" + argument0
-        var ret = ds_map_find_value(global.chemg_sprite_map, sp_key)
+    // Modo especial activo: variantes `sp_`.
+    if (global.special_mode) {
+        var ret = ds_map_find_value(global.chemg_sprite_map, "sp_" + argument0)
         if (!is_undefined(ret) && ret != -1)
             return ret
     }

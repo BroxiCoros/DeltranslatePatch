@@ -52,9 +52,6 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
             global.lang_settings = scr_load_json(settings_path)
     }
 
-    // Recargar modos especiales (pueden ser distintos en cada pack).
-    scr_load_special_modes()
-
     // ----- Defer sprites: trasladar los actuales a outdated_sprites -----
     // Pueden encadenarse varios cambios de idioma sin pasar de sala;
     // por eso concatenamos en lugar de sobrescribir.

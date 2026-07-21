@@ -40,16 +40,10 @@ if (variable_global_exists("lang_map"))
 // ---------------------------------------------------------------
 // Configuración persistida (true_config.ini)
 // ---------------------------------------------------------------
-// El índice de modo especial ya NO se lee aquí: ahora es por idioma,
-// y lo carga `scr_load_special_modes` con la clave correspondiente.
-// Solo dejamos `special_mode_index` inicializada para que las funciones
-// globales que la consultan antes de la primera llamada (p. ej. desde
-// scripts disparados por scr_init_localization) no fallen.
-global.special_mode_index = 0
-global.special_mode = false
-global.active_sp_prefix = ""
-
+// `saved_lang` es lo único añadido aquí: el idioma que el jugador
+// eligió la última vez, para el escaneo multi-idioma de más abajo.
 ossafe_ini_open("true_config.ini")
+global.special_mode = ini_read_real("LANG", "special_mode", 0)
 global.translated_songs = ini_read_real("LANG", "translated_songs", 1)
 var saved_lang = ini_read_string("LANG", "LANG_DT", "")
 ossafe_ini_close()
@@ -232,10 +226,6 @@ update_language = function() {
 
 update_language()
 
-// Los modos especiales vienen del pack de idioma activo, así que solo
-// podemos leerlos DESPUÉS de update_language().
-scr_load_special_modes()
-
 // `files_url` (no `var`) es intencional: es una variable de instancia
 // que `load_datas` consulta más abajo como fallback de `datas_url`.
 files_url = get_lang_setting("files_url", "")
@@ -336,8 +326,6 @@ copy_files_from_tmp = function() {
     }
 
     update_language()
-    // Tras actualizar el pack, los modos pueden haber cambiado.
-    scr_load_special_modes()
 
     loading_new_translation_files = false
     scr_init_localization()
