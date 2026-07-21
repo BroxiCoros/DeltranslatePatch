@@ -52,6 +52,13 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
             global.lang_settings = scr_load_json(settings_path)
     }
 
+    // El modo especial se recuerda por idioma: releer el del idioma nuevo.
+    // Sin fallback a la clave global: un idioma que nunca se tocó arranca
+    // apagado (y así el flag tampoco viaja a packs que no ofrecen modo).
+    ossafe_ini_open("true_config.ini")
+    global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, 0)
+    ossafe_ini_close()
+
     // ----- Defer sprites: trasladar los actuales a outdated_sprites -----
     // Pueden encadenarse varios cambios de idioma sin pasar de sala;
     // por eso concatenamos en lugar de sobrescribir.

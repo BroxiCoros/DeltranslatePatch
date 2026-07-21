@@ -66,7 +66,8 @@ if (option < options_count) {
         if (left_p() || right_p() || button1_p()) {
             ossafe_ini_open("true_config.ini")
             global.special_mode = !global.special_mode
-            ini_write_string("LANG", "special_mode", global.special_mode)
+            // Clave por idioma: cada pack recuerda su propio estado.
+            ini_write_string("LANG", "special_mode_" + global.lang, global.special_mode)
             ossafe_ini_close()
             ossafe_savedata_save()
 
