@@ -42,8 +42,9 @@ if (variable_global_exists("lang_map"))
 // ---------------------------------------------------------------
 // `saved_lang` es lo único añadido aquí: el idioma que el jugador
 // eligió la última vez, para el escaneo multi-idioma de más abajo.
+// `special_mode` NO se lee aquí (a diferencia del upstream): se recuerda
+// por idioma, así que hace falta saber cuál está activo. Ver más abajo.
 ossafe_ini_open("true_config.ini")
-global.special_mode = ini_read_real("LANG", "special_mode", 0)
 global.translated_songs = ini_read_real("LANG", "translated_songs", 1)
 var saved_lang = ini_read_string("LANG", "LANG_DT", "")
 ossafe_ini_close()
@@ -225,6 +226,15 @@ update_language = function() {
 }
 
 update_language()
+
+// Modo especial: se recuerda POR IDIOMA (`special_mode_<lang>`), así que
+// solo se puede leer aquí, ya fijado `global.lang`. La clave global del
+// upstream (`special_mode`) se usa como fallback para migrar la
+// preferencia que el jugador ya tuviera; a partir de ahí solo se escribe
+// la clave por idioma.
+ossafe_ini_open("true_config.ini")
+global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0))
+ossafe_ini_close()
 
 // `files_url` (no `var`) es intencional: es una variable de instancia
 // que `load_datas` consulta más abajo como fallback de `datas_url`.
