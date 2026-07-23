@@ -22,6 +22,11 @@ del upstream, entra correctamente.
   `true_config.ini` (`LANG.LANG_DT`), selector con ←/→ en el Menu raíz y en
   Ajustes in-game, y **cambio de idioma en caliente** dentro de los capítulos
   (sprites **y sonidos** diferidos para no cortar el render ni el audio).
+  Las subcarpetas de idioma tienen prioridad: si `lang/` contiene al menos un
+  `lang/<código>/settings.json` válido, se usa el modo multi-idioma y se
+  **ignora** cualquier `lang/settings.json` suelto en la raíz. Solo se cae al
+  pack heredado de un único idioma en la raíz cuando no hay ninguna subcarpeta
+  válida.
 - **Modo especial por idioma:** el interruptor Sí/No del upstream se recuerda
   por *pack* (`LANG.special_mode_<código>` en `true_config.ini`) en vez de en
   una única clave global, y se relee al cambiar de idioma. Así no se arrastra
