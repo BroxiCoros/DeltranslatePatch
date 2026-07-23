@@ -52,11 +52,16 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
             global.lang_settings = scr_load_json(settings_path)
     }
 
-    // El modo especial se recuerda por idioma: releer el del idioma nuevo.
-    // Sin fallback a la clave global: un idioma que nunca se tocó arranca
-    // apagado (y así el flag tampoco viaja a packs que no ofrecen modo).
+    // El modo especial y las voces dobladas se recuerdan por idioma:
+    // releer los del idioma nuevo. Sin fallback a las claves globales: un
+    // idioma que nunca se tocó arranca con su default de fábrica (modo
+    // especial apagado, voces dobladas encendidas), y así ninguno de los
+    // dos flags viaja a packs que no ofrecen ese interruptor.
+    // Va antes de `scr_init_localization` porque de él dependen las
+    // variantes `sp_`/`spm_` que se resolverán con el idioma nuevo.
     ossafe_ini_open("true_config.ini")
     global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, 0)
+    global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, 1)
     ossafe_ini_close()
 
     // ----- Defer sprites: trasladar los actuales a outdated_sprites -----

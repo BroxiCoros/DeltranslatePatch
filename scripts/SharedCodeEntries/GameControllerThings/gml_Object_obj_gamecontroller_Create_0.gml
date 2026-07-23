@@ -36,12 +36,12 @@ init_global_vars();
 // ---------------------------------------------------------------
 // `saved_lang` es lo único añadido aquí: el idioma que el jugador
 // eligió la última vez, para el escaneo multi-idioma de más abajo.
-// `special_mode` NO se lee aquí (a diferencia del upstream): se recuerda
-// por idioma, así que hace falta saber cuál está activo. Ver más abajo.
+// `special_mode` y `translated_songs` NO se leen aquí (a diferencia del
+// upstream): se recuerdan por idioma, así que hace falta saber cuál está
+// activo. Ver más abajo.
 ossafe_ini_open("true_config.ini");
 global.translator_mode = 0;
 speed_mode = 0;
-global.translated_songs = ini_read_real("LANG", "translated_songs", 1);
 var saved_lang = ini_read_string("LANG", "LANG_DT", "");
 ossafe_ini_close();
 
@@ -130,13 +130,17 @@ if (file_exists(get_lang_folder_path() + "settings.json")) {
     global.lang_settings = json_parse("{\"name\": \"English\"}")
 }
 
-// Modo especial: se recuerda POR IDIOMA (`special_mode_<lang>`), así que
-// solo se puede leer aquí, ya fijado `global.lang`. La clave global del
-// upstream (`special_mode`) se usa como fallback para migrar la
-// preferencia que el jugador ya tuviera; a partir de ahí solo se escribe
-// la clave por idioma.
+// Modo especial y voces dobladas: se recuerdan POR IDIOMA
+// (`special_mode_<lang>` / `translated_songs_<lang>`), así que solo se
+// pueden leer aquí, ya fijado `global.lang`. Las claves globales del
+// upstream (`special_mode` / `translated_songs`) se usan como fallback
+// para migrar la preferencia que el jugador ya tuviera; a partir de ahí
+// solo se escriben las claves por idioma.
+// Ojo con los defaults: el modo especial arranca apagado (0) y las voces
+// dobladas encendidas (1), igual que en el upstream.
 ossafe_ini_open("true_config.ini");
 global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0));
+global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, ini_read_real("LANG", "translated_songs", 1));
 ossafe_ini_close();
 
 // ----- Modo traductor (dev) -----

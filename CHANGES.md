@@ -27,12 +27,18 @@ del upstream, entra correctamente.
   **ignora** cualquier `lang/settings.json` suelto en la raíz. Solo se cae al
   pack heredado de un único idioma en la raíz cuando no hay ninguna subcarpeta
   válida.
-- **Modo especial por idioma:** el interruptor Sí/No del upstream se recuerda
-  por *pack* (`LANG.special_mode_<código>` en `true_config.ini`) en vez de en
-  una única clave global, y se relee al cambiar de idioma. Así no se arrastra
-  a un pack que no ofrece modo especial. La clave `special_mode` del upstream
-  se sigue leyendo como respaldo la primera vez, para no perder la
-  preferencia anterior del jugador.
+- **Modo especial y voces dobladas por idioma:** los dos interruptores Sí/No
+  del upstream se recuerdan por *pack* (`LANG.special_mode_<código>` y
+  `LANG.translated_songs_<código>` en `true_config.ini`) en vez de en una
+  única clave global, y se releen al cambiar de idioma. Así no se arrastran a
+  un pack que no ofrece ese interruptor: el caso feo era apagar "Voces
+  dobladas" en un pack y pasar a otro sin el interruptor, que quedaba con las
+  voces apagadas (y con las variantes `spm_` de textos y sprites activas) sin
+  forma de volver a encenderlas desde el menú. Las claves `special_mode` y
+  `translated_songs` del upstream se siguen leyendo como respaldo la primera
+  vez, para no perder la preferencia anterior del jugador. Los valores por
+  defecto son los del upstream: modo especial apagado, voces dobladas
+  encendidas.
 - **`font_settings`:** override de tamaño y rango de glifos por fuente desde
   `settings.json` / `chapter_settings.json` (el de capítulo gana).
 - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.

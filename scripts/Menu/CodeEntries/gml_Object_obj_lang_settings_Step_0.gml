@@ -79,7 +79,8 @@ if (option < options_count) {
         if (left_p() || right_p() || button1_p()) {
             ossafe_ini_open("true_config.ini")
             global.translated_songs = !global.translated_songs
-            ini_write_string("LANG", "translated_songs", global.translated_songs)
+            // Clave por idioma: cada pack recuerda su propio estado.
+            ini_write_string("LANG", "translated_songs_" + global.lang, global.translated_songs)
             ossafe_ini_close()
             ossafe_savedata_save()
 
