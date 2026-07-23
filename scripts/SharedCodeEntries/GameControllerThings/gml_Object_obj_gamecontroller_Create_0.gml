@@ -57,10 +57,11 @@ global.is_single_lang_mode = false;
 // ---------------------------------------------------------------
 // Escaneo de idiomas disponibles en `lang/`
 // ---------------------------------------------------------------
-// - Si `lang/settings.json` existe directamente, es un pack heredado
-//   de un solo idioma: respetamos esa estructura.
-// - Si no, iteramos subcarpetas y leemos `lang/<code>/settings.json`
-//   de cada pack válido.
+// - Primero iteramos subcarpetas y leemos `lang/<code>/settings.json` de
+//   cada pack válido. Si encontramos al menos uno, gana el modo
+//   multi-idioma y se IGNORA cualquier `lang/settings.json` suelto en la raíz.
+// - Solo si no hay ninguna subcarpeta válida caemos al pack heredado de un
+//   solo idioma (`lang/settings.json` en la raíz).
 scan_languages = function() {
     global.languages_list = []
     global.all_lang_settings = {}
@@ -69,13 +70,7 @@ scan_languages = function() {
     var s = undefined
     var code = ""
 
-    if (file_exists(global.lang_folder + "settings.json")) {
-        global.is_single_lang_mode = true
-        s = scr_load_json(global.lang_folder + "settings.json")
-        code = get_struct_field(s, "lang_code", "en")
-        array_push(global.languages_list, code)
-        variable_struct_set(global.all_lang_settings, code, s)
-    } else if (directory_exists(global.lang_folder)) {
+    if (directory_exists(global.lang_folder)) {
         var entry = file_find_first(global.lang_folder + "*", fa_directory)
         while (entry != "") {
             if (entry != "." && entry != ".." && directory_exists(global.lang_folder + entry)) {
@@ -90,6 +85,16 @@ scan_languages = function() {
             entry = file_find_next()
         }
         file_find_close()
+    }
+
+    // Fallback al pack suelto de la raíz solo si el barrido de subcarpetas
+    // no encontró ningún idioma válido.
+    if (array_length(global.languages_list) == 0 && file_exists(global.lang_folder + "settings.json")) {
+        global.is_single_lang_mode = true
+        s = scr_load_json(global.lang_folder + "settings.json")
+        code = get_struct_field(s, "lang_code", "en")
+        array_push(global.languages_list, code)
+        variable_struct_set(global.all_lang_settings, code, s)
     }
 }
 
