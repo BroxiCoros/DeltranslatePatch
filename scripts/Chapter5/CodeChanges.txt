@@ -1551,3 +1551,10 @@ var ltr_copy = 1;
 
             ltr_copy++;
 %%%
+
+=== gml_Object_obj_dw_garden_exit_Step_0
+---#
+    global.interact = 1;
++++
+
+%%%
