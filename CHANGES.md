@@ -51,6 +51,9 @@ del upstream, entra correctamente.
   (`var`); antes `path` de instancia pisaba `obj_mainchara_board.path`
   (`mp_grid_path`).
 - **`scr_get_font`:** deja de devolver `-1` (fuente inválida) como handle válido.
+- **Crash del Cap. 1 sin pack de idioma:** `scr_lang_load` cae a los strings de
+  fábrica del juego (o a un mapa vacío) cuando no hay pack instalado, en vez de
+  dejar `global.lang_map` en `undefined` y reventar en el primer string.
 
 ### Notas
 
