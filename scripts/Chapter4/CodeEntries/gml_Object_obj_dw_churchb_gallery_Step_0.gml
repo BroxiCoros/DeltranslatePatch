@@ -29,8 +29,8 @@ if (!init)
     if (global.tempflag[90] == 1)
     {
         pos = scr_heromarker("kris", "warp1");
-        setxy(pos[0], pos[1], 1049);
-        setxy(pos[0], pos[1], 1235);
+        setxy(pos[0], pos[1], obj_mainchara);
+        setxy(pos[0], pos[1], obj_caterpillarchara);
         global.facing = pos[2].image_index;
         global.tempflag[90] = 0;
         scr_caterpillar_interpolate("all");
@@ -136,10 +136,10 @@ if (!init)
         }
         
         var thelayerdepth = layer_get_depth("TILES") - 1000;
-        galleryshadow = scr_marker_ext(x, y + (sprite_height * 3) + yoff, sprite_index, image_xscale, image_yscale * -2, image_speed, image_index, 0, thelayerdepth);
+        galleryshadow = scr_marker_ext(x, y + (sprite_height * 3) + yoff, sprite_index, image_xscale, image_yscale * -2, image_speed, image_index, c_black, thelayerdepth);
     }
     
-    susie = scr_marker_ext(x, y, 430, 2, 2, undefined, undefined, undefined, undefined, 1);
+    susie = scr_marker_ext(x, y, spr_susie_walk_up_dw, 2, 2, undefined, undefined, undefined, undefined, 1);
     
     with (susie)
     {
@@ -229,24 +229,24 @@ with (susie)
             }
             
             image_speed = 0.25;
-            var targsprite = 410;
+            var targsprite = spr_susie_walk_down_dw;
             
             switch (spos[ind].image_index)
             {
                 case 0:
-                    targsprite = 410;
+                    targsprite = spr_susie_walk_down_dw;
                     break;
                 
                 case 1:
-                    targsprite = 428;
+                    targsprite = spr_susie_walk_right_dw;
                     break;
                 
                 case 2:
-                    targsprite = 430;
+                    targsprite = spr_susie_walk_up_dw;
                     break;
                 
                 case 3:
-                    targsprite = 422;
+                    targsprite = spr_susie_walk_left_dw;
                     break;
             }
             
@@ -874,13 +874,13 @@ if (enemcon == 1 && !d_ex())
                 scr_lerpvar("image_alpha", image_alpha, 0, fadetime, 2, "out");
         }
         
-        angymarker = scr_marker_ext(angyboy.marker.x - 16 - 2, (angyboy.marker.y - 16) + 2, spr_dw_churchb_organikenemy_marker, 2, 2, 0, 0, 16777215, angyboy.marker.depth + 1);
+        angymarker = scr_marker_ext(angyboy.marker.x - 16 - 2, (angyboy.marker.y - 16) + 2, spr_dw_churchb_organikenemy_marker, 2, 2, 0, 0, c_white, angyboy.marker.depth + 1);
     }
     
     if (timer == (8 + fadetime))
     {
         snd_play(snd_jump);
-        snd_play_delay(201, jumptime, 1, 1.2);
+        snd_play_delay(snd_wing, jumptime, 1, 1.2);
         var targx = obj_mainchara.x + 60;
         var targy = obj_mainchara.y - 42;
         
@@ -909,7 +909,7 @@ if (enemcon == 2 && !d_ex())
     {
         angymarker.depth = 5000;
         snd_play(snd_tensionhorn);
-        snd_play_delay(290, 10, undefined, 1.1);
+        snd_play_delay(snd_tensionhorn, 10, undefined, 1.1);
     }
     
     if (timer == 32)

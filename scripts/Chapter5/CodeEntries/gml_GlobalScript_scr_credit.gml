@@ -55,9 +55,7 @@ function generate_credits()
                 stringsetloc("-Concept Art-", "scr_credit_slash_scr_credit_gml_58_0")
             ],
             [
-                stringsetloc("Gigi DG (Susie outfits)", "scr_credit_slash_scr_credit_gml_62_0")
-            ],
-            [
+                stringsetloc("Gigi DG (Susie outfits)", "scr_credit_slash_scr_credit_gml_62_0"),
                 stringsetloc("Matt Cummings (Festival)", "scr_credit_slash_scr_credit_gml_63_0")
             ]
         ),
@@ -141,7 +139,7 @@ function generate_credits()
         ),
         new scr_credit(
             [
-                stringsetloc("-Backgrounds-", "scr_credit_slash_scr_credit_gml_132_0")
+                stringsetloc("-Backgrounds-", "scr_credit_slash_scr_credit_gml_134_0")
             ],
             [
                 stringsetloc("Akane Iwakuma", "scr_credit_slash_scr_credit_gml_135_0")

@@ -1,3 +1,5 @@
+dtv = 502
+
 if (instance_number(obj_gamecontroller) > 1)
 {
     instance_destroy();

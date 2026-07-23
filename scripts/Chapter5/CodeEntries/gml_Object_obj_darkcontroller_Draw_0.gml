@@ -243,7 +243,7 @@ if (global.menuno == 5)
             }
         }
         
-        if (global.is_console)
+        if (global.is_console || os_type == os_android)
         {
             var drawautorun = true;
             
@@ -507,10 +507,10 @@ if (global.menuno == 4)
         if (i == coord)
             chosen = 1;
         
-        var headssprite = 4648;
+        var headssprite = spr_equipchar_ch2;
         
         if (global.flag[1311] == 1)
-            headssprite = 4645;
+            headssprite = spr_equipchar;
         
         var dodraw = true;
         
@@ -986,10 +986,10 @@ if (global.menuno == 2)
         if (i == coord)
             chosen = 1;
         
-        var headssprite = 4648;
+        var headssprite = spr_equipchar_ch2;
         
         if (global.flag[1311] == 1)
-            headssprite = 4645;
+            headssprite = spr_equipchar;
         
         var dodraw = true;
         

@@ -35,5 +35,15 @@
   ],
   "gml_Object_obj_ch5_DW29_Step_0": [
     "snd_flowery_voiceclip_lend_me_your_power"
+  ],
+  "gml_GlobalScript_scr_textsound": [
+    "snd_flowery_voicenoise_1",
+    "snd_flowery_voicenoise_2",
+    "snd_flowery_voicenoise_3",
+    "snd_flowery_voicenoise_loop"
+  ],
+  "gml_GlobalScript_scr_texttype": [
+    "snd_flowery_voicenoise_1",
+    "snd_flowery_voicenoise_loop"
   ]
 }

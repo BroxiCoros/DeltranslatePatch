@@ -94,7 +94,14 @@ FN_3 == "GASTER" || FN_3 == stringsetloc("GASTER", "DEVICE_NAMER_slash_Draw_0_gm
 %%%
 
 
-
+=== gml_Object_obj_chapter_continue_Create_0
+---
+choice_text[0] = (global.lang == "en") ? stringsetsub("Continue to Chapter ~1", next_chapter) : stringsetsub("Chapter ~1へ進む", next_chapter);
+choice_text[1] = (global.lang == "en") ? stringsetsub("Keep Playing Chapter ~1", chapter) : stringsetsub("このままChapter ~1をプレイ", chapter);
++++
+choice_text[0] = stringsetsubloc("Continue to Chapter ~1", next_chapter, "obj_chapter_continue_slash_Create_0_gml_1_0");
+choice_text[1] = stringsetsubloc("Keep Playing Chapter ~1", chapter, "obj_chapter_continue_slash_Create_0_gml_2_0");
+%%%
 
 
 
@@ -1433,4 +1440,114 @@ with (obj_writer)
 }
 +++
 
+%%%
+
+
+=== gml_Object_obj_purple_enemy_Step_0
+---
+                var susiesim3 = stringsetloc("* Susie calls Seth budget Ralsei!", "obj_purple_enemy_slash_Step_0_gml_1631_0");
+                msgset(0, choose(susiesim1, susiesim2, susiesim3));
++++
+                var susiesim3 = stringsetloc("* Susie calls Seth budget Ralsei!", "obj_purple_enemy_slash_Step_0_gml_1631_0");
+                sustext = choose(susiesim1, susiesim2, susiesim3);
+                msgset(0, sustext);
+%%%
+
+---
+                var ralseisim3 = stringsetloc("* Ralsei admires Seth's scent! (?)", "obj_purple_enemy_slash_Step_0_gml_1661_0");
+                msgset(0, choose(ralseisim1, ralseisim2, ralseisim3));
++++
+                var ralseisim3 = stringsetloc("* Ralsei admires Seth's scent! (?)", "obj_purple_enemy_slash_Step_0_gml_1661_0");
+
+                if (!is_undefined(sustext) && string_length(sustext) > 40)
+                {
+                    msgset(0, "&" + choose(ralseisim1, ralseisim2, ralseisim3));
+                }
+                else
+                {
+                    msgset(0, choose(ralseisim1, ralseisim2, ralseisim3));
+                }
+%%%
+
+=== gml_Object_obj_dw_castle_church_climb_Other_15
+---
+    timestring += ("." + string(dec))
++++
+    timestring += stringsetloc(".", "obj_dw_castle_church_climb_slash_Other_15_gml_21_0") + string(dec)
+%%%
+
+=== gml_Object_obj_date_controller_Draw_0
+---
+    draw_text_ext_transformed(_body_x - _w, _body_y, _first_text, _sep, __w, portraittextscale, 1, 0);
++++
+    if (string_pos("\n", first_text) != 0 || string_pos("\n", second_text) != 0 )
+        __w = 10000
+    draw_text_ext_transformed(_body_x - _w, _body_y, _first_text, _sep, __w, portraittextscale, 1, 0);
+%%%
+
+---
+var __l = 0;
++++
+var __l = 0;
+var ltr_copy = 1;
+%%%
+
+---
+            if (ltr == 24 && date3con == 0 && global.lang != "ja")
+            {
+                _body_x = camx + 200;
+                _body_y += 24;
+            }
+
+            if (ltr == 12 && date3con == 1 && global.lang != "ja")
+            {
+                _body_x = camx + 220;
+                _body_y += 24;
+            }
+
+            if (ltr == 12 && date3con == 2 && global.lang != "ja")
+            {
+                _body_x = camx + 230;
+                _body_y += 24;
+            }
++++
+            var until_next_space = 0;
+
+            for (var ltr_inner = ltr; ltr_inner <= string_length(write_string); ltr_inner += 1)
+            {
+                draw_chr_inner = string_char_at(write_string, ltr_inner);
+
+                if (draw_chr_inner == " " && draw_chr != " " && until_next_space > 1)
+                {
+                    break;
+                }
+                until_next_space++;
+
+                if (ltr_inner >= string_length(write_string))
+                {
+                    until_next_space = 0;
+                }
+            }
+
+            if (ltr == 24 && date3con == 0 && global.lang != "ja")
+            {
+                _body_x = camx + 200;
+                _body_y += 24;
+            }
+
+            if ((ltr_copy + until_next_space) >= 17 && date3con == 1 && global.lang != "ja")
+            {
+                _body_x = camx + 220;
+                _body_y += 24;
+                ltr_copy = 0;
+            }
+
+            if ((ltr_copy + until_next_space) >= 17 && date3con == 2 && global.lang != "ja")
+            {
+                _body_x = camx + 230;
+                _body_y += 24;
+                ltr_copy = 0;
+            }
+
+            ltr_copy++;
 %%%

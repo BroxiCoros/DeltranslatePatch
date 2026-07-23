@@ -10,9 +10,6 @@ using System.Text.RegularExpressions;
 
 #region Вспомогательные функции
 
-Version utmLibVer = System.Reflection.Assembly.GetAssembly(typeof(UndertaleData)).GetName().Version;
-bool isUTMLibDot8 = utmLibVer < new Version(0, 9, 0, 0);
-
 string gameFolder = Path.GetDirectoryName(FilePath) + Path.DirectorySeparatorChar;
 string scriptFolder = Path.GetDirectoryName(ScriptPath) + Path.DirectorySeparatorChar;
 
@@ -21,6 +18,8 @@ var decompilerSettings = Data.ToolInfo.DecompilerSettings;
 
 #region Обратная совместимость с UndertaleModLib 0.8
 
+Version utmLibVer = System.Reflection.Assembly.GetAssembly(typeof(UndertaleData)).GetName().Version;
+bool isUTMLibDot8 = utmLibVer < new Version(0, 9, 0, 0);
 object globalsInst = ((Action)IncrementProgress).Target;
 Type globalsType = globalsInst.GetType();
 

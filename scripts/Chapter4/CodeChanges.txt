@@ -1955,6 +1955,14 @@ prevemptyname = stringsetloc("[EMPTY]", "DEVICE_MENU_slash_Step_0_gml_105_0");
 
 
 
+=== gml_Object_obj_chapter_continue_Create_0
+---
+choice_text[0] = (global.lang == "en") ? stringsetsub("Continue to Chapter ~1", next_chapter) : stringsetsub("Chapter ~1へ進む", next_chapter);
+choice_text[1] = (global.lang == "en") ? stringsetsub("Keep Playing Chapter ~1", chapter) : stringsetsub("このままChapter ~1をプレイ", chapter);
++++
+choice_text[0] = stringsetsubloc("Continue to Chapter ~1", next_chapter, "obj_chapter_continue_slash_Create_0_gml_1_0");
+choice_text[1] = stringsetsubloc("Keep Playing Chapter ~1", chapter, "obj_chapter_continue_slash_Create_0_gml_2_0");
+%%%
 
 
 

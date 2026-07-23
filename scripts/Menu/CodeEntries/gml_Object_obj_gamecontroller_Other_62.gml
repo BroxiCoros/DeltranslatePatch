@@ -44,6 +44,22 @@ if (ds_map_find_value(async_load, "id") == lang_changes_call)
             {
                 var name = variable_struct_get(variable_struct_get(lang_change, str), "name");
                 var desc = variable_struct_get(variable_struct_get(lang_change, str), "description");
+                var valid = variable_struct_get(variable_struct_get(lang_change, str), "valid");
+                if (valid != undefined) {
+                    var flag = false
+                    if (!is_array(valid)) {
+                        valid = [valid]
+                    }
+                    for (var j = 0; j < array_length(valid); j++) {
+                        if (valid[j] == dtv) {
+                            flag = true
+                            break
+                        }
+                    }
+                    if (!flag) {
+                        continue;
+                    }
+                }
                 lang_change_desc += string("{0}{1}:\n{2}\n", str, is_undefined(name) ? "" : string(" ({0})", name), is_undefined(desc) ? "" : desc);
                 var files_list = variable_struct_get(variable_struct_get(lang_change, str), "files");
                 var datas_list = variable_struct_get(variable_struct_get(lang_change, str), "datas");

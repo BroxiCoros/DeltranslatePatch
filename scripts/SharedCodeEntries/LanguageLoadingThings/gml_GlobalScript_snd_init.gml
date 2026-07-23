@@ -5,7 +5,7 @@ function snd_init(argument0) //gml_Script_snd_init
     if (global.launcher)
         dir = working_directory + "../mus/";
     if (os_type == os_android)
-        dir = global.savepath + "mus/";
+        dir = "mus/";
 
     initsongvar = dir + argument0
 
