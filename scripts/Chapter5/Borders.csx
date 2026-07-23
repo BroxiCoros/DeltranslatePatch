@@ -284,7 +284,7 @@ importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_darkcontroller_Draw_0",
 
 importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_darkcontroller_Draw_0", @"draw_text(_selectXPos, yy + 220 + 16, st[global.flag[25]]);", @"draw_text(_selectXPos, yy + 200 + 16, st[global.flag[25]]);");
 
-importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_darkcontroller_Draw_0", @"if (global.is_console)
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_darkcontroller_Draw_0", @"if (global.is_console || os_type == os_android)
         {
             var drawautorun = true;", @"if (true)
         {
