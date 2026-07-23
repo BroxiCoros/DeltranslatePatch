@@ -105,16 +105,20 @@ if ((option == options_count && button1_p()) || keyboard_check_pressed(vk_shift)
     DEVICE_MENU.COL_B = COL_B
     DEVICE_MENU.COL_PLUS = COL_PLUS
     
-    DEVICE_MENU.BGSINER = BGSINER
-    DEVICE_MENU.BGMAGNITUDE = BGMAGNITUDE
+    // Simetrico al Create: con la UI verde (sin partidas) DEVICE_MENU no tiene
+    // estas variables y no las usa, asi que no se las devolvemos.
+    if (SUBTYPE == 1) {
+        DEVICE_MENU.BGSINER = BGSINER
+        DEVICE_MENU.BGMAGNITUDE = BGMAGNITUDE
+        DEVICE_MENU.ANIM_SINER = ANIM_SINER
+        DEVICE_MENU.ANIM_SINER_B = ANIM_SINER_B
+        DEVICE_MENU.TRUE_ANIM_SINER = TRUE_ANIM_SINER
+    }
     DEVICE_MENU.COL_A = COL_A
     DEVICE_MENU.COL_B = COL_B
     DEVICE_MENU.COL_PLUS = COL_PLUS
     BGMADE = 1
     DEVICE_MENU.BG_ALPHA = BG_ALPHA
-    DEVICE_MENU.ANIM_SINER = ANIM_SINER
-    DEVICE_MENU.ANIM_SINER_B = ANIM_SINER_B
-    DEVICE_MENU.TRUE_ANIM_SINER = TRUE_ANIM_SINER
     if (SUBTYPE == 0) {
         DEVICE_MENU.COL_A = COL_A
         DEVICE_MENU.COL_B = COL_B

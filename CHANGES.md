@@ -57,6 +57,10 @@ del upstream, entra correctamente.
 - **Logo de intro en macOS (Cap. 5):** al saltar la intro, macOS usa una ventana
   de transición más larga; deja de dibujar el logo (`dontdraw`) en ese tramo para
   que no se quede colgado en pantalla.
+- **Crash de Ajustes → idioma sin partidas:** `obj_lang_settings` solo lee y
+  escribe las variables de fondo de `DEVICE_MENU` cuando existen (UI oscura,
+  `SUBTYPE == 1`); sin partidas guardadas sale la UI verde de Gaster, donde no
+  existían y entrar en Config reventaba.
 
 ### Notas
 

@@ -61,16 +61,29 @@ OBM = DEVICE_MENU.OBM
 COL_A = DEVICE_MENU.COL_A
 COL_B = DEVICE_MENU.COL_B
 COL_PLUS = DEVICE_MENU.COL_PLUS
-BGSINER = DEVICE_MENU.BGSINER
-BGMAGNITUDE = DEVICE_MENU.BGMAGNITUDE
+// DEVICE_MENU solo define estas cinco dentro de su `if (TYPE == 1)`, es decir
+// cuando hay partidas guardadas y sale la UI oscura de DELTARUNE. Sin partidas
+// se dibuja la UI verde de Gaster y no existen, asi que leerlas crasheaba al
+// entrar en Config. Los valores del else son los mismos con los que DEVICE_MENU
+// las inicializa. `SUBTYPE` se calcula arriba con la misma regla que su `TYPE`.
+if (SUBTYPE == 1) {
+    BGSINER = DEVICE_MENU.BGSINER
+    BGMAGNITUDE = DEVICE_MENU.BGMAGNITUDE
+    ANIM_SINER = DEVICE_MENU.ANIM_SINER
+    ANIM_SINER_B = DEVICE_MENU.ANIM_SINER_B
+    TRUE_ANIM_SINER = DEVICE_MENU.TRUE_ANIM_SINER
+} else {
+    BGSINER = 0
+    BGMAGNITUDE = 6
+    ANIM_SINER = 0
+    ANIM_SINER_B = 0
+    TRUE_ANIM_SINER = 0
+}
 COL_A = DEVICE_MENU.COL_A
 COL_B = DEVICE_MENU.COL_B
 COL_PLUS = DEVICE_MENU.COL_PLUS
 BGMADE = 1
 BG_ALPHA = DEVICE_MENU.BG_ALPHA
-ANIM_SINER = DEVICE_MENU.ANIM_SINER
-ANIM_SINER_B = DEVICE_MENU.ANIM_SINER_B
-TRUE_ANIM_SINER = DEVICE_MENU.TRUE_ANIM_SINER
 if (SUBTYPE == 0) {
     COL_A = DEVICE_MENU.COL_A
     COL_B = DEVICE_MENU.COL_B
