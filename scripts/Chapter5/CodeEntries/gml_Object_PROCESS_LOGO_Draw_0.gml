@@ -9,25 +9,32 @@ if (PHASE == 0)
         PHASE = 1;
     }
     
-    for (i = 0; i < h; i += 1)
+    if (!dontdraw)
     {
-        ia = (siner / 25) - (abs(i - mid) * 0.05);
-        xoff = 40 * sin((siner / 5) + (i / 3)) * factor;
-        xoff2 = 40 * sin((siner / 5) + (i / 3) + 0.6) * factor;
-        xoff3 = 40 * sin((siner / 5) + (i / 3) + 1.2) * factor;
-        draw_sprite_part_ext(sprite_index, image_index, 0, i, w, 2, x + xoff, y + i, 1, 1, c_white, (1 - factor) / 2);
-        draw_sprite_part_ext(sprite_index, image_index, 0, i, w, 2, x + xoff2, y + i, 1, 1, c_white, (1 - factor) / 2);
-        draw_sprite_part_ext(sprite_index, image_index, 0, i, w, 2, x + xoff3, y + i, 1, 1, c_white, (1 - factor) / 2);
-        draw_sprite_part_ext(chsprite, chnum, 0, i, w, 2, 95 + xoff, (y + i + chyoffset) - 9, 1, 1, c_white, (1 - factor) / 2);
-        draw_sprite_part_ext(chsprite, chnum, 0, i, w, 2, 95 + xoff2, (y + i + chyoffset) - 9, 1, 1, c_white, (1 - factor) / 2);
-        draw_sprite_part_ext(chsprite, chnum, 0, i, w, 2, 95 + xoff3, (y + i + chyoffset) - 9, 1, 1, c_white, (1 - factor) / 2);
+        for (i = 0; i < h; i += 1)
+        {
+            ia = (siner / 25) - (abs(i - mid) * 0.05);
+            xoff = 40 * sin((siner / 5) + (i / 3)) * factor;
+            xoff2 = 40 * sin((siner / 5) + (i / 3) + 0.6) * factor;
+            xoff3 = 40 * sin((siner / 5) + (i / 3) + 1.2) * factor;
+            draw_sprite_part_ext(sprite_index, image_index, 0, i, w, 2, x + xoff, y + i, 1, 1, c_white, (1 - factor) / 2);
+            draw_sprite_part_ext(sprite_index, image_index, 0, i, w, 2, x + xoff2, y + i, 1, 1, c_white, (1 - factor) / 2);
+            draw_sprite_part_ext(sprite_index, image_index, 0, i, w, 2, x + xoff3, y + i, 1, 1, c_white, (1 - factor) / 2);
+            draw_sprite_part_ext(chsprite, chnum, 0, i, w, 2, 95 + xoff, (y + i + chyoffset) - 9, 1, 1, c_white, (1 - factor) / 2);
+            draw_sprite_part_ext(chsprite, chnum, 0, i, w, 2, 95 + xoff2, (y + i + chyoffset) - 9, 1, 1, c_white, (1 - factor) / 2);
+            draw_sprite_part_ext(chsprite, chnum, 0, i, w, 2, 95 + xoff3, (y + i + chyoffset) - 9, 1, 1, c_white, (1 - factor) / 2);
+        }
     }
 }
 
 if (PHASE == 1)
 {
-    draw_self();
-    draw_sprite(chsprite, chnum, 160, y + chyoffset);
+    if (!dontdraw)
+    {
+        draw_self();
+        draw_sprite(chsprite, chnum, 160, y + chyoffset);
+    }
+
     PHASETIMER += 1;
     
     if (PHASETIMER >= 30)
@@ -56,29 +63,37 @@ if (PHASE == 2)
     }
     
     var ILC = scr_84_get_sprite("IMAGE_LOGO_CENTER");
-    draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, 0, c_white, AB);
-    draw_sprite_ext(chsprite, chnum, 160, y + chyoffset, image_xscale, image_yscale, 0, c_white, AB);
+
+    if (!dontdraw)
+    {
+        draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, 0, c_white, AB);
+        draw_sprite_ext(chsprite, chnum, 160, y + chyoffset, image_xscale, image_yscale, 0, c_white, AB);
+    }
+
     mina = siner / 30;
     
     if (mina >= 0.14)
         mina = 0.14;
     
     factor2 += 0.05;
-    
-    for (i = 0; i < 10; i += 1)
+
+    if (!dontdraw)
     {
-        draw_sprite_ext(ILC, image_index, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), (y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(ILC, image_index, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), (y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(ILC, image_index, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(ILC, image_index, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(chsprite, chnum, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), ((chyoffset - 17) + y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(chsprite, chnum, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), ((chyoffset - 17) + y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(chsprite, chnum, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), (chyoffset - 17) + y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
-        draw_sprite_ext(chsprite, chnum, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), (chyoffset - 17) + y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+        for (i = 0; i < 10; i += 1)
+        {
+            draw_sprite_ext(ILC, image_index, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), (y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(ILC, image_index, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), (y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(ILC, image_index, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(ILC, image_index, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(chsprite, chnum, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), ((chyoffset - 17) + y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(chsprite, chnum, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), ((chyoffset - 17) + y + (h / 2)) - (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(chsprite, chnum, (x + (w / 2)) - (sin((siner / 8) + (i / 2)) * (i * factor2)), (chyoffset - 17) + y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+            draw_sprite_ext(chsprite, chnum, x + (w / 2) + (sin((siner / 8) + (i / 2)) * (i * factor2)), (chyoffset - 17) + y + (h / 2) + (cos((siner / 8) + (i / 2)) * (i * factor2)), image_xscale, image_yscale, 0, c_white, mina * AA);
+        }
+
+        draw_sprite_ext(scr_84_get_sprite("IMAGE_LOGO_CENTER_HEART"), image_index, x, y, image_xscale, image_yscale, 0, c_white, AA);
     }
-    
-    draw_sprite_ext(scr_84_get_sprite("IMAGE_LOGO_CENTER_HEART"), image_index, x, y, image_xscale, image_yscale, 0, c_white, AA);
-    
+
     if (AA <= -0.46)
         room_speed = 30;
     
@@ -110,8 +125,16 @@ if (ingame == 0)
         
         if (skiptimer >= 28)
             room_speed = 30;
-        
-        if (skiptimer >= 30)
+
+        if (skiptimer >= 29 && os_type == os_macosx)
+            dontdraw = true;
+
+        var targ = 30;
+
+        if (os_type == os_macosx)
+            targ = 40;
+
+        if (skiptimer >= targ)
             room_goto(PLACE_MENU);
     }
 }

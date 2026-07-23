@@ -28,6 +28,7 @@ if (global.plot == 0)
 
 skipped = 0;
 skiptimer = 0;
+dontdraw = false;
 room_speed = 15;
 
 enum e__VW
