@@ -22,4 +22,13 @@ function scr_load_lang_sprites_only() //gml_Script_scr_load_lang_sprites_only
     var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
     for (var i = 0; i < array_length(additional_funny_words); i++)
         add_sprite(additional_funny_words[i]);
+
+    // Con los sprites del idioma nuevo ya cargados, reconstruir las fuentes-
+    // sprite que dependan de ellos (p.ej. las de numeros del Cap.5). Cada
+    // capitulo que lo necesite registra su `lang_fonts_loader` en
+    // `scr_init_localization`; los que no, no lo definen y esto no hace nada.
+    // Como esta funcion solo se llama en el hot-switch (en el boot los sprites
+    // los carga otro loop), no hay doble creacion de fuentes.
+    if (variable_global_exists("lang_fonts_loader"))
+        global.lang_fonts_loader();
 }
