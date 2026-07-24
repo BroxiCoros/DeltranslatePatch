@@ -105,10 +105,23 @@ scan_languages();
 // ---------------------------------------------------------------
 // Prioridad:
 //   1) El que el jugador eligió la última vez (persistido en INI).
-//   2) El primero encontrado al escanear (orden del file system).
-//   3) "en" como fallback si no hay pack alguno.
+//   2) `es_mx` si está instalado (este fork es de Letra Delta y solo lo
+//      usamos nosotros, así que el idioma por defecto va fijo aquí).
+//   3) El primero encontrado al escanear (orden del file system).
+//   4) "en" como fallback si no hay pack alguno.
+//
+// Sin el paso 2, una instalación nueva arrancaba en el idioma que el sistema
+// de archivos devolviera primero, que no es alfabético ni coincide entre
+// máquinas: en la práctica salía al azar (casi siempre inglés).
+//
+// Esto NO pisa la elección del jugador: en cuanto cambia de idioma una vez se
+// guarda en `LANG_DT` y el paso 1 gana siempre.
+var default_lang = "es_mx"
+
 if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang)) {
     global.lang = saved_lang
+} else if (variable_struct_exists(global.all_lang_settings, default_lang)) {
+    global.lang = default_lang
 } else if (array_length(global.languages_list) > 0) {
     global.lang = global.languages_list[0]
 } else {
