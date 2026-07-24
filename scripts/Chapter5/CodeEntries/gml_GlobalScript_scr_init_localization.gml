@@ -78,6 +78,11 @@ function scr_init_localization()
         if (!(variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending))
             scr_load_lang_sounds_only();
 
+        // Las fuentes-sprite de numeros (damage/hp) se rehacen tras la recarga
+        // de sprites en caliente: dependen de sprites que el pack localiza.
+        // scr_load_lang_sprites_only invoca este loader al terminar.
+        global.lang_fonts_loader = scr_reload_damage_fonts;
+
         global.lang_map = ds_map_create();
         scr_lang_load();
         scr_ascii_input_names();
