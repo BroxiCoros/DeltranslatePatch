@@ -170,12 +170,21 @@ scan_languages()
 // ---------------------------------------------------------------
 // Elegir el idioma inicial
 // ---------------------------------------------------------------
-// Prioridad:
+// Prioridad (mantener en sincronía con el gamecontroller compartido):
 //   1) El que estaba guardado en config.ini, si sigue siendo válido.
-//   2) El primero que encontramos al escanear (el orden es el del FS).
-//   3) "en" como último recurso (sin pack).
+//   2) `es_mx` si está instalado (idioma por defecto fijo del fork).
+//   3) El primero que encontramos al escanear (el orden es el del FS).
+//   4) "en" como último recurso (sin pack).
+//
+// Sin el paso 2 el idioma de arranque de una instalación nueva dependía del
+// orden del file system, o sea que salía al azar. No pisa la elección del
+// jugador: `LANG_DT` (paso 1) gana siempre.
+var default_lang = "es_mx"
+
 if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang)) {
     global.lang = saved_lang
+} else if (variable_struct_exists(global.all_lang_settings, default_lang)) {
+    global.lang = default_lang
 } else if (array_length(global.languages_list) > 0) {
     global.lang = global.languages_list[0]
 } else {
