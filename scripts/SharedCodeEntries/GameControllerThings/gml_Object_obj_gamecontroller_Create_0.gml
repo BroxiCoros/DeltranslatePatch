@@ -146,8 +146,25 @@ ossafe_ini_close();
 // ----- Modo traductor (dev) -----
 // Se conserva el soporte completo del upstream: mapas de strings usadas,
 // diffs y registro de traducciones nuevas para el flujo de traducción.
-if (get_lang_setting("translator_mode", 0))
+//
+// Va en una función y no inline (a diferencia del upstream) porque el modo
+// se puede encender DESPUÉS del arranque: la U de obj_gamecontroller_Step_0
+// relee `translator_mode` de `global.lang_settings`, que
+// `scr_switch_game_language` ya pudo haber cambiado por el de otro pack. Si
+// el idioma de arranque no traía el modo y el nuevo sí, el flag se encendía
+// sin que estos mapas existieran y el primer `ds_map_set` de
+// `scr_get_lang_string` reventaba. Ahora quien enciende el modo reserva
+// también su estado.
+//
+// Es método de la instancia (no un gml_GlobalScript_) a propósito:
+// `new_translations_filename` es variable de instancia y `add_new_translation`
+// la lee de aquí. Un script global llamado desde `scr_switch_game_language`
+// (donde `self` es obj_lang_settings) la crearía en la instancia equivocada.
+init_translator_data = function()
 {
+    if (variable_global_exists("lang_to_orig"))
+        exit;
+
     global.used_strings = ds_map_create();
     global.changed_strings = ds_map_create();
     global.lang_to_orig = ds_map_create();
@@ -162,7 +179,10 @@ if (get_lang_setting("translator_mode", 0))
     else {
         global.new_translations = ds_map_create();
     }
-}
+};
+
+if (get_lang_setting("translator_mode", 0))
+    init_translator_data();
 
 add_new_translation = function(arg0, arg1)
 {
