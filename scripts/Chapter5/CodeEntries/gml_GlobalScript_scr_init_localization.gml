@@ -115,6 +115,18 @@ function scr_load_lang_sounds_only()
         var letter = letters[i];
         var voice = variable_struct_get(additional_voicelines, letter);
         add_sound(voice);
+
+        // Registrar la voz extra en `songs_list` para que el interruptor de
+        // voces dobladas (`translated_songs`) tambien la cubra: sin esto,
+        // `scr_84_get_sound` no devuelve el asset vanilla al apagarlas.
+        //
+        // El guard es propio del fork: aqui esta funcion se re-ejecuta en cada
+        // cambio de idioma en caliente (upstream solo corre este bucle una vez,
+        // dentro de `scr_init_localization`), y `global.songs_list` la crea
+        // `init_global_vars` una sola vez por arranque. Sin el `array_includes`
+        // la lista creceria sin freno acumulando duplicados.
+        if (!array_includes(global.songs_list, voice))
+            global.songs_list[array_length(global.songs_list)] = voice;
     }
 
     scr_floweryvoiceclip_init();
