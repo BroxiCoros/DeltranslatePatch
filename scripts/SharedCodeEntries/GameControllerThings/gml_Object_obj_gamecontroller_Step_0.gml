@@ -107,6 +107,14 @@ if global.translator_mode
 }
 else if keyboard_check_released(ord("U"))
 {
+    // `get_lang_setting` mira el pack ACTIVO, que tras un cambio de idioma en
+    // caliente puede no ser el del arranque. Por eso reservamos aquí el estado
+    // del modo traductor (idempotente) antes de encender el flag: si el idioma
+    // de arranque no traía `translator_mode` y el actual sí, los mapas no
+    // existirían y `scr_get_lang_string` reventaría en el primer string.
     if get_lang_setting("translator_mode", 0)
+    {
+        init_translator_data()
         global.translator_mode = true
+    }
 }

@@ -27,8 +27,9 @@
 //      aún estén sonando NO se destruyen: se conservan para el siguiente
 //      cleanup (guard `audio_is_playing`), evitando cortar una voz a mitad.
 //
-// No toca `global.orig_en` ni el modo traductor: son variables de
-// gameplay independientes del idioma.
+// Sí toca el modo traductor: es una propiedad del pack (`translator_mode` en
+// su settings.json), no del jugador, así que viaja con el idioma. Ver el
+// bloque del final.
 
 function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_language
 {
@@ -106,6 +107,19 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     // y los cargan `scr_load_lang_sprites_only` / el `lang_sounds_loader`
     // del capitulo despues.
     scr_init_localization()
+
+    // ----- Modo traductor: caso simétrico al de la U -----
+    // Si el pack nuevo no lo declara, se apaga. `orig_en` se resetea con él
+    // porque `scr_84_get_sound` y `scr_84_get_sprite` lo consultan SIN
+    // gatearlo por `translator_mode`: dejarlo encendido daría texto traducido
+    // pero sprites y sonidos en inglés. El sentido contrario (encenderlo) no
+    // se hace aquí a propósito: el modo traductor lo activa el usuario con la
+    // U, no un cambio de idioma.
+    if (!get_lang_setting("translator_mode", 0))
+    {
+        global.translator_mode = 0
+        global.orig_en = false
+    }
 
     // Persistir la elección para próximas sesiones y para que el menú
     // principal arranque en el mismo idioma.
