@@ -543,6 +543,56 @@ importGroup.QueueFindReplace("gml_Object_obj_onion_event_Create_0", "if (global.
 
 importGroup.QueueFindReplace("gml_Object_obj_room_ranking_b_Step_0", "if (gacha_con == 121 && global.is_console)", "if (gacha_con == 121)");
 
+// ---------------------------------------------------------------------
+// Recuperar la ventana 4:3 (640x480) cuando el borde esta en "None"
+// ---------------------------------------------------------------------
+// Los window_set_size de arriba fijan la ventana a 16:9 (640x360) siempre.
+// Este bloque la devuelve a 640x480 cuando el jugador tiene el borde
+// desactivado, y a 16:9 cuando lo vuelve a activar.
+//
+//   - Va como QueueAppend: anadir sentencias al FINAL de una entrada es
+//     seguro, no depende de las llaves ni del formato del decompilado
+//     (a diferencia de un find&replace multi-sentencia).
+//   - Solo actua en las TRANSICIONES (cambio de opcion, salida de pantalla
+//     completa, primer frame). Si se forzara cada frame, se pelearia con el
+//     jugador cuando redimensiona la ventana a mano.
+//   - El multiplicador se recalcula para 4:3: window_size_multiplier se
+//     computa contra 360*_ww, asi que en pantallas como 2560x1440 da 3 y
+//     480*3 = 1440 no cabria. ceil(display_get_height() / 480) - 1
+//     reproduce el ">" estricto del bucle vanilla (1440 -> 2, 1080 -> 2,
+//     2160 -> 4).
+//   - Las variables de estado se crean con variable_instance_exists en vez
+//     de tocar el Create_0, para no anadir otro parche fragil.
+// ---------------------------------------------------------------------
+importGroup.QueueAppend("gml_Object_obj_time_Step_0", @"
+if (!global.is_console && variable_global_exists(""screen_border_id""))
+{
+    var _bo = (global.screen_border_id == ""None"" || global.screen_border_id == ""なし"");
+    var _fs = window_get_fullscreen();
+
+    if (!variable_instance_exists(id, ""border_size_ready""))
+    {
+        border_size_ready = false;
+        border_size_bo = _bo;
+        border_size_fs = _fs;
+    }
+
+    if (!_fs && (!border_size_ready || _bo != border_size_bo || _fs != border_size_fs))
+    {
+        var _m = window_size_multiplier;
+
+        if (_bo)
+            _m = max(1, min(_m, ceil(display_get_height() / 480) - 1));
+
+        window_set_size(640 * _m, (_bo ? 480 : 360) * _m);
+        alarm[2] = 1;
+        border_size_ready = true;
+    }
+
+    border_size_bo = _bo;
+    border_size_fs = _fs;
+}");
+
 importGroup.Import();
 
 ScriptMessage("All done! :3  (NXRUNE_CH3 + deltranslate compat)");
