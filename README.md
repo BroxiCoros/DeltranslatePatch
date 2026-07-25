@@ -7,7 +7,7 @@
 > - **Modo especial y voces dobladas por idioma:** ambos interruptores Sí/No se recuerdan por *pack* (`special_mode_<código>` y `translated_songs_<código>`), no en una clave global.
 > - **`font_settings`:** tamaño y rango de glifos por fuente desde `settings.json` / `chapter_settings.json`.
 > - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
-> - **Bordes** opcionales (basados en [NXRUNE](https://github.com/IruzzArcana/NXRUNE) de IRUZZ): ejecutar `ChapterN/Borders.csx` tras el `Fix.csx`.
+> - **Bordes** opcionales (basados en [NXRUNE](https://github.com/IruzzArcana/NXRUNE) de IRUZZ): ejecutar `ChapterN/Borders.csx` tras el `Fix.csx`. Con la opción de borde en «Ninguno» el juego recupera su tamaño original (NXRUNE lo dejaba en 16:9 igualmente, con franjas negras), el ajuste se recuerda también fuera de la partida para que lo respete la pantalla de selección, y no se muestra la animación de precarga de texturas al entrar a los capítulos 2-5.
 >
 > Cambios por versión: [`CHANGES.md`](CHANGES.md).
 >
