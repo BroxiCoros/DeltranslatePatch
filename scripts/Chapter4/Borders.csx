@@ -225,7 +225,31 @@ importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"    if (global.is
     }", @"application_surface_enable(true);
 application_surface_draw_enable(false);");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "scr_enable_screen_border(global.is_console);", "scr_enable_screen_border(true);");
+// ---------------------------------------------------------------------
+// Que el menu de seleccion de partida respete la opcion de borde
+// ---------------------------------------------------------------------
+// La opcion se guarda POR PARTIDA: obj_darkcontroller escribe BORDER/TYPE
+// en keyconfig_<filechoice>.ini y DEVICE_MENU la lee al cargar esa partida.
+// En la pantalla de seleccion todavia no hay filechoice, asi que
+// global.screen_border_id valia siempre el "Dynamic" que deja
+// obj_initializer2_Create_0 y el menu salia con marco aunque el jugador lo
+// tuviera desactivado.
+//
+// Aqui se replica el ajuste en true_config.ini, el ini GLOBAL (no por
+// partida) que el juego ya usa para FULLSCREEN: se lee en el ini_open que
+// ya existe en obj_time_Create_0 (ancla unica en los 5 capitulos, y en
+// bloque con llaves), y se escribe desde el bloque del Step de mas abajo
+// cada vez que cambia. Cada partida conserva su ajuste; el menu usa el
+// ultimo que se uso, igual que hace el juego con la pantalla completa.
+//
+// obj_initializer2_Create_0 fija global.screen_border_id bastante antes de
+// crear obj_time (lineas 54-59 vs 100-111 segun el capitulo), asi que aqui
+// la global ya existe.
+// ---------------------------------------------------------------------
+importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"ini_open(""true_config.ini"");", @"ini_open(""true_config.ini"");
+global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", global.screen_border_id);");
+
+importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "scr_enable_screen_border(global.is_console);", @"scr_enable_screen_border(global.screen_border_id != ""None"" && global.screen_border_id != ""なし"");");
 
 importGroup.QueueFindReplace("gml_Object_obj_time_Alarm_1", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
 
@@ -532,6 +556,7 @@ if (!global.is_console && variable_global_exists(""screen_border_id""))
         border_size_ready = false;
         border_size_bo = _bo;
         border_size_fs = _fs;
+        border_cfg_id = global.screen_border_id;
     }
 
     if (!_fs && (!border_size_ready || _bo != border_size_bo || _fs != border_size_fs))
@@ -544,6 +569,14 @@ if (!global.is_console && variable_global_exists(""screen_border_id""))
         window_set_size(640 * _m, (_bo ? 480 : 360) * _m);
         alarm[2] = 1;
         border_size_ready = true;
+    }
+
+    if (global.screen_border_id != border_cfg_id)
+    {
+        border_cfg_id = global.screen_border_id;
+        ini_open(""true_config.ini"");
+        ini_write_string(""BORDER"", ""TYPE"", border_cfg_id);
+        ini_close();
     }
 
     border_size_bo = _bo;
