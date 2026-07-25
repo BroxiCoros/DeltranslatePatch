@@ -166,25 +166,27 @@ UndertaleModLib.Compiler.CodeImportGroup importGroup = new(Data, null, decompSet
 
 // obj_initializer2
 
-importGroup.QueueFindReplace("gml_Object_obj_initializer2_Create_0", @"if (global.is_console)
-    loadtex = instance_create(0, 0, obj_prefetchtex);", @"if (true)
-    loadtex = instance_create(0, 0, obj_prefetchtex);");
+// ---------------------------------------------------------------------
+// PRECARGA DE TEXTURAS (obj_prefetchtex): QUITADA A PROPOSITO
+// ---------------------------------------------------------------------
+// NXRUNE encendia en PC el precargador de texturas de consola
+//   obj_initializer2_Create_0: `if (global.is_console) loadtex = ...` -> `if (true)`
+// y sacaba el gate de `textures_loaded` fuera del bloque de consola en
+// obj_initializer2_Step_0, con lo que el juego ESPERABA a la precarga.
+// Eso es la animacion del perro (spr_dog_turn_full) con la barra de
+// progreso al entrar al capitulo: obj_prefetchtex precarga UNA pagina de
+// texturas por frame, asi que la espera dura tantos frames como paginas
+// haya. El Cap.1 nunca llevo esos parches, por eso ahi no aparecia.
+//
+// Los dos parches estan quitados: en PC se vuelve al comportamiento
+// vanilla (carga perezosa, sin animacion ni espera). Contrapartida: la
+// pagina de textura de cada imagen de borde se sube la primera vez que se
+// dibuja, lo que puede dar un micro-tiron puntual.
+//
+// OJO: los dos parches van JUNTOS. Si se restaura solo el del Step_0, en
+// PC `loadtex` vale -4 y `loadtex.loaded` revienta.
+// ---------------------------------------------------------------------
 
-importGroup.QueueFindReplace("gml_Object_obj_initializer2_Step_0", @"    if (!textures_loaded)
-        textures_loaded = loadtex.loaded;
-    
-    if (textures_loaded)
-        show_debug_message_concat(""TEXTURES LOADED"");
-    else
-        exit;
-}", @"}
-    if (!textures_loaded)
-        textures_loaded = loadtex.loaded;
-    
-    if (textures_loaded)
-        show_debug_message_concat(""TEXTURES LOADED"");
-    else
-        exit;");
 
 importGroup.QueueFindReplace("gml_Object_obj_initializer2_Step_0", @"        if (global.is_console)
             global.screen_border_alpha = 0;", "global.screen_border_alpha = 0;");
