@@ -75,6 +75,34 @@
 // volver a sincronizar los patrones.
 // =====================================================================
 
+// =====================================================================
+// AJUSTE PROPIO DEL FORK: layout condicional con el borde en "None"
+// =====================================================================
+// NXRUNE convierte el juego a 16:9 de forma INCONDICIONAL: el xx/yy del
+// Draw_77 mete SIEMPRE la application_surface en el recuadro interior del
+// marco de 1920x1080 (320 px de margen lateral, 60 px arriba y abajo), se
+// dibuje o no un borde. Con la opcion "None" eso dejaba franjas negras
+// arriba y abajo y el juego mas chico que sin el mod.
+//
+// Aqui el layout consulta global.screen_border_id:
+//   - "None" / "なし"  -> formula vanilla (centrar y maximizar con
+//     global.window_scale) + draw_surface_ext: el juego ocupa todo lo que
+//     puede en la ventana, igual que sin los scripts de bordes.
+//   - cualquier otra -> layout del marco + draw_surface_stretched.
+//
+// Se consulta screen_border_id (la opcion ELEGIDA por el jugador) y NO
+// screen_border_active porque el Cap.3 fuerza scr_enable_screen_border(1)
+// al crear obj_tenna_enemy: con screen_border_active el juego cambiaria de
+// tamano de golpe al entrar en ese combate.
+//
+// Mismo criterio en el mensaje de salida (obj_time_Draw_64): (4, 4) vanilla
+// con el borde desactivado, (40, 30) cuando hay marco. Se deja como UNA
+// sola sentencia con ternarios a proposito: el decompilador corre con
+// RemoveSingleLineBlockBraces, asi que ese draw_sprite_ext puede quedar
+// dentro de un `if (quit_timer >= 1)` SIN llaves y partirlo en varias
+// sentencias romperia la condicion.
+// =====================================================================
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -166,32 +194,45 @@ importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "scr_enable_screen_
 importGroup.QueueFindReplace("gml_Object_obj_time_Draw_77", "if (scr_is_switch_os() || os_type == os_ps4 || os_type == os_ps5)", "if (true)");
 
 importGroup.QueueFindReplace("gml_Object_obj_time_Draw_77", @"var xx = floor((ww - (sw * global.window_scale)) / 2);
-var yy = floor((wh - (sh * global.window_scale)) / 2);", @"var border_w = 1920;
-var border_h = 1080;
+var yy = floor((wh - (sh * global.window_scale)) / 2);", @"var _border_off = (global.screen_border_id == ""None"" || global.screen_border_id == ""なし"");
 var xx, yy;
 
-if ((ww / wh) > (border_w / border_h))
+if (_border_off)
 {
-    var scale = wh / border_h;
-    border_w *= scale;
-    border_h *= scale;
-    xx = (320 * (wh / 1080)) + (abs(ww - border_w) / 2);
-    yy = 60 * (wh / 1080);
+    xx = floor((ww - (sw * global.window_scale)) / 2);
+    yy = floor((wh - (sh * global.window_scale)) / 2);
 }
 else
 {
-    var scale = ww / border_w;
-    border_w *= scale;
-    border_h *= scale;
-    xx = 320 * (ww / 1920);
-    yy = (60 * (ww / 1920)) + (abs(wh - border_h) / 2);
+    var border_w = 1920;
+    var border_h = 1080;
+
+    if ((ww / wh) > (border_w / border_h))
+    {
+        var scale = wh / border_h;
+        border_w *= scale;
+        border_h *= scale;
+        xx = (320 * (wh / 1080)) + (abs(ww - border_w) / 2);
+        yy = 60 * (wh / 1080);
+    }
+    else
+    {
+        var scale = ww / border_w;
+        border_w *= scale;
+        border_h *= scale;
+        xx = 320 * (ww / 1920);
+        yy = (60 * (ww / 1920)) + (abs(wh - border_h) / 2);
+    }
 }");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Draw_77", "draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);", "draw_surface_stretched(application_surface, xx, yy, ww - (2 * xx), wh - (2 * yy));");
+importGroup.QueueFindReplace("gml_Object_obj_time_Draw_77", "draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);", @"if (_border_off)
+    draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);
+else
+    draw_surface_stretched(application_surface, xx, yy, ww - (2 * xx), wh - (2 * yy));");
 
 importGroup.QueueFindReplace("gml_Object_obj_time_Draw_75", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Draw_64", "draw_sprite_ext(scr_84_get_sprite(\"spr_quitmessage\"), quit_timer / 7, 4, 4, 2, 2, 0, c_white, quit_timer / 15);", " draw_sprite_ext(scr_84_get_sprite(\"spr_quitmessage\"), quit_timer / 7, 40, 30, 2, 2, 0, c_white, quit_timer / 15);");
+importGroup.QueueFindReplace("gml_Object_obj_time_Draw_64", "draw_sprite_ext(scr_84_get_sprite(\"spr_quitmessage\"), quit_timer / 7, 4, 4, 2, 2, 0, c_white, quit_timer / 15);", @"draw_sprite_ext(scr_84_get_sprite(""spr_quitmessage""), quit_timer / 7, ((global.screen_border_id == ""None"" || global.screen_border_id == ""なし"") ? 4 : 40), ((global.screen_border_id == ""None"" || global.screen_border_id == ""なし"") ? 4 : 30), 2, 2, 0, c_white, quit_timer / 15);");
 
 // scr_draw_background_ps4
 
