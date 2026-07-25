@@ -582,9 +582,16 @@ importGroup.QueueFindReplace("gml_Object_obj_onion_event_Create_0", "if (global.
 //   - Va como QueueAppend: anadir sentencias al FINAL de una entrada es
 //     seguro, no depende de las llaves ni del formato del decompilado
 //     (a diferencia de un find&replace multi-sentencia).
-//   - Solo actua en las TRANSICIONES (cambio de opcion, salida de pantalla
-//     completa, primer frame). Si se forzara cada frame, se pelearia con el
-//     jugador cuando redimensiona la ventana a mano.
+//   - Tras cada TRANSICION (cambio de opcion, salida de pantalla completa,
+//     arranque) comprueba y corrige el tamano durante 30 frames (~1 s) y
+//     luego para. No vale corregir una sola vez: el propio juego tiene un
+//     vigilante en obj_time_Draw_75 (Cap.1) / obj_time_Draw_77 (Cap.2-4)
+//     que detecta el cambio de pantalla completa y llama a window_set_size
+//     DESPUES de este bloque en el mismo frame, dejando la ventana en 16:9.
+//     Con la ventana de gracia se corrige al frame siguiente (se ve un
+//     frame en 16:9 al salir de pantalla completa). Tampoco se fuerza cada
+//     frame para siempre, para no pelearse con el jugador si redimensiona
+//     la ventana a mano.
 //   - El multiplicador se recalcula para 4:3: window_size_multiplier se
 //     computa contra 360*_ww, asi que en pantallas como 2560x1440 da 3 y
 //     480*3 = 1440 no cabria. ceil(display_get_height() / 480) - 1
@@ -599,24 +606,34 @@ if (!global.is_console && variable_global_exists(""screen_border_id""))
     var _bo = (global.screen_border_id == ""None"" || global.screen_border_id == ""なし"");
     var _fs = window_get_fullscreen();
 
-    if (!variable_instance_exists(id, ""border_size_ready""))
+    if (!variable_instance_exists(id, ""border_size_hold""))
     {
-        border_size_ready = false;
+        border_size_hold = 30;
         border_size_bo = _bo;
         border_size_fs = _fs;
         border_cfg_id = global.screen_border_id;
     }
 
-    if (!_fs && (!border_size_ready || _bo != border_size_bo || _fs != border_size_fs))
+    if (_bo != border_size_bo || _fs != border_size_fs)
+        border_size_hold = 30;
+
+    if (!_fs && border_size_hold > 0)
     {
+        border_size_hold -= 1;
+
         var _m = window_size_multiplier;
 
         if (_bo)
             _m = max(1, min(_m, ceil(display_get_height() / 480) - 1));
 
-        window_set_size(640 * _m, (_bo ? 480 : 360) * _m);
-        alarm[2] = 1;
-        border_size_ready = true;
+        var _tw = 640 * _m;
+        var _th = (_bo ? 480 : 360) * _m;
+
+        if (window_get_width() != _tw || window_get_height() != _th)
+        {
+            window_set_size(_tw, _th);
+            alarm[2] = 1;
+        }
     }
 
     if (global.screen_border_id != border_cfg_id)
