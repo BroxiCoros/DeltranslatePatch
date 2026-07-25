@@ -43,7 +43,24 @@ del upstream, entra correctamente.
   `settings.json` / `chapter_settings.json` (el de capítulo gana).
 - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
 - **Bordes** opcionales (NXRUNE de IRUZZ): `ChapterN/Borders.csx` tras el
-  `Fix.csx` del capítulo.
+  `Fix.csx` del capítulo. Sobre el parche original de NXRUNE:
+  - **Con el borde en «Ninguno», el juego recupera su tamaño original.** NXRUNE
+    pasa el juego a 16:9 de forma incondicional: mete siempre la
+    `application_surface` en el recuadro interior del marco (320 px de margen
+    lateral, 60 px arriba y abajo) y fija la ventana a 640x360, se dibuje o no
+    un borde; al desactivarlos quedaban franjas negras y el juego más chico que
+    sin el mod. Ahora el layout, el tamaño de ventana y la posición del mensaje
+    de salida consultan `global.screen_border_id`: con «Ninguno» se usa la
+    fórmula vanilla (centrar y maximizar) y la ventana vuelve a 4:3.
+  - **El ajuste se recuerda fuera de la partida:** se espeja en `true_config.ini`
+    (`BORDER.TYPE`), el ini global que el juego ya usa para la pantalla completa,
+    para que la pantalla de selección de partida lo respete. Cada partida sigue
+    guardando el suyo en su `keyconfig_<n>.ini`, que manda en cuanto se carga.
+  - **Sin precarga de texturas en PC (Cap. 2-5):** NXRUNE encendía el
+    precargador de consola (`obj_prefetchtex`), que carga una página de texturas
+    por frame; de ahí la animación del perro con barra de progreso, y varios
+    segundos de espera, al entrar a un capítulo. Se vuelve a la carga perezosa
+    del PC vanilla.
 
 ### Correcciones
 
