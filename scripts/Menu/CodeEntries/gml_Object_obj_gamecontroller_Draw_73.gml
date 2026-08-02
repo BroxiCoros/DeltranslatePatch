@@ -1,6 +1,23 @@
 if (!instance_exists(obj_CHAPTER_SELECT))
     exit;
 
+// track how ossafe has loaded the player's slot on consoles
+// (a diferencia del upstream, la lectura del ini se delega en
+// `scr_console_read_lang_config`: aquí las claves son por idioma y además
+// hay que recuperar el idioma guardado)
+if (global.is_console)
+{
+	if (ld_load_state == 0 && global.savedata_async_load)
+	{
+		ld_load_state = 1
+	}
+	else if (ld_load_state == 1 && !global.savedata_async_load)
+	{
+		ld_load_state = 2
+		scr_console_read_lang_config()
+	}
+}
+
 if (os_type != os_windows) {
     exit;
 }

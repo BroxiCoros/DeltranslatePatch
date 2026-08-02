@@ -49,7 +49,7 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     else
     {
         var settings_path = get_lang_folder_path() + "settings.json"
-        if (file_exists(settings_path))
+        if (scr_file_exists(settings_path))
             global.lang_settings = scr_load_json(settings_path)
     }
 
