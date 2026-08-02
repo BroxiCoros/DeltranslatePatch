@@ -71,9 +71,26 @@ global.lang_sounds = ds_map_create()
 global.font_map = ds_map_create()
 global.langs_names = []
 global.lang_settings = {}
-global.languages_list = []
-global.all_lang_settings = {}
-global.is_single_lang_mode = false
+// En consola, al volver al menú del capítulo el juego hace `game_restart()`,
+// que reejecuta este Create SIN volver a montar el romfs. Cualquier
+// `directory_exists`/`file_find_*` sobre una ruta del pack en ese momento no
+// devuelve `false`: aborta el proceso con `2002-6006` en `nn::fs::OpenDirectory`
+// (pantalla negra). Los globales SÍ sobreviven al reinicio, así que reusamos el
+// escaneo del arranque en vez de repetirlo. Es la misma guarda que el upstream
+// tiene en `scr_file_exists_init` para `global.file_map`; sin ella, este
+// `scan_languages` era el único punto del fork que volvía a entrar al romfs.
+// En escritorio se reescanea como siempre.
+lang_scan_valid = global.is_console
+    && variable_global_exists("languages_list")
+    && array_length(global.languages_list) > 0
+    && variable_global_exists("all_lang_settings")
+
+if (!lang_scan_valid)
+{
+    global.languages_list = []
+    global.all_lang_settings = {}
+    global.is_single_lang_mode = false
+}
 global.lang = "en"
 lang_changes_call = -1
 lang_changes = {}
@@ -182,7 +199,8 @@ scan_languages = function() {
     }
 }
 
-scan_languages()
+if (!lang_scan_valid)
+    scan_languages()
 
 // ---------------------------------------------------------------
 // Elegir el idioma inicial
