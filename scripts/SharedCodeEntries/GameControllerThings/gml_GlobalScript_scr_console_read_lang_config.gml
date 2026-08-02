@@ -7,8 +7,12 @@
 // no se puede leer nada persistido y el arranque se hace con los defaults.
 //
 // Este script recupera lo que faltaba en cuanto el mapa está disponible. Lo
-// llama el Step de `obj_gamecontroller` (Draw_73 en el Menu) al detectar la
-// transición de `global.savedata_async_load` que marca el fin de la carga.
+// llama el Step de `obj_gamecontroller` (Draw_73 en el Menu) en cuanto existe
+// el objeto que marca que la partida ya está cargada: `obj_time` en los
+// capítulos, `obj_screen_start`/`obj_screen_select` en el Menu.
+// Antes se seguía la transición de `global.savedata_async_load`; el upstream
+// la abandonó en 5.2.2 porque tras un `game_restart()` la savedata sigue
+// montada y ese flag ya no vuelve a bascular.
 //
 // Reaplica dos cosas:
 //   1. El idioma que el jugador dejó elegido (`LANG_DT`). Si difiere del que
