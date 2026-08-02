@@ -50,6 +50,14 @@ del upstream, entra correctamente.
   idioma guardado** (`LANG.LANG_DT`), conmutándolo en caliente si difiere del
   de arranque. En escritorio no interviene: allí todo se sigue leyendo en el
   Create.
+- **Escaneo de idiomas reusado tras `game_restart()` (consola):** al volver al
+  menú del capítulo el juego se reinicia dentro del mismo proceso y el romfs
+  deja de estar montado. Un `directory_exists` sobre una ruta del pack en ese
+  momento no devuelve `false`: **aborta el proceso** con `2002-6006` en
+  `nn::fs::OpenDirectory` (pantalla negra). Como los globales sí sobreviven al
+  reinicio, el escaneo de `lang/` solo se hace una vez y después se reusa,
+  igual que el upstream hace con `global.file_map` en `scr_file_exists_init`.
+  En escritorio se reescanea en cada arranque, como siempre.
 - **`font_settings`:** override de tamaño y rango de glifos por fuente desde
   `settings.json` / `chapter_settings.json` (el de capítulo gana).
 - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
