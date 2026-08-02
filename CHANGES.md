@@ -39,6 +39,17 @@ del upstream, entra correctamente.
   vez, para no perder la preferencia anterior del jugador. Los valores por
   defecto son los del upstream: modo especial apagado, voces dobladas
   encendidas.
+- **Config diferida en consola (`scr_console_read_lang_config`):** en
+  Switch/PS4/PS5 `ossafe_ini_open` no lee del disco sino de `global.savedata`,
+  un mapa que se rellena de forma asíncrona y que todavía no existe cuando
+  corre el Create de `obj_gamecontroller`. El upstream difiere ahí la lectura
+  de sus dos claves globales; este fork necesita diferir más, porque sus
+  claves son por idioma y hace falta saber cuál está activo antes de poder
+  leerlas. El script (uno por árbol, compartido y Menu) se llama desde el
+  `Step`/`Draw_73` cuando `ld_load_state` llega a 2, y además **recupera el
+  idioma guardado** (`LANG.LANG_DT`), conmutándolo en caliente si difiere del
+  de arranque. En escritorio no interviene: allí todo se sigue leyendo en el
+  Create.
 - **`font_settings`:** override de tamaño y rango de glifos por fuente desde
   `settings.json` / `chapter_settings.json` (el de capítulo gana).
 - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
