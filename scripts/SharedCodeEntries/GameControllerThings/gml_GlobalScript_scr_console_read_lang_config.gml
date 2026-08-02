@@ -1,0 +1,46 @@
+// Lectura DIFERIDA de `true_config.ini` en consola.
+//
+// En Switch/PS4/PS5 `ossafe_ini_open` no toca el disco: lee de
+// `global.savedata`, un ds_map que `obj_initializer2` rellena de forma
+// ASÍNCRONA (`buffer_load_async` en su Create, mapa listo en su Other_72).
+// El Create de `obj_gamecontroller` corre antes de que exista, así que allí
+// no se puede leer nada persistido y el arranque se hace con los defaults.
+//
+// Este script recupera lo que faltaba en cuanto el mapa está disponible. Lo
+// llama el Step de `obj_gamecontroller` (Draw_73 en el Menu) al detectar la
+// transición de `global.savedata_async_load` que marca el fin de la carga.
+//
+// Reaplica dos cosas:
+//   1. El idioma que el jugador dejó elegido (`LANG_DT`). Si difiere del que
+//      arrancó, se conmuta en caliente; `scr_switch_game_language` ya relee
+//      por su cuenta el modo especial y las voces del idioma nuevo, así que
+//      en ese camino no hace falta tocar nada más.
+//   2. Si el idioma no cambia, el modo especial y las voces dobladas de ese
+//      idioma (`special_mode_<lang>` / `translated_songs_<lang>`), con las
+//      claves globales del upstream como fallback de migración, igual que en
+//      el Create.
+//
+// Solo se puede llamar en consola y una única vez: los llamadores lo
+// garantizan con `ld_load_state`.
+
+function scr_console_read_lang_config() //gml_GlobalScript_scr_console_read_lang_config
+{
+    ossafe_ini_open("true_config.ini")
+    var saved_lang = ini_read_string("LANG", "LANG_DT", "")
+    ossafe_ini_close()
+
+    var can_switch = saved_lang != "" && saved_lang != global.lang &&
+        variable_global_exists("all_lang_settings") &&
+        variable_struct_exists(global.all_lang_settings, saved_lang)
+
+    if (can_switch)
+    {
+        scr_switch_game_language(saved_lang)
+        exit;
+    }
+
+    ossafe_ini_open("true_config.ini")
+    global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0))
+    global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, ini_read_real("LANG", "translated_songs", 1))
+    ossafe_ini_close()
+}

@@ -10,6 +10,11 @@
 // una fuente compartida por nombre (p. ej. fnt_8bit) es distinta entre
 // capitulos: el juego sigue pidiendo "fnt_8bit" y aqui cargamos el correcto.
 //
+// Nombre alternativo (`scr_letter_fix`): en consola los ficheros del pack no
+// pueden llevar caracteres no ASCII, asi que se guardan con el `ord()` de cada
+// uno. En cada nivel de prioridad se prueba primero el nombre alternativo y
+// luego el literal. En nombres ASCII (el caso normal) ambos coinciden.
+//
 // Nota: todas las temporales son `var` (locales) a proposito. Antes `path`
 // era de instancia y podia pisar la variable `path` de obj_mainchara_board
 // (mp_grid_path) -> crash del tablero del Cap. 3 al cargar fuentes.
@@ -20,6 +25,7 @@
 function add_font(argument0, argument1) //gml_Script_add_font
 {
     var fnt_name = argument0
+    var fnt_name_alt = scr_letter_fix(fnt_name)
     var fnt_size = argument1
 
     var fonts_range = get_lang_setting("fonts_range")
@@ -51,16 +57,27 @@ function add_font(argument0, argument1) //gml_Script_add_font
 
     var path = get_lang_folder_path() + "fonts/"
     var suffix = "_chapter" + string(global.chapter)
-    var filename_ttf_chapter = ((path + fnt_name) + suffix) + ".ttf"
-    var filename_otf_chapter = ((path + fnt_name) + suffix) + ".otf"
-    var filename_ttf = (path + fnt_name) + ".ttf"
-    var filename_otf = (path + fnt_name) + ".otf"
+
+    // Candidatos en orden de prioridad: primero los especificos del capitulo,
+    // y dentro de cada nivel el nombre alternativo antes que el literal.
+    var candidates = [
+        ((path + fnt_name_alt) + suffix) + ".ttf",
+        ((path + fnt_name_alt) + suffix) + ".otf",
+        ((path + fnt_name) + suffix) + ".ttf",
+        ((path + fnt_name) + suffix) + ".otf",
+        (path + fnt_name_alt) + ".ttf",
+        (path + fnt_name_alt) + ".otf",
+        (path + fnt_name) + ".ttf",
+        (path + fnt_name) + ".otf"
+    ]
 
     var resolved_path = ""
-    if (file_exists(filename_ttf_chapter))      resolved_path = filename_ttf_chapter
-    else if (file_exists(filename_otf_chapter)) resolved_path = filename_otf_chapter
-    else if (file_exists(filename_ttf))         resolved_path = filename_ttf
-    else if (file_exists(filename_otf))         resolved_path = filename_otf
+    for (var i = 0; i < array_length(candidates); i++) {
+        if (scr_file_exists(candidates[i])) {
+            resolved_path = candidates[i]
+            break
+        }
+    }
 
     // Asset built-in del juego: hereda bold/italic y sirve de fallback.
     var font = asset_get_index(fnt_name)
@@ -68,6 +85,8 @@ function add_font(argument0, argument1) //gml_Script_add_font
     if (resolved_path != "") {
         font = font_add(resolved_path, fnt_size, font_get_bold(font), font_get_italic(font), fonts_range[0], fonts_range[1])
         array_push(global.loaded_fonts, font)
+    } else if ((asset_get_index(fnt_name_alt + "_" + global.lang)) != -1) {
+        font = asset_get_index(fnt_name_alt + "_" + global.lang)
     } else if ((asset_get_index(fnt_name + "_" + global.lang)) != -1) {
         font = asset_get_index(fnt_name + "_" + global.lang)
     }

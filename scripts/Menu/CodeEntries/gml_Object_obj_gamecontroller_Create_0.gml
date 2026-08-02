@@ -1,4 +1,4 @@
-dtv = 503
+dtv = 504
 
 if (instance_number(obj_gamecontroller) > 1)
 {
@@ -31,6 +31,8 @@ if (os_type == os_android && !directory_exists(global.lang_folder)) {
     zip_unzip(global.savepath + "lang.zip", global.savepath);
 }
 
+scr_file_exists_init(global.lang_folder, undefined);
+
 if (!variable_global_exists("gamepad_type"))
     global.gamepad_type = "N/A";
 
@@ -45,9 +47,24 @@ if (variable_global_exists("lang_map"))
 // `special_mode` y `translated_songs` NO se leen aquí (a diferencia del
 // upstream): se recuerdan por idioma, así que hace falta saber cuál está
 // activo. Ver más abajo.
-ossafe_ini_open("true_config.ini")
-var saved_lang = ini_read_string("LANG", "LANG_DT", "")
-ossafe_ini_close()
+//
+// En consola NO se puede tocar el ini todavía: `ossafe_ini_open` no lee del
+// disco sino de `global.savedata`, que se rellena de forma asíncrona y en
+// este momento aún no existe. Todo lo persistido se difiere al Draw_73, que
+// espera a `ld_load_state == 2` y entonces reaplica idioma y ajustes.
+global.special_mode = 0
+global.translated_songs = 1
+var saved_lang = ""
+if (!global.is_console)
+{
+    ossafe_ini_open("true_config.ini")
+    saved_lang = ini_read_string("LANG", "LANG_DT", "")
+    ossafe_ini_close()
+}
+else
+{
+    ld_load_state = 0
+}
 
 global.lang_sprites = ds_map_create()
 global.lang_sounds = ds_map_create()
@@ -142,7 +159,7 @@ scan_languages = function() {
         while (entry != "") {
             if (entry != "." && entry != ".." && directory_exists(global.lang_folder + entry)) {
                 var setting_path = global.lang_folder + entry + "/settings.json"
-                if (file_exists(setting_path)) {
+                if (scr_file_exists(setting_path)) {
                     s = scr_load_json(setting_path)
                     code = get_struct_field(s, "lang_code", entry)
                     array_push(global.languages_list, code)
@@ -156,7 +173,7 @@ scan_languages = function() {
 
     // Fallback al pack heredado: un único idioma suelto en la raíz, solo si
     // el barrido de subcarpetas no encontró ningún idioma válido.
-    if (array_length(global.languages_list) == 0 && file_exists(global.lang_folder + "settings.json")) {
+    if (array_length(global.languages_list) == 0 && scr_file_exists(global.lang_folder + "settings.json")) {
         global.is_single_lang_mode = true
         s = scr_load_json(global.lang_folder + "settings.json")
         code = get_struct_field(s, "lang_code", "en")
@@ -194,7 +211,7 @@ if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_l
 update_lang_version = function() {
     var version = string_to_version("0.0.0")
     var changes_file = get_lang_folder_path() + "changes.json"
-    if (file_exists(changes_file)) {
+    if (scr_file_exists(changes_file)) {
         var changes = scr_load_json(changes_file)
         var versions = variable_struct_get_names(changes)
 
@@ -212,7 +229,7 @@ update_lang_version = function() {
 }
 
 update_language = function() {
-    if (file_exists(get_lang_folder_path() + "settings.json")) {
+    if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
         var settings = scr_load_json(get_lang_folder_path() + "settings.json")
 
         var lang_code = variable_struct_get(settings, "lang_code")
@@ -248,10 +265,16 @@ update_language()
 // solo se escriben las claves por idioma.
 // Ojo con los defaults: el modo especial arranca apagado (0) y las voces
 // dobladas encendidas (1), igual que en el upstream.
-ossafe_ini_open("true_config.ini")
-global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0))
-global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, ini_read_real("LANG", "translated_songs", 1))
-ossafe_ini_close()
+//
+// En consola se salta: el ini todavía no está disponible (ver arriba) y de
+// esto se encarga `scr_console_read_lang_config` desde el Draw_73.
+if (!global.is_console)
+{
+    ossafe_ini_open("true_config.ini")
+    global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0))
+    global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, ini_read_real("LANG", "translated_songs", 1))
+    ossafe_ini_close()
+}
 
 // `files_url` (no `var`) es intencional: es una variable de instancia
 // que `load_datas` consulta más abajo como fallback de `datas_url`.

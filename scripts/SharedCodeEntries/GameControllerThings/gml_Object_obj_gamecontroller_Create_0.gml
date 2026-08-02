@@ -12,6 +12,7 @@ global.lang = "en"
 global.orig_en = false
 
 global.is_console = scr_is_switch_os() || os_type == os_ps4 || os_type == os_ps5;
+scr_file_exists_init(global.lang_folder, undefined);
 var launch_data = scr_init_launch_parameters();
 global.launcher = launch_data.is_launcher;
 is_connecting_controller = 3;
@@ -39,11 +40,26 @@ init_global_vars();
 // `special_mode` y `translated_songs` NO se leen aquí (a diferencia del
 // upstream): se recuerdan por idioma, así que hace falta saber cuál está
 // activo. Ver más abajo.
-ossafe_ini_open("true_config.ini");
+//
+// En consola NO se puede tocar el ini todavía: `ossafe_ini_open` no lee del
+// disco sino de `global.savedata`, que se rellena de forma asíncrona y en
+// este momento aún no existe. Todo lo persistido se difiere al Step, que
+// espera a `ld_load_state == 2` y entonces reaplica idioma y ajustes.
 global.translator_mode = 0;
 speed_mode = 0;
-var saved_lang = ini_read_string("LANG", "LANG_DT", "");
-ossafe_ini_close();
+global.special_mode = 0;
+global.translated_songs = 1;
+var saved_lang = "";
+if (!global.is_console)
+{
+    ossafe_ini_open("true_config.ini");
+    saved_lang = ini_read_string("LANG", "LANG_DT", "");
+    ossafe_ini_close();
+}
+else
+{
+    ld_load_state = 0;
+}
 
 global.lang_sprites = ds_map_create();
 global.lang_sounds = ds_map_create();
@@ -75,7 +91,7 @@ scan_languages = function() {
         while (entry != "") {
             if (entry != "." && entry != ".." && directory_exists(global.lang_folder + entry)) {
                 var setting_path = global.lang_folder + entry + "/settings.json"
-                if (file_exists(setting_path)) {
+                if (scr_file_exists(setting_path)) {
                     s = scr_load_json(setting_path)
                     code = get_struct_field(s, "lang_code", entry)
                     array_push(global.languages_list, code)
@@ -89,7 +105,7 @@ scan_languages = function() {
 
     // Fallback al pack suelto de la raíz solo si el barrido de subcarpetas
     // no encontró ningún idioma válido.
-    if (array_length(global.languages_list) == 0 && file_exists(global.lang_folder + "settings.json")) {
+    if (array_length(global.languages_list) == 0 && scr_file_exists(global.lang_folder + "settings.json")) {
         global.is_single_lang_mode = true
         s = scr_load_json(global.lang_folder + "settings.json")
         code = get_struct_field(s, "lang_code", "en")
@@ -131,7 +147,7 @@ if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_l
 // Cargar el settings.json del idioma activo. Si el pack no declara
 // `lang_code` explícitamente, conservamos el `global.lang` que ya
 // eligió el escaneo (normalmente el nombre de la subcarpeta).
-if (file_exists(get_lang_folder_path() + "settings.json")) {
+if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
     var settings = scr_load_json(get_lang_folder_path() + "settings.json")
     var lang_code = variable_struct_get(settings, "lang_code")
     if (is_undefined(lang_code))
@@ -151,10 +167,16 @@ if (file_exists(get_lang_folder_path() + "settings.json")) {
 // solo se escriben las claves por idioma.
 // Ojo con los defaults: el modo especial arranca apagado (0) y las voces
 // dobladas encendidas (1), igual que en el upstream.
-ossafe_ini_open("true_config.ini");
-global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0));
-global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, ini_read_real("LANG", "translated_songs", 1));
-ossafe_ini_close();
+//
+// En consola se salta: el ini todavía no está disponible (ver arriba) y de
+// esto se encarga `scr_console_read_lang_config` desde el Step.
+if (!global.is_console)
+{
+    ossafe_ini_open("true_config.ini");
+    global.special_mode = ini_read_real("LANG", "special_mode_" + global.lang, ini_read_real("LANG", "special_mode", 0));
+    global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, ini_read_real("LANG", "translated_songs", 1));
+    ossafe_ini_close();
+}
 
 // ----- Modo traductor (dev) -----
 // Se conserva el soporte completo del upstream: mapas de strings usadas,
@@ -186,7 +208,7 @@ init_translator_data = function()
 
     new_translations_filename = "new_translations_ch" + string(global.chapter) + ".json";
 
-    if (file_exists(new_translations_filename)) {
+    if (scr_file_exists(new_translations_filename)) {
         global.new_translations = scr_84_load_map_json(new_translations_filename);
     }
     else {
@@ -241,7 +263,7 @@ file_find_close();
 scr_init_localization();
 update_on_room_end = false;
 
-if (file_exists(working_directory + "lang/lang_en.json")) {
+if (scr_file_exists(working_directory + "lang/lang_en.json")) {
     orig_filename = working_directory + "lang/lang_en.json"
     global.orig_map = scr_84_load_map_json(orig_filename)
 }
