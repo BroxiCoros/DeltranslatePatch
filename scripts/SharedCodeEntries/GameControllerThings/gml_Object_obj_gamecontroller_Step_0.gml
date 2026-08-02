@@ -120,18 +120,17 @@ else if keyboard_check_released(ord("U"))
 }
 
 // track how ossafe has loaded the player's slot on consoles
-// (a diferencia del upstream, la lectura del ini se delega en
-// `scr_console_read_lang_config`: aquí las claves son por idioma y además
-// hay que recuperar el idioma guardado)
+// (única divergencia con el upstream: la lectura del ini se delega en
+// `scr_console_read_lang_config`, porque aquí las claves son por idioma y
+// además hay que recuperar el idioma guardado)
 if (global.is_console)
 {
-	if (ld_load_state == 0 && global.savedata_async_load)
-	{
-		ld_load_state = 1
-	}
-	else if (ld_load_state == 1 && !global.savedata_async_load)
+	if (ld_load_state == 0 && instance_exists(obj_time))
 	{
 		ld_load_state = 2
-		scr_console_read_lang_config()
+		if (ossafe_file_exists("true_config.ini"))
+		{
+			scr_console_read_lang_config()
+		}
 	}
 }
