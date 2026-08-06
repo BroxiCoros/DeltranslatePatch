@@ -8,6 +8,63 @@ function scr_init_localization()
         global.loaded_fonts = [];
     }
     
+    // ---------------------------------------------------------------
+    // Idiomas NATIVOS del juego (inglés / japonés): apartarse
+    // ---------------------------------------------------------------
+    // No hay pack que cargar. El juego trae su propio inicializador de
+    // localización, `scr_84_init_localization`, que el mod NO reemplaza y
+    // que hoy es código muerto. Rellena exactamente los mismos tres mapas
+    // que consultan los resolvedores del mod:
+    //
+    //   global.font_map          -> fnt_ja_main, fnt_ja_dotumche, ...
+    //   global.chemg_sprite_map  -> "spr_quitmessage" -> spr_ja_quitmessage, ...
+    //   global.chemg_sound_map   -> "snd_joker_chaos" -> snd_joker_chaos_ja, ...
+    //
+    // y carga los strings con `scr_84_lang_load()` desde el
+    // `chapterN_windows/lang/lang_<idioma>.json` que trae el propio juego.
+    // Como `scr_84_get_sprite` / `scr_84_get_sound` / `scr_get_font` leen
+    // esos mismos mapas, todo el código que el mod reescribió sigue
+    // funcionando y recibe los assets japoneses sin tocar una línea más.
+    //
+    // Detalles que importan:
+    //   - `scr_84_init_localization` LEE `global.lang` de la clave `LANG.LANG`
+    //     del true_config.ini (la del juego, distinta de la `LANG_DT` del
+    //     mod), así que hay que escribirla antes o pisaría nuestra elección.
+    //   - NO se toca `global.lang_loaded` aquí: esa función tiene su propio
+    //     gate `lang_loaded != lang` y se encarga de marcarla.
+    //   - Los sprites/sonidos externos que hubiera cargado un pack anterior
+    //     los libera el mecanismo de `outdated_*` de
+    //     `scr_switch_game_language`; aquí solo se reconstruyen los mapas.
+    if (is_native_lang())
+    {
+        global.chapter_lang_settings = json_parse("{}");
+
+        // Las fuentes que hubiera añadido un pack sí se liberan aquí (igual
+        // que hace la rama normal de más abajo): no las cubre el mecanismo
+        // de `outdated_*`, que solo difiere sprites y sonidos, y
+        // `scr_84_init_localization` va a destruir el `font_map` que las
+        // referencia.
+        if (variable_global_exists("loaded_fonts"))
+        {
+            for (var i = 0; i < array_length(global.loaded_fonts); i++)
+                font_delete(global.loaded_fonts[i]);
+
+            global.loaded_fonts = [];
+        }
+
+        ossafe_ini_open("true_config.ini");
+        ini_write_string("LANG", "LANG", global.lang);
+        ossafe_ini_close();
+
+        scr_84_init_localization();
+
+        // Nada quedó pendiente de cargar: los assets nativos ya están en
+        // los mapas, no hay recarga diferida que disparar.
+        global.lang_sprites_pending = false;
+        global.lang_sounds_pending = false;
+        exit;
+    }
+
     if (global.lang_loaded != global.lang)
     {
         global.lang_loaded = global.lang;

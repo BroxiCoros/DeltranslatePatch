@@ -62,7 +62,7 @@ if (global.interact == 5)
         {
             for (i = 0; i < 8; i += 1) {
                 var str = string_hash_to_newline(global.litemname[i])
-                var text_scale = min(1, 141 / string_width(str))
+                var text_scale = scr_lang_fit(141, str)
                 draw_text_transformed(116 + xx, 30 + yy + (i * 16), str, text_scale, 1, 0);
             }
             

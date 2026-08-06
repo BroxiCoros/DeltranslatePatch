@@ -336,20 +336,20 @@ if (global.menuno == 4)
         ch_y[ch_i] = ch_yoff + (ch_i * ch_vspace);
     
     var statname = stringsetloc("Attack: ", "obj_darkcontroller_slash_Draw_0_gml_207_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_set_color(c_white);
     draw_text_transformed(xx + 100, ch_y[0], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[0] + 6, 1);
     statname = stringsetloc("Defense: ", "obj_darkcontroller_slash_Draw_0_gml_208_0");
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, ch_y[1], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[1] + 6, 4);
     statname = stringsetloc("Magic: ", "obj_darkcontroller_slash_Draw_0_gml_209_0");
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, ch_y[2], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[2] + 6, 5);
     statname = stringsetloc("Guts: ", "obj_darkcontroller_slash_Draw_0_gml_212_0");
-    xx_scale = min(1, 112 / string_width(statname));
+    xx_scale = scr_lang_fit(112, statname);
     draw_text_transformed(xx + 100, ch_y[5], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[5] + 6, 9);
     char_desc = stringsetloc("LV1 ", "obj_darkcontroller_slash_Draw_0_gml_214_0");
@@ -391,7 +391,7 @@ if (global.menuno == 4)
         if (dograndom >= 97)
         {
             statname = stringsetloc("Dog:", "obj_darkcontroller_slash_Draw_0_gml_231_0");
-            xx_scale = min(1, 122 / string_width(statname));
+            xx_scale = scr_lang_fit(122, statname);
             draw_set_color(c_white);
             draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
             draw_sprite_ext(spr_dog_sleep, -threebuffer / 30, xx + 220, ch_y[3] + 5, 2, 2, 0, c_white, 1);
@@ -446,7 +446,7 @@ if (global.menuno == 4)
             guts_amount = 3;
         
         statname = stringsetloc("Rudeness ", "obj_darkcontroller_slash_Draw_0_gml_251_0");
-        xx_scale = min(1, 122 / string_width(statname));
+        xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[3] + 6, 13);
         draw_text(xx + 230, ch_y[3], string_hash_to_newline(rude_amount));
@@ -469,7 +469,7 @@ if (global.menuno == 4)
                 var grasstime = (round(get_timer()) / 1000000) * 4;
                 draw_sprite_ext(spr_board_grabbablegrass, grasstime, xx + 66, ch_y[4] + 2, 2, 2, 0, c_white, 1);
                 var str = stringsetloc("Plucked", "obj_darkcontroller_slash_Draw_0_gml_552_0")
-                xx_scale = min(1, 122 / string_width(str));
+                xx_scale = scr_lang_fit(122, str);
                 draw_text_transformed(xx + 100, ch_y[4], str, xx_scale, 1, 0);
                 draw_text(xx + 230, ch_y[4], string(clamp(global.flag[1256], 0, 99)));
             }
@@ -534,7 +534,7 @@ if (global.menuno == 4)
             __scale = 1;
         
         var statname = stringsetloc("Fluffiness", "obj_darkcontroller_slash_Draw_0_gml_286_0")
-        var xx_scale = min(1, 122 / string_width(statname))
+        var xx_scale = scr_lang_fit(122, statname)
         draw_text_transformed((xx + 100), ch_y[4], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[4] + 6, 12);
         
@@ -557,13 +557,13 @@ if (global.menuno == 4)
             char_desc = stringsetsubloc("LV~1 Moss Neutral#Neither chaotic nor#lawful to moss.", falselv, "obj_darkcontroller_slash_Draw_0_gml_385_0");
         
         statname = stringsetloc("Coldness ", "obj_darkcontroller_slash_Draw_0_gml_388_0");
-        xx_scale = min(1, 122 / string_width(statname));
+        xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[3] + 6, 17);
         var coldness_amount = clamp(47 + (global.flag[925] * 7), 47, 100);
         draw_text(xx + 230, ch_y[3], string_hash_to_newline(coldness_amount));
         statname = stringsetloc("Boldness", "obj_darkcontroller_slash_Draw_0_gml_391_0");
-        xx_scale = min(1, 122 / string_width(statname));
+        xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[4], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[4] + 6, 16);
         var boldness_amount = min(-12 + ((global.plot - 70) * 3), 100);
@@ -621,7 +621,7 @@ if (global.menuno == 4)
             draw_set_halign(fa_right);
             draw_text(xx + 340 + 42, ch_y[i], string_hash_to_newline(string(round((global.spellcost[charcoord][i] / global.maxtension) * 100)) + "%"));
             draw_set_halign(fa_left);
-            xx_scale = min(1, 198 / string_width(global.spellname[charcoord][i]));
+            xx_scale = scr_lang_fit(198, global.spellname[charcoord][i]);
             draw_text_transformed(xx + 390, ch_y[i], string_hash_to_newline(global.spellname[charcoord][i]), xx_scale, 1, 0);
         }
     }
@@ -734,7 +734,7 @@ if (global.menuno == 2)
     
     if (charweaponname[charcoord] != " ")
     {
-        xx_scale = min(1, 230 / string_width(charweaponname[charcoord]));
+        xx_scale = scr_lang_fit(230, charweaponname[charcoord]);
         draw_text_transformed(xx + 365, yy + 112, string_hash_to_newline(charweaponname[charcoord]), xx_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 118, charweaponicon[charcoord]);
     }
@@ -747,7 +747,7 @@ if (global.menuno == 2)
     
     if (global.chararmor1[charcoord] != 0)
     {
-        xx_scale = min(1, 230 / string_width(chararmor1name[charcoord]));
+        xx_scale = scr_lang_fit(230, chararmor1name[charcoord]);
         draw_text_transformed(xx + 365, yy + 142, string_hash_to_newline(chararmor1name[charcoord]), xx_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 148, chararmor1icon[charcoord]);
     }
@@ -760,7 +760,7 @@ if (global.menuno == 2)
     
     if (global.chararmor2[charcoord] != 0)
     {
-        xx_scale = min(1, 230 / string_width(chararmor2name[charcoord]));
+        xx_scale = scr_lang_fit(230, chararmor2name[charcoord]);
         draw_text_transformed(xx + 365, yy + 172, string_hash_to_newline(chararmor2name[charcoord]), xx_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 178, chararmor2icon[charcoord]);
     }
@@ -803,7 +803,7 @@ if (global.menuno == 2)
             
             if (global.weapon[i] != 0)
             {
-                xx_scale = min(1, 210 / string_width(weaponname[i]));
+                xx_scale = scr_lang_fit(210, weaponname[i]);
                 draw_text_transformed(xx + 384 + eq_xoff, yy + 230 + (j * ch_vspace), string_hash_to_newline(weaponname[i]), xx_scale, 1, 0);
             }
             else
@@ -846,7 +846,7 @@ if (global.menuno == 2)
             
             if (global.armor[i] != 0)
             {
-                xx_scale = min(1, 210 / string_width(armorname[i]));
+                xx_scale = scr_lang_fit(210, armorname[i]);
                 draw_text_transformed(xx + 384 + eq_xoff, yy + 230 + (j * ch_vspace), string_hash_to_newline(armorname[i]), xx_scale, 1, 0);
             }
             else
@@ -908,15 +908,15 @@ if (global.menuno == 2)
     
     draw_set_color(c_white);
     var statname = stringsetloc("Attack: ", "obj_darkcontroller_slash_Draw_0_gml_586_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 0), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 0), 1);
     statname = stringsetloc("Defense: ", "obj_darkcontroller_slash_Draw_0_gml_587_0");
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 1), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 1), 4);
     statname = stringsetloc("Magic: ", "obj_darkcontroller_slash_Draw_0_gml_588_0");
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 2), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 2), 5);
     atsum = global.at[global.char[coord]] + global.itemat[global.char[coord]][0] + global.itemat[global.char[coord]][1] + global.itemat[global.char[coord]][2];
@@ -1103,13 +1103,13 @@ if (global.menuno == 2)
             if (_abilitytext[i] == " " || _abilitytext[i] == "")
             {
                 statname = stringsetloc("(No ability.)", "obj_darkcontroller_slash_Draw_0_gml_766_0");
-                xx_scale = min(1, 182 / string_width(statname));
+                xx_scale = scr_lang_fit(182, statname);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), statname, xx_scale, 1, 0);
             }
             else
             {
-                xx_scale = min(1, 182 / string_width(_abilitytext[i]));
+                xx_scale = scr_lang_fit(182, _abilitytext[i]);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), string_hash_to_newline(_abilitytext[i]), xx_scale, 1, 0);
                 draw_set_color(c_orange);
@@ -1137,13 +1137,13 @@ if (global.menuno == 2)
             if (_abilitytext[i] == " " || _abilitytext[i] == "")
             {
                 statname = stringsetloc("(No ability.)", "obj_darkcontroller_slash_Draw_0_gml_766_0");
-                xx_scale = min(1, 182 / string_width(statname));
+                xx_scale = scr_lang_fit(182, statname);
                 draw_set_color(c_dkgray);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), statname, xx_scale, 1, 0);
             }
             else
             {
-                xx_scale = min(1, 182 / string_width(_abilitytext[i]));
+                xx_scale = scr_lang_fit(182, _abilitytext[i]);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), string_hash_to_newline(_abilitytext[i]), xx_scale, 1, 0);
                 draw_set_color(c_orange);

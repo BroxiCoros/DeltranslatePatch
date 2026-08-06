@@ -190,6 +190,53 @@ UndertaleModLib.Compiler.CodeImportGroup importGroup = new(Data, null, decompSet
     ThrowOnNoOpFindReplace = true
 };
 
+// ---------------------------------------------------------------------
+// Los parches tambien van al GEMELO VANILLA
+// ---------------------------------------------------------------------
+// BaseFix guarda una copia pristina de las entradas con logica por idioma en
+// `scr_native_<entrada>` y desvia ahi cuando el idioma es nativo (ver la region
+// "Gemelos vanilla" de BaseFix.csx). Si los bordes solo se parchean en la
+// entrada, en japones/ingles nativo desaparece la fila del borde del menu,
+// porque ahi corre el gemelo.
+//
+// Por eso cada parche se encola TAMBIEN sobre el gemelo, en un grupo aparte con
+// ThrowOnNoOpFindReplace = false: el gemelo tiene el texto de vanilla, asi que
+// los patrones de una linea (que son iguales en vanilla y en el mod) casan y se
+// aplican, y los que el fork adapto al texto del mod simplemente no casan y se
+// saltan sin romper el parcheo.
+UndertaleModLib.Compiler.CodeImportGroup twinGroup = new(Data, null, decompSettings)
+{
+    ThrowOnNoOpFindReplace = false
+};
+
+bool _twinHas(string codeName)
+{
+    return codeName.StartsWith("gml_Object_")
+        && Data.Code.ByName("gml_GlobalScript_scr_native_" + codeName.Substring("gml_Object_".Length)) != null;
+}
+
+string _twinName(string codeName)
+{
+    return "gml_GlobalScript_scr_native_" + codeName.Substring("gml_Object_".Length);
+}
+
+void QFR(string codeName, string find, string repl)
+{
+    importGroup.QueueFindReplace(codeName, find, repl);
+
+    if (_twinHas(codeName))
+        twinGroup.QueueFindReplace(_twinName(codeName), find, repl);
+}
+
+void QTFR(string codeName, string find, string repl)
+{
+    importGroup.QueueTrimmedLinesFindReplace(codeName, find, repl);
+
+    if (_twinHas(codeName))
+        twinGroup.QueueTrimmedLinesFindReplace(_twinName(codeName), find, repl);
+}
+
+
 // obj_initializer2
 
 // ---------------------------------------------------------------------
@@ -214,10 +261,10 @@ UndertaleModLib.Compiler.CodeImportGroup importGroup = new(Data, null, decompSet
 // ---------------------------------------------------------------------
 
 
-importGroup.QueueFindReplace("gml_Object_obj_initializer2_Step_0", @"        if (global.is_console)
+QFR("gml_Object_obj_initializer2_Step_0", @"        if (global.is_console)
             global.screen_border_alpha = 0;", "global.screen_border_alpha = 0;");
 
-importGroup.QueueFindReplace("gml_Object_obj_initializer2_Step_0", @"        if (global.is_console)
+QFR("gml_Object_obj_initializer2_Step_0", @"        if (global.is_console)
             global.screen_border_alpha = 1;", "global.screen_border_alpha = 1;");
 
 importGroup.QueueAppend("gml_Object_obj_initializer2_Step_0", "global.game_won = scr_completed_chapter_any_slot(global.chapter);");
@@ -231,7 +278,7 @@ importGroup.QueueAppend("gml_Object_obj_initializer2_Step_0", "global.game_won =
 
 // obj_time
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"if (global.is_console)
+QFR("gml_Object_obj_time_Create_0", @"if (global.is_console)
 {
     if (!instance_exists(obj_gamecontroller))
         instance_create(0, 0, obj_gamecontroller);
@@ -246,11 +293,11 @@ importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"if (global.is_con
     var border_controller = instance_create(0, 0, obj_border_controller);
     border_controller.init_border();");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "if (display_width > (640 * _ww) && display_height > (480 * _ww))", "if (display_width > (640 * _ww) && display_height > (360 * _ww))");
+QFR("gml_Object_obj_time_Create_0", "if (display_width > (640 * _ww) && display_height > (480 * _ww))", "if (display_width > (640 * _ww) && display_height > (360 * _ww))");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
+QFR("gml_Object_obj_time_Create_0", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"    if (global.is_console)
+QFR("gml_Object_obj_time_Create_0", @"    if (global.is_console)
     {
         application_surface_enable(true);
         application_surface_draw_enable(false);
@@ -278,14 +325,14 @@ application_surface_draw_enable(false);");
 // crear obj_time (lineas 54-59 vs 100-111 segun el capitulo), asi que aqui
 // la global ya existe.
 // ---------------------------------------------------------------------
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"ini_open(""true_config.ini"");", @"ini_open(""true_config.ini"");
+QFR("gml_Object_obj_time_Create_0", @"ini_open(""true_config.ini"");", @"ini_open(""true_config.ini"");
 global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", global.screen_border_id);");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "scr_enable_screen_border(global.is_console);", @"scr_enable_screen_border(global.screen_border_id != ""None"" && global.screen_border_id != ""なし"");");
+QFR("gml_Object_obj_time_Create_0", "scr_enable_screen_border(global.is_console);", @"scr_enable_screen_border(global.screen_border_id != ""None"" && global.screen_border_id != ""なし"");");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Alarm_1", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
+QFR("gml_Object_obj_time_Alarm_1", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Step_0", @"if (global.is_console)
+QFR("gml_Object_obj_time_Step_0", @"if (global.is_console)
 {
     if (!i_ex(obj_border_controller))
     {
@@ -298,13 +345,13 @@ importGroup.QueueFindReplace("gml_Object_obj_time_Step_0", @"if (global.is_conso
     border_controller.init_border();
 }");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Draw_77", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
+QFR("gml_Object_obj_time_Draw_77", "window_set_size(640 * window_size_multiplier, 480 * window_size_multiplier);", "window_set_size(640 * window_size_multiplier, 360 * window_size_multiplier);");
 
-importGroup.QueueFindReplace("gml_Object_obj_time_Draw_64", "draw_sprite_ext(scr_84_get_sprite(\"spr_quitmessage\"), quit_timer / 7, 4, 4, 2, 2, 0, c_white, quit_timer / 15);", @"draw_sprite_ext(scr_84_get_sprite(""spr_quitmessage""), quit_timer / 7, ((global.screen_border_id == ""None"" || global.screen_border_id == ""なし"") ? 4 : 40), ((global.screen_border_id == ""None"" || global.screen_border_id == ""なし"") ? 4 : 30), 2, 2, 0, c_white, quit_timer / 15);");
+QFR("gml_Object_obj_time_Draw_64", "draw_sprite_ext(scr_84_get_sprite(\"spr_quitmessage\"), quit_timer / 7, 4, 4, 2, 2, 0, c_white, quit_timer / 15);", @"draw_sprite_ext(scr_84_get_sprite(""spr_quitmessage""), quit_timer / 7, ((global.screen_border_id == ""None"" || global.screen_border_id == ""なし"") ? 4 : 40), ((global.screen_border_id == ""None"" || global.screen_border_id == ""なし"") ? 4 : 30), 2, 2, 0, c_white, quit_timer / 15);");
 
 // obj_border_controller
 
-importGroup.QueueFindReplace("gml_Object_obj_border_controller_Draw_77", @"var xx = floor((ww - (sw * global.window_scale)) / 2);
+QFR("gml_Object_obj_border_controller_Draw_77", @"var xx = floor((ww - (sw * global.window_scale)) / 2);
 var yy = floor((wh - (sh * global.window_scale)) / 2);",
 @"var _border_off = (global.screen_border_id == ""None"" || global.screen_border_id == ""なし"");
 var xx, yy;
@@ -337,7 +384,7 @@ else
     }
 }");
 
-importGroup.QueueFindReplace("gml_Object_obj_border_controller_Draw_77", "draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);", @"if (_border_off)
+QFR("gml_Object_obj_border_controller_Draw_77", "draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);", @"if (_border_off)
     draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);
 else
     draw_surface_stretched(application_surface, xx, yy, ww - (2 * xx), wh - (2 * yy));");
@@ -345,7 +392,7 @@ else
 
 // scr_draw_background_ps4
 
-importGroup.QueueFindReplace("gml_GlobalScript_scr_draw_background_ps4", @"    if (os_type == os_ps4 || scr_is_switch_os() || os_type == os_ps5)
+QFR("gml_GlobalScript_scr_draw_background_ps4", @"    if (os_type == os_ps4 || scr_is_switch_os() || os_type == os_ps5)
     {
         var scale = window_get_width() / 1920;
         draw_background_stretched(bg, xx * scale, yy * scale, background_get_width(bg) * scale, background_get_height(bg) * scale);
@@ -378,7 +425,7 @@ importGroup.QueueFindReplace("gml_GlobalScript_scr_draw_background_ps4", @"    i
 
 // obj_darkcontroller
 
-importGroup.QueueFindReplace("gml_Object_obj_darkcontroller_Draw_0", "draw_sprite(spr_heart, 0, _heartXPos, yy + 160 + (global.submenucoord[30] * 35));", "draw_sprite(spr_heart, 0, _heartXPos, yy + 140 + (global.submenucoord[30] * 35));");
+QFR("gml_Object_obj_darkcontroller_Draw_0", "draw_sprite(spr_heart, 0, _heartXPos, yy + 160 + (global.submenucoord[30] * 35));", "draw_sprite(spr_heart, 0, _heartXPos, yy + 140 + (global.submenucoord[30] * 35));");
 
 importGroup.QueueFindReplace("gml_Object_obj_darkcontroller_Draw_0", @"        draw_text(_xPos, yy + 150, string_hash_to_newline(stringsetloc(""Master Volume"", ""obj_darkcontroller_slash_Draw_0_gml_86_0"")));
         draw_text(_selectXPos, yy + 150, string_hash_to_newline(audvol));
@@ -555,19 +602,19 @@ importGroup.QueueFindReplace("gml_Object_obj_darkcontroller_Step_0", @"         
 // consola). Si lo dejaramos, fallaria con "no-op find and replace"
 // porque el patron original ya no existe en el codigo.
 
-importGroup.QueueFindReplace("gml_Object_DEVICE_MENU_Alarm_0", "if (global.is_console)", "if (true)");
+QFR("gml_Object_DEVICE_MENU_Alarm_0", "if (global.is_console)", "if (true)");
 
 // scr_text
 
-importGroup.QueueFindReplace("gml_GlobalScript_scr_text", "if (!paptalk && global.is_console)", "if (!paptalk)");
+QFR("gml_GlobalScript_scr_text", "if (!paptalk && global.is_console)", "if (!paptalk)");
 
 // obj_onion_event
 
-importGroup.QueueFindReplace("gml_Object_obj_onion_event_Create_0", "if (global.is_console)", "if (true)");
+QFR("gml_Object_obj_onion_event_Create_0", "if (global.is_console)", "if (true)");
 
 // obj_room_ranking_b
 
-importGroup.QueueFindReplace("gml_Object_obj_room_ranking_b_Step_0", "if (gacha_con == 121 && global.is_console)", "if (gacha_con == 121)");
+QFR("gml_Object_obj_room_ranking_b_Step_0", "if (gacha_con == 121 && global.is_console)", "if (gacha_con == 121)");
 
 // ---------------------------------------------------------------------
 // Recuperar la ventana 4:3 (640x480) cuando el borde esta en "None"
@@ -646,5 +693,6 @@ if (!global.is_console && variable_global_exists(""screen_border_id""))
 }");
 
 importGroup.Import();
+twinGroup.Import();
 
 ScriptMessage("All done! :3  (NXRUNE_CH3 + deltranslate compat)");

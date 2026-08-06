@@ -41,7 +41,9 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     global.lang = target_lang
 
     // Usar la caché si el Create del gamecontroller ya escaneó todos
-    // los idiomas; si no (por seguridad), leer del disco.
+    // los idiomas; si no (por seguridad), leer del disco. Los idiomas
+    // nativos no tienen carpeta ni settings.json: su struct siempre sale de
+    // la caché, que es donde lo dejó `scan_languages()`.
     if (variable_global_exists("all_lang_settings") && variable_struct_exists(global.all_lang_settings, target_lang))
     {
         global.lang_settings = variable_struct_get(global.all_lang_settings, target_lang)

@@ -269,7 +269,7 @@ if (con == 3)
         
         if (rtimer > (dingtime * 1))
         {
-            var xscale = min(1, 180 / string_width(timegrade))
+            var xscale = scr_lang_fit(180, timegrade)
             // draw_text_color(_xx + 120, _yy + (1 * mspace), timegrade, timegradeblend, timegradeblend, timegradeblend, timegradeblend, 1);
             draw_text_transformed_colour(_xx + 120, _yy + (1 * mspace), timegrade, xscale, 1, 0, timegradeblend, timegradeblend, timegradeblend, timegradeblend, 1);
             
@@ -279,7 +279,7 @@ if (con == 3)
         
         if (rtimer > (dingtime * 2))
         {
-            var xscale = min(1, 180 / string_width(damagegrade))
+            var xscale = scr_lang_fit(180, damagegrade)
             // draw_text_color(_xx + 120, _yy + (2 * mspace), damagegrade, damagegradeblend, damagegradeblend, damagegradeblend, damagegradeblend, 1);
             draw_text_transformed_colour(_xx + 120, _yy + (2 * mspace), damagegrade, xscale, 1, 0, damagegradeblend, damagegradeblend, damagegradeblend, damagegradeblend, 1);
             
@@ -289,7 +289,7 @@ if (con == 3)
         
         if (rtimer > (dingtime * 3))
         {
-            var xscale = min(1, 180 / string_width(tpgrade))
+            var xscale = scr_lang_fit(180, tpgrade)
             // draw_text_color(_xx + 120, _yy + (3 * mspace), tpgrade, tpgradeblend, tpgradeblend, tpgradeblend, tpgradeblend, 1);
             draw_text_transformed_colour(_xx + 120, _yy + (3 * mspace), tpgrade, xscale, 1, 0, tpgradeblend, tpgradeblend, tpgradeblend, tpgradeblend, 1);
             

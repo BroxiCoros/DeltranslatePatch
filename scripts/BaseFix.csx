@@ -431,7 +431,129 @@ IterateOverCodeEntries(scriptFolder + "CodeEntries");
 
 #endregion
 
-#region Замена кусков кода 
+#region Gemelos vanilla para los idiomas nativos
+
+// ============================================================================
+// GEMELO VANILLA
+// ============================================================================
+// El mod reemplaza entradas de codigo ENTERAS por versiones reescritas para
+// texto traducido: normalizan posiciones, meten escalados para que quepan las
+// etiquetas largas y, de paso, pierden los ajustes por idioma de vanilla
+// (`langopt(en, ja)` y `if (global.lang == "ja")`). Medido contra el volcado del
+// juego: 164 ajustes perdidos en 40 entradas, el 62% en el
+// `obj_darkcontroller_Draw_0` de cada capitulo.
+//
+// Con un pack de idioma eso da igual (la maquetacion es la del mod y es
+// coherente), pero con un idioma NATIVO se nota: el jugador espera el juego de
+// Toby y ve la maquetacion del mod.
+//
+// En vez de perseguir cada defecto a mano, aqui se guarda el codigo VANILLA de
+// la entrada como funcion (`scr_native_<entrada>`) y se antepone a la version
+// del mod un desvio:
+//
+//     if (is_native_lang()) { scr_native_<entrada>(); exit; }
+//
+// Asi, en idioma nativo el juego ejecuta literalmente el codigo original. La
+// paridad es por construccion, no por parches, y se regenera sola en cada
+// actualizacion del juego porque el gemelo sale del data.win nuevo.
+//
+// Funciona porque `GetOrig()` ya restaura el codigo original en la entrada
+// antes de que el mod la pise (es lo que hace idempotente al patcher), asi que
+// decompilar justo despues devuelve vanilla.
+//
+// El codigo de un evento se comporta igual llamado como funcion: `self` sigue
+// siendo la instancia que lo llama y `exit` retorna de la funcion.
+//
+// LIMITES:
+//   - Solo eventos de objeto (`gml_Object_*`). Los scripts tendrian que
+//     replicar ademas la firma de argumentos; quedan para otra iteracion.
+//   - Solo entradas cuyo vanilla tenga logica por idioma: en el resto el gemelo
+//     no aporta nada y solo engordaria el data.win.
+//   - Lista negra: entradas que sostienen funciones PROPIAS del fork; con
+//     gemelo, en idioma nativo esa funcion desapareceria. La critica es
+//     DEVICE_MENU_*, desde donde se abre el menu de idioma: sin ella te
+//     quedarias en japones sin forma de volver al español.
+//   - En idioma nativo el `obj_darkcontroller` corre vanilla, asi que NO sale
+//     la fila del borde que añade Borders.csx. Es asumible: ese ajuste se
+//     cambia desde un idioma con pack y se sigue respetando.
+//   - El Menu raiz no comparte `SharedCodeEntries`, asi que ahi no existe
+//     `is_native_lang()` y el mecanismo se desactiva entero.
+
+var twinBlock = new string[] {
+    "obj_gamecontroller_", "obj_lang_settings_", "DEVICE_MENU_",
+    "obj_time_", "obj_border_controller_", "obj_initializer2_",
+    "obj_date_controller_", "obj_onion_event_",
+    "obj_room_ranking_b_", "obj_ch2_lw_cutscenes_short_",
+    "obj_dw_church_ripplepuzzle_postgers_"
+};
+
+var twinLangPattern = new System.Text.RegularExpressions.Regex(@"global\.lang|langopt\s*\(|is_english\s*\(");
+var twinDone = new HashSet<string>();
+var twinFailed = new List<string>();
+bool twinEnabled = !ScriptPath.Contains("Menu");
+
+// Nombre del objeto al que pertenece una entrada, quitando el sufijo de evento:
+// "gml_Object_obj_darkcontroller_Draw_0" -> "obj_darkcontroller".
+var twinEventSuffix = new System.Text.RegularExpressions.Regex(
+    @"_(Create|Destroy|CleanUp|PreCreate|Alarm|Step|Collision|Keyboard|KeyPress|KeyRelease|Mouse|Other|Draw|Trigger|Gesture)_\d+$");
+
+string TwinObjectOf(string codeName)
+{
+    if (!codeName.StartsWith("gml_Object_"))
+        return null;
+
+    return twinEventSuffix.Replace(codeName.Substring("gml_Object_".Length), "");
+}
+
+bool TwinAllowed(string codeName)
+{
+    if (!twinEnabled || !codeName.StartsWith("gml_Object_"))
+        return false;
+
+    foreach (var b in twinBlock)
+        if (codeName.Contains(b))
+            return false;
+
+    return true;
+}
+
+// Objetos cuyas entradas van con gemelo. Se decide POR OBJETO, no por entrada:
+// si el Draw corre vanilla pero el Step se queda con el del mod, el menu se
+// descuadra (el cursor navega filas que ya no se dibujan, p.ej. la del borde
+// que añade Borders.csx). O todo el objeto, o nada.
+var twinObjects = new HashSet<string>();
+
+string MakeVanillaTwin(string codeName, string vanillaGml)
+{
+    if (!TwinAllowed(codeName) || string.IsNullOrEmpty(vanillaGml))
+        return null;
+
+    string twinName = "scr_native_" + codeName.Substring("gml_Object_".Length);
+
+    if (twinDone.Contains(twinName))
+        return twinName;
+
+    try
+    {
+        CreateBlankFunction(twinName);
+        ReplaceGML(Data.Code.ByName("gml_GlobalScript_" + twinName),
+                   "function " + twinName + "() //gml_Script_" + twinName + "\n{\n" + vanillaGml + "\n}");
+        twinDone.Add(twinName);
+        return twinName;
+    }
+    catch (Exception e)
+    {
+        // Si el vanilla decompilado no recompila, se sigue sin gemelo: esa
+        // entrada se queda con la maquetacion del mod, que es lo que habia
+        // antes. Se reporta al final para no perderlo de vista.
+        twinFailed.Add(codeName + ": " + e.Message);
+        return null;
+    }
+}
+
+#endregion
+
+#region Замена кусков кода
 
 var codesWithSpritesIds = new Dictionary<string, List<string>>();
 var spriteIdDict = Data.Sprites.Select((item, index) => (item, index))
@@ -505,15 +627,129 @@ await Task.Run(() =>
 {
     SetProgressBar(null, "Code entries replacing", 0, maxCount);
 
+    // --- Pasada 1: restaurar el vanilla y quedarnos con su texto -------------
+    // `GetOrig()` deja el codigo original en la entrada, asi que decompilar
+    // aqui da vanilla. Se cachea para no decompilar dos veces y, sobre todo,
+    // para poder decidir los gemelos POR OBJETO antes de pisar nada.
+    var vanillaText = new Dictionary<string, string>();
+    var entriesOk = new HashSet<string>();
+    var replacedNames = new HashSet<string>(codeEntrs.Select(c => c.Item1));
+
+    // Ademas de las entradas que se reemplazan enteras, se miran las que solo
+    // toca `CodeChanges.txt` por find&replace: ahi tambien se pierden ajustes de
+    // idioma. El caso que lo destapo es `obj_chapter_continue_Create_0`, que en
+    // vanilla lleva el japones incrustado
+    //   choice_text[0] = (global.lang == "en") ? "Continue to..." : "Chapter ~1へ進む";
+    // y que el mod reescribe a una clave de loc que NO existe en el
+    // `lang_ja.json` del juego, asi que en japones nativo caia al ingles.
+    var twinCandidates = new List<string>();
+    twinCandidates.AddRange(codeEntrs.Select(c => c.Item1));
+    twinCandidates.AddRange(codeChanges.Keys);
+
+    foreach (var codeName in twinCandidates)
+    {
+        if (!GetOrig(codeName))
+            continue;
+
+        entriesOk.Add(codeName);
+
+        if (twinEnabled && TwinAllowed(codeName) && !vanillaText.ContainsKey(codeName))
+        {
+            try
+            {
+                var vgml = Decompile(Data.Code.ByName(codeName));
+                vanillaText[codeName] = vgml;
+
+                // Basta con que UNA entrada del objeto tenga logica por idioma
+                // para que el objeto entero vaya con gemelo.
+                if (!string.IsNullOrEmpty(vgml) && twinLangPattern.IsMatch(vgml))
+                    twinObjects.Add(TwinObjectOf(codeName));
+            }
+            catch (Exception) { }
+        }
+    }
+
+    // --- Pasada 2: crear gemelos y sustituir ---------------------------------
     foreach (var code in codeEntrs)
     {
-        if (!GetOrig(code.Item1))
+        if (!entriesOk.Contains(code.Item1))
             continue;
         // ScriptMessage(code.Item1);
         // Data.Code.ByName(code.Item1).ReplaceGML(code.Item2, Data);
-        ReplaceGML(Data.Code.ByName(code.Item1), code.Item2);
+
+        string twinName = null;
+
+        if (twinEnabled && vanillaText.ContainsKey(code.Item1)
+            && twinObjects.Contains(TwinObjectOf(code.Item1)))
+        {
+            twinName = MakeVanillaTwin(code.Item1, vanillaText[code.Item1]);
+        }
+
+        var gml = code.Item2;
+
+        if (twinName != null)
+        {
+            gml = "// Idioma nativo del juego: ejecutar el codigo original.\n"
+                + "if (is_native_lang())\n{\n    " + twinName + "();\n    exit;\n}\n\n"
+                + gml;
+        }
+
+        ReplaceGML(Data.Code.ByName(code.Item1), gml);
         IncrementProgress();
         UpdateProgressValue(GetProgress());
+    }
+
+    // --- Pasada 3: el resto de entradas de los objetos con gemelo ------------
+    // Hay entradas que el mod NO reemplaza pero que sí toca despues, por
+    // find&replace, `Borders.csx` o `CodeChanges.txt`. El caso que lo destapo:
+    // `obj_darkcontroller_Step_0` no esta en CodeEntries, pero Borders le añade
+    // la fila del borde al menu. Con el Draw en vanilla y el Step parcheado, el
+    // cursor navegaba a una fila que ya no se dibuja.
+    //
+    // Aqui se congela una copia PRISTINA de esas entradas y se les pone el
+    // mismo desvio. Como el gemelo se saca antes de que nadie las toque, el
+    // idioma nativo queda inmune a lo que venga despues.
+    if (twinEnabled)
+    {
+        foreach (var obj in twinObjects.ToList())
+        {
+            var prefix = "gml_Object_" + obj + "_";
+
+            foreach (var c in Data.Code.Where(x => x.Name.Content.StartsWith(prefix)).ToList())
+            {
+                var name = c.Name.Content;
+
+                // Solo se salta lo que ya proceso la pasada 2 (CodeEntries).
+                if (name.EndsWith("_old") || replacedNames.Contains(name))
+                    continue;
+
+                // TwinObjectOf evita confundir obj_x con otro objeto cuyo
+                // nombre empiece igual (obj_x_algo).
+                if (!TwinAllowed(name) || TwinObjectOf(name) != obj)
+                    continue;
+
+                string vgml;
+                try
+                {
+                    vgml = Decompile(c);
+                }
+                catch (Exception) { continue; }
+
+                var tn = MakeVanillaTwin(name, vgml);
+
+                if (tn == null)
+                    continue;
+
+                ReplaceGML(c, "// Idioma nativo del juego: ejecutar el codigo original.\n"
+                    + "if (is_native_lang())\n{\n    " + tn + "();\n    exit;\n}\n\n" + vgml);
+            }
+        }
+    }
+
+    if (twinEnabled)
+    {
+        ScriptMessage("Gemelos vanilla creados: " + twinDone.Count
+            + (twinFailed.Count > 0 ? ("  | FALLIDOS: " + twinFailed.Count + "\n" + string.Join("\n", twinFailed)) : ""));
     }
 
     foreach (var code in codesWithSpritesIds)
