@@ -19,7 +19,16 @@ init = function(arg0)
     
     if (!global.is_console)
     {
-        var quit_text = scr_get_lang_string("Quit", "gml_Object_obj_screen_select_footer_Create_0_1");
+        // Este objeto no puede correr su gemelo vanilla: es de donde cuelga el
+        // selector de idiomas del fork (en vanilla ahi solo hay un interruptor
+        // en<->ja). Y como en idioma nativo no hay pack que consultar,
+        // `scr_get_lang_string` devolveria el literal ingles. Asi que este
+        // texto se lleva los dos idiomas del juego consigo, copiados de su
+        // vanilla. Regla general: lo que por necesidad no puede delegar en el
+        // gemelo, tiene que traer los idiomas nativos incorporados.
+        var quit_text = is_native_lang()
+            ? ((global.lang == "en") ? "Quit" : "終了")
+            : scr_get_lang_string("Quit", "gml_Object_obj_screen_select_footer_Create_0_1");
         var quit_choice = instance_create(x + 180, y + 24, obj_ui_choice);
         quit_choice.init(id, quit_text, UnknownEnum.Value_4);
         quit_choice.set_alpha(0);
