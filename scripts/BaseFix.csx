@@ -489,6 +489,7 @@ var twinBlock = new string[] {
 
 var twinLangPattern = new System.Text.RegularExpressions.Regex(@"global\.lang|langopt\s*\(|is_english\s*\(");
 var twinDone = new HashSet<string>();
+var twinBad = new HashSet<string>();
 var twinFailed = new List<string>();
 bool twinEnabled = !ScriptPath.Contains("Menu");
 
@@ -523,6 +524,45 @@ bool TwinAllowed(string codeName)
 // que añade Borders.csx). O todo el objeto, o nada.
 var twinObjects = new HashSet<string>();
 
+// Compila UN gemelo en su propio grupo.
+//
+// `ReplaceGML` no compila nada: solo apunta el texto en `changedCodes` para el
+// CompileGroup UNICO de `SaveEntries()`. Y ese grupo es todo-o-nada: si una
+// sola entrada no compila, se descartan TODAS las sustituciones del parche y el
+// script termina igualmente con rc=0 y "Saved data file to...".
+//
+// El resto de lo que entra en ese grupo es GML escrito a mano y revisado en el
+// repo; el cuerpo de un gemelo, en cambio, es salida del decompilador sobre un
+// data.win arbitrario. Basta con que una actualizacion del juego traiga algo
+// que Underanalyzer decompile mal para tumbar el parche entero sin avisar.
+//
+// Por eso cada gemelo se compila aparte: si falla, el peor caso es "ese objeto
+// no tiene paridad vanilla" en vez de "el parche no se aplico".
+bool TwinCompile(string twinName, string gml)
+{
+    var code = Data.Code.ByName("gml_GlobalScript_" + twinName);
+
+    CompileGroup group = new(Data)
+    {
+        MainThreadAction = ExecuteInUIThread
+    };
+
+    group.QueueCodeReplace(code, gml);
+    CompileResult result = group.Compile();
+
+    if (!result.Successful)
+    {
+        twinFailed.Add(twinName + ": " + result.PrintAllErrors(true));
+        return false;
+    }
+
+    // Ya esta compilado en la entrada: fuera de `changedCodes` para que el
+    // grupo final ni lo repita ni pueda tumbarse por su culpa.
+    changedCodes.Remove(code.Name.Content);
+
+    return true;
+}
+
 string MakeVanillaTwin(string codeName, string vanillaGml)
 {
     if (!TwinAllowed(codeName) || string.IsNullOrEmpty(vanillaGml))
@@ -533,20 +573,38 @@ string MakeVanillaTwin(string codeName, string vanillaGml)
     if (twinDone.Contains(twinName))
         return twinName;
 
+    if (twinBad.Contains(twinName))
+        return null;
+
+    string header = "function " + twinName + "() //gml_Script_" + twinName + "\n{\n";
+
     try
     {
-        CreateBlankFunction(twinName);
-        ReplaceGML(Data.Code.ByName("gml_GlobalScript_" + twinName),
-                   "function " + twinName + "() //gml_Script_" + twinName + "\n{\n" + vanillaGml + "\n}");
+        // `CreateBlankFunction` toca `Data.Code`, `Data.Scripts` y
+        // `Data.GlobalInitScripts`, y esto corre dentro del `Task.Run` de la
+        // sustitucion: hay que hacerlo en el hilo de UI, como ya hace
+        // `GetOrig()` con su `Data.Code.Add`. Por CLI da igual, pero en la GUI
+        // de UMT 0.9 tocar esas colecciones desde otro hilo revienta el
+        // binding.
+        ExecuteInUIThread(() => CreateBlankFunction(twinName));
+
+        if (!TwinCompile(twinName, header + vanillaGml + "\n}"))
+        {
+            // Que la funcion quede vacia pero valida. Al devolver null no se
+            // pone el desvio, asi que esa entrada se queda con la version del
+            // mod tambien en idioma nativo: es lo que habia antes del gemelo.
+            TwinCompile(twinName, header + "}");
+            twinBad.Add(twinName);
+            return null;
+        }
+
         twinDone.Add(twinName);
         return twinName;
     }
     catch (Exception e)
     {
-        // Si el vanilla decompilado no recompila, se sigue sin gemelo: esa
-        // entrada se queda con la maquetacion del mod, que es lo que habia
-        // antes. Se reporta al final para no perderlo de vista.
         twinFailed.Add(codeName + ": " + e.Message);
+        twinBad.Add(twinName);
         return null;
     }
 }
@@ -726,6 +784,19 @@ await Task.Run(() =>
                 // TwinObjectOf evita confundir obj_x con otro objeto cuyo
                 // nombre empiece igual (obj_x_algo).
                 if (!TwinAllowed(name) || TwinObjectOf(name) != obj)
+                    continue;
+
+                // `GetOrig()` tambien aqui, y no un `Decompile()` a pelo: estas
+                // entradas no las respalda nadie mas, asi que sin el
+                // `<entrada>_old` el patcher deja de ser idempotente. Sobre un
+                // data.win YA parcheado, `Decompile` devolveria el codigo con
+                // el desvio ya puesto y el gemelo pasaria a ser
+                //   scr_native_X() { if (is_native_lang()) { scr_native_X(); exit; } ... }
+                // o sea, recursion infinita en cuanto se juega en idioma
+                // nativo. Con `GetOrig` la entrada vuelve a vanilla primero y
+                // la segunda pasada del patcher da el mismo resultado que la
+                // primera.
+                if (!GetOrig(name))
                     continue;
 
                 string vgml;
