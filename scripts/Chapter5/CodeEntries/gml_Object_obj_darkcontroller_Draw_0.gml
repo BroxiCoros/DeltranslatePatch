@@ -538,19 +538,19 @@ if (global.menuno == 4)
     
     draw_set_color(c_white);
     var statname = stringsetloc("Attack: ", "obj_darkcontroller_slash_Draw_0_gml_207_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, ch_y[0], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[0] + 6, 1);
     var statname = stringsetloc("Defense: ", "obj_darkcontroller_slash_Draw_0_gml_208_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, ch_y[1], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[1] + 6, 4);
     var statname = stringsetloc("Magic: ", "obj_darkcontroller_slash_Draw_0_gml_209_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, ch_y[2], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[2] + 6, 5);
     var statname = stringsetloc("Guts: ", "obj_darkcontroller_slash_Draw_0_gml_212_0");
-    var xx_scale = min(1, 112 / string_width(statname));
+    var xx_scale = scr_lang_fit(112, statname);
     draw_text_transformed(xx + 100, ch_y[5], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[5] + 6, 9);
     char_desc = stringsetloc("LV1 ", "obj_darkcontroller_slash_Draw_0_gml_214_0");
@@ -624,7 +624,7 @@ if (global.menuno == 4)
                 {
                     draw_item_icon(xx + 74, ch_y[3] + 8, 28);
                     
-                    var j_scale = min(1, 131 / string_width(str_jumps));
+                    var j_scale = scr_lang_fit(131, str_jumps);
                     draw_text_transformed(xx + 100, ch_y[3], str_jumps, j_scale, 1, 0);
                     
                     var jumpcount = string(global.flag[1904]);
@@ -641,7 +641,7 @@ if (global.menuno == 4)
                 }
                 else
                 {
-                    var s_scale = min(1, 129 / string_width(str_slashes));
+                    var s_scale = scr_lang_fit(129, str_slashes);
                     draw_text_transformed(xx + 100, ch_y[4], str_slashes, s_scale, 1, 0);
                 }
                 
@@ -715,7 +715,7 @@ if (global.menuno == 4)
             guts_amount = 4;
         
         var statname = stringsetloc("Rudeness ", "obj_darkcontroller_slash_Draw_0_gml_251_0");
-        var xx_scale = min(1, 122 / string_width(statname));
+        var xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[3] + 6, 13);
         draw_text(xx + 230, ch_y[3], string_hash_to_newline(rude_amount));
@@ -748,7 +748,7 @@ if (global.menuno == 4)
             else
             {
                 draw_set_color(-1);
-                xx_scale = min(1, 122 / string_width(readstring));
+                xx_scale = scr_lang_fit(122, readstring);
                 draw_text_transformed(xx + 100, ch_y[4], readstring, xx_scale, 1, 0);
                 var memfont = draw_get_font();
                 draw_set_font(scr_84_get_font("mainbig"));
@@ -791,7 +791,7 @@ if (global.menuno == 4)
             __scale = 1;
         
         var statname = stringsetloc("Fluffiness", "obj_darkcontroller_slash_Draw_0_gml_286_0")
-        var xx_scale = min(1, 122 / string_width(statname))
+        var xx_scale = scr_lang_fit(122, statname)
         draw_text_transformed((xx + 100), ch_y[4], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[4] + 6, 12);
         
@@ -805,12 +805,12 @@ if (global.menuno == 4)
         char_desc = stringsetloc("LV5 Mistletoe#Things got#serious today.", "obj_darkcontroller_slash_Draw_0_gml_790_0");
         var coldness_amount = clamp(47 + (global.flag[925] * 7), 47, 100);
         var statname = stringsetloc("Coldness ", "obj_darkcontroller_slash_Draw_0_gml_388_0");
-        var xx_scale = min(1, 122 / string_width(statname));
+        var xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[3] + 6, 17);
         draw_text(xx + 230, ch_y[3], string_hash_to_newline(coldness_amount));
         statname = stringsetloc("Boldness", "obj_darkcontroller_slash_Draw_0_gml_391_0");
-        xx_scale = min(1, 122 / string_width(statname));
+        xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[4], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[4] + 6, 16);
         var boldness_amount = min(-12 + ((global.plot - 70) * 3), 100);
@@ -822,7 +822,9 @@ if (global.menuno == 4)
     var guts_xoff = -max(0, guts_amount - 3) * 20;
     
     for (var i = 0; i < guts_amount; i += 1)
-        draw_item_icon(xx + 230 + (i * 20) + guts_xoff, ch_y[5] + 6, 9);
+        // Vanilla los dibuja en xx + 190; el mod los movio a 230 para dejar sitio
+        // a etiquetas traducidas mas largas.
+        draw_item_icon(xx + (is_native_lang() ? 190 : 230) + langopt(0, 16) + (i * 20) + guts_xoff, ch_y[5] + 6, 9);
     
     atsum = global.at[global.char[coord]] + global.itemat[global.char[coord]][0] + global.itemat[global.char[coord]][1] + global.itemat[global.char[coord]][2];
     dfsum = global.df[global.char[coord]] + global.itemdf[global.char[coord]][0] + global.itemdf[global.char[coord]][1] + global.itemdf[global.char[coord]][2];
@@ -883,10 +885,19 @@ if (global.menuno == 4)
             if (tpcoststring == "102%")
                 tpcoststring = "??%";
             
-            draw_set_halign(fa_right);
-            draw_text(xx + 340 + 42, ch_y[i], string_hash_to_newline(tpcoststring));
-            draw_set_halign(fa_left);
-            xx_scale = min(1, 198 / string_width(global.spellname[charcoord][i]));
+            // Ver Cap.1: en japones el coste va a la izquierda en xx + 310, si no
+            // se solapa con el corazon.
+            if (global.lang == "ja")
+            {
+                draw_text_width(xx + 310, ch_y[i], string_hash_to_newline(tpcoststring), 42);
+            }
+            else
+            {
+                draw_set_halign(fa_right);
+                draw_text(xx + 340 + 42, ch_y[i], string_hash_to_newline(tpcoststring));
+                draw_set_halign(fa_left);
+            }
+            xx_scale = scr_lang_fit(198, global.spellname[charcoord][i]);
             draw_text_transformed(xx + 390, ch_y[i], string_hash_to_newline(global.spellname[charcoord][i]), xx_scale, 1, 0);
         }
     }
@@ -1044,7 +1055,7 @@ if (global.menuno == 2)
     if (charweaponname[charcoord] != " " || charweaponname[charcoord] != "")
     {
         var eqname = string_hash_to_newline(charweaponname[charcoord]);
-        var eq_scale = min(1, 230 / string_width(eqname));
+        var eq_scale = scr_lang_fit(230, eqname);
         draw_text_transformed(xx + 365, yy + 112, eqname, eq_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 118, charweaponicon[charcoord]);
     }
@@ -1058,7 +1069,7 @@ if (global.menuno == 2)
     if (global.chararmor1[charcoord] != 0)
     {
         var eqname = string_hash_to_newline(chararmor1name[charcoord]);
-        var eq_scale = min(1, 230 / string_width(eqname));
+        var eq_scale = scr_lang_fit(230, eqname);
         draw_text_transformed(xx + 365, yy + 142, eqname, eq_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 148, chararmor1icon[charcoord]);
     }
@@ -1072,7 +1083,7 @@ if (global.menuno == 2)
     if (global.chararmor2[charcoord] != 0)
     {
         var eqname = string_hash_to_newline(chararmor2name[charcoord]);
-        var eq_scale = min(1, 230 / string_width(eqname));
+        var eq_scale = scr_lang_fit(230, eqname);
         draw_text_transformed(xx + 365, yy + 172, eqname, eq_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 178, chararmor2icon[charcoord]);
     }
@@ -1116,7 +1127,7 @@ if (global.menuno == 2)
             if (global.weapon[i] != 0)
             {
                 var lname = string_hash_to_newline(weaponname[i]);
-                var l_scale = min(1, 210 / string_width(lname));
+                var l_scale = scr_lang_fit(210, lname);
                 draw_text_transformed(xx + 384 + eq_xoff, yy + 230 + (j * ch_vspace), lname, l_scale, 1, 0);
             }
             else
@@ -1160,7 +1171,7 @@ if (global.menuno == 2)
             if (global.armor[i] != 0)
             {
                 var lname = string_hash_to_newline(armorname[i]);
-                var l_scale = min(1, 210 / string_width(lname));
+                var l_scale = scr_lang_fit(210, lname);
                 draw_text_transformed(xx + 384 + eq_xoff, yy + 230 + (j * ch_vspace), lname, l_scale, 1, 0);
             }
             else
@@ -1223,15 +1234,15 @@ if (global.menuno == 2)
     
     draw_set_color(c_white);
     var statname = stringsetloc("Attack: ", "obj_darkcontroller_slash_Draw_0_gml_586_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 0), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 0), 1);
     var statname = stringsetloc("Defense: ", "obj_darkcontroller_slash_Draw_0_gml_587_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 1), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 1), 4);
     var statname = stringsetloc("Magic: ", "obj_darkcontroller_slash_Draw_0_gml_588_0");
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 2), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 2), 5);
     atsum = global.at[global.char[coord]] + global.itemat[global.char[coord]][0] + global.itemat[global.char[coord]][1] + global.itemat[global.char[coord]][2];
@@ -1418,13 +1429,13 @@ if (global.menuno == 2)
             if (_abilitytext[i] == " " || _abilitytext[i] == "")
             {
                 statname = stringsetloc("(No ability.)", "obj_darkcontroller_slash_Draw_0_gml_766_0");
-                xx_scale = min(1, 182 / string_width(statname));
+                xx_scale = scr_lang_fit(182, statname);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), statname, xx_scale, 1, 0);
             }
             else
             {
-                xx_scale = min(1, 182 / string_width(_abilitytext[i]));
+                xx_scale = scr_lang_fit(182, _abilitytext[i]);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), string_hash_to_newline(_abilitytext[i]), xx_scale, 1, 0);
                 draw_set_color(c_orange);
@@ -1452,13 +1463,13 @@ if (global.menuno == 2)
             if (_abilitytext[i] == " " || _abilitytext[i] == "")
             {
                 statname = stringsetloc("(No ability.)", "obj_darkcontroller_slash_Draw_0_gml_766_0");
-                xx_scale = min(1, 182 / string_width(statname));
+                xx_scale = scr_lang_fit(182, statname);
                 draw_set_color(c_dkgray);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), statname, xx_scale, 1, 0);
             }
             else
             {
-                xx_scale = min(1, 182 / string_width(_abilitytext[i]));
+                xx_scale = scr_lang_fit(182, _abilitytext[i]);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), string_hash_to_newline(_abilitytext[i]), xx_scale, 1, 0);
                 draw_set_color(c_orange);
@@ -1820,7 +1831,7 @@ if (haveflowery)
         
         for (var i = 0; i < array_length(equipped); i++)
         {
-            var eq_scale = min(1, 230 / string_width(equipped[i]));
+            var eq_scale = scr_lang_fit(230, equipped[i]);
             draw_text_transformed(xx + 365 + loff, ((yy + 120) - 8) + (i * space), equipped[i], eq_scale, 1, 0);
             draw_sprite_ext(icon[i][0], icon[i][1], xx + 343 + loff, yy + 118 + (i * space), 2, 2, 0, c_white, 1);
         }

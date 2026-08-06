@@ -295,7 +295,7 @@ if (global.bmenuno == 2 && global.myfight == 0 && global.flag[34] == 1)
     
     draw_set_color(c_gray);
     var spell_desc = string_hash_to_newline(global.spelldescb[thischar][(page * 6) + spellcoord])
-    var xx_scale = min(1, 136 / string_width(spell_desc))
+    var xx_scale = scr_lang_fit(136, spell_desc)
     draw_text_transformed(xx + spell_offset, yy + 375, spell_desc, xx_scale, 1, 0);
     thiscost = floor((global.spellcost[thischar][(page * 6) + spellcoord] / global.maxtension) * 100);
     draw_set_color(c_orange);
@@ -393,7 +393,7 @@ if (global.bmenuno == 2 && global.myfight == 0 && global.flag[34] == 0)
     {
         draw_set_color(c_gray);
         var spell_desc = string_hash_to_newline(global.battlespelldesc[thischar][(page * 6) + spellcoord])
-        var xx_scale = min(1, 136 / string_width(spell_desc))
+        var xx_scale = scr_lang_fit(136, spell_desc)
         draw_text_transformed(xx + spell_offset, yy + 375, spell_desc, xx_scale, 1, 0);
         draw_set_color(c_orange);
         
@@ -449,7 +449,7 @@ if (global.bmenuno == 4 && global.myfight == 0)
     
     draw_set_color(c_gray);
     var item_desc = string_hash_to_newline(tempitemdescb[(page * 6) + itemcoord][global.charturn])
-    var xx_scale = min(1, 136 / string_width(item_desc))
+    var xx_scale = scr_lang_fit(136, item_desc)
     draw_text_transformed(xx + spell_offset, yy + 375, item_desc, xx_scale, 1, 0);
 }
 
@@ -635,7 +635,7 @@ if (global.bmenuno == 9 && global.myfight == 0)
     else
     {
         var act_desc = string_hash_to_newline(actdesc[actcoord])
-        var xx_scale = min(1, 136 / string_width(act_desc))
+        var xx_scale = scr_lang_fit(136, act_desc)
         draw_text_transformed(xx + 500, yy + 375, act_desc, xx_scale, 1, 0);
     }
     
