@@ -504,7 +504,16 @@ var twinBlock = new string[] {
     "obj_time_", "obj_border_controller_", "obj_initializer2_",
     "obj_date_controller_", "obj_onion_event_",
     "obj_room_ranking_b_", "obj_ch2_lw_cutscenes_short_",
-    "obj_dw_church_ripplepuzzle_postgers_"
+    "obj_dw_church_ripplepuzzle_postgers_",
+    // El menu de opciones lleva la fila del BORDE, que es del fork y no existe
+    // en el juego (en PC vanilla solo esta en la rama de consola). Con gemelo,
+    // en idioma nativo esa fila desaparecia; y parchearla sobre el gemelo desde
+    // `Borders.csx` sale mal (ver la nota de LIMITES de mas arriba). Asi que
+    // este objeto corre SIEMPRE la version del mod, en todos los idiomas: la
+    // misma regla que `DEVICE_MENU_*`. Se pierden los ajustes finos de vanilla
+    // en ese menu (offsets tipo `(global.lang == "ja") ? -4 : 0`) a cambio de
+    // que la fila este y el cursor cuadre en todos los idiomas.
+    "obj_darkcontroller_"
 };
 
 var twinLangPattern = new System.Text.RegularExpressions.Regex(@"global\.lang|langopt\s*\(|is_english\s*\(");
@@ -528,7 +537,10 @@ string TwinObjectOf(string codeName)
 
 bool TwinAllowed(string codeName)
 {
-    if (!twinEnabled || !codeName.StartsWith("gml_Object_"))
+    if (!twinEnabled)
+        return false;
+
+    if (!codeName.StartsWith("gml_Object_") && !codeName.StartsWith("gml_GlobalScript_"))
         return false;
 
     foreach (var b in twinBlock)
@@ -536,6 +548,107 @@ bool TwinAllowed(string codeName)
             return false;
 
     return true;
+}
+
+// ---------------------------------------------------------------------------
+// GEMELOS DE SCRIPT
+// ---------------------------------------------------------------------------
+// Con gemelo solo en los eventos, la frontera entre "codigo del mod" y "codigo
+// vanilla" queda mal trazada: un evento en vanilla sigue llamando a los
+// `gml_GlobalScript_*` del mod, y algunos estan reescritos dando por hecho el
+// estado que crean las entradas del mod. Caso real (Cap.5, hablando con
+// Flowery, solo en ingles): el `scr_asterskip` del mod usa `cur_string_width`,
+// una variable que INVENTA el mod y que inicializa en `obj_writer_Create_0`.
+// En idioma nativo `obj_writer` entero corre vanilla, esa variable no existe
+// nunca y el juego revienta. En japones no pasaba porque esa linea vive dentro
+// de `if (aster == 1 && autoaster == 1)` y el japones no usa los asteriscos.
+//
+// La regla que lo arregla sin listas de excepciones:
+//
+//     si la funcion EXISTE EN VANILLA, lleva gemelo; si la inventa el fork, no.
+//
+// Y es que esa pregunta separa sola las dos cosas. Medido en el Cap.5: de las
+// 60 funciones que toca el mod, 31 son nuevas del fork (`scr_init_localization`,
+// `scr_switch_game_language`, `get_lang_folder_path`, `add_font`,
+// `is_native_lang`...: toda la infraestructura de idioma, que DEBE seguir
+// activa) y 29 existen en vanilla (`scr_asterskip`, `scr_charbox`,
+// `scr_shopmenu`, `snd_init`, `stringsetloc`...: codigo de juego reescrito para
+// que quepa el texto traducido, que en idioma nativo sobra).
+//
+// Ojo: aqui NO se filtra por `twinLangPattern`. En los eventos el criterio es
+// "su vanilla tiene logica por idioma", pero el problema de los scripts no es
+// la maquetacion sino el ESTADO: `scr_asterskip` no menciona el idioma por
+// ningun lado y aun asi rompe.
+
+// Una funcion inventada por el fork se reconoce porque su "vanilla" es la
+// funcion en blanco que dejo `CreateBlankFunction`. Sirve igual en la primera
+// pasada del patcher y en las siguientes (`GetOrig` restaura ese mismo blanco),
+// asi que no hace falta llevar registro de lo que se creo.
+var twinBlankBody = new System.Text.RegularExpressions.Regex(
+    @"^\s*function\s+[A-Za-z_0-9]+\s*\([^)]*\)\s*(//[^\n]*)?\s*\{\s*\}\s*$");
+
+bool TwinScriptQualifies(string codeName, string vanillaGml)
+{
+    if (!codeName.StartsWith("gml_GlobalScript_") || string.IsNullOrEmpty(vanillaGml))
+        return false;
+
+    return !twinBlankBody.IsMatch(vanillaGml);
+}
+
+// Nombres de las funciones que declara un texto. Una entrada no tiene por que
+// declarar una sola funcion con su mismo nombre: `scr_rhythmgame_lyrics` del
+// Cap.3 declara siete (`scr_rhythmgame_add_lyric`, `..._parse_lyrics`, ...), asi
+// que el nombre hay que sacarlo del texto, no del nombre de la entrada.
+var twinFuncDecl = new System.Text.RegularExpressions.Regex(
+    @"function\s+([A-Za-z_0-9]+)\s*\(");
+
+List<string> TwinFuncNames(string gml)
+{
+    return twinFuncDecl.Matches(gml)
+                       .Select(m => m.Groups[1].Value)
+                       .Distinct()
+                       .ToList();
+}
+
+// El desvio de un script no puede ir delante del texto (ahi esta la declaracion
+// `function`): tiene que entrar DENTRO del cuerpo, justo tras la llave. Y va en
+// CADA funcion que el vanilla declare, no solo en la primera.
+//
+// Las llamadas entre funciones de la misma entrada no hay que tocarlas: si el
+// gemelo llama a la version del mod, esa tiene su propio desvio y acaba tambien
+// en vanilla. Una indireccion de mas, ningun caso especial.
+string TwinScriptDivert(string modGml, string funcName, string twinName)
+{
+    var decl = new System.Text.RegularExpressions.Regex(
+        @"(function\s+" + funcName + @"\s*\([^)]*\)[^\n{]*\r?\n?\s*\{)");
+
+    if (!decl.IsMatch(modGml))
+        return null;
+
+    // Los argumentos se reenvian SIEMPRE por `argument[]`, nunca por el nombre
+    // de los parametros. El desvio se inserta en el cuerpo del MOD, y ahi los
+    // parametros no tienen por que llamarse igual que en el vanilla: usando los
+    // nombres del vanilla, `stringsetloc` acababa compilando
+    // `scr_native_stringsetloc(self.arg0, self.arg1)` -- variables de instancia
+    // inexistentes, o sea `undefined` en cada llamada.
+    //
+    // Un `switch` sobre `argument_count` en vez de `script_execute_ext` para no
+    // depender de que la referencia a la funcion se resuelva como indice de
+    // script. Cubre de paso las 6 funciones de firma variable (la familia
+    // `*subloc`), asi que no hay dos caminos que mantener.
+    var sb = new StringBuilder();
+    sb.Append("        switch (argument_count)\n        {\n");
+    for (int n = 0; n <= 8; n++)
+    {
+        var args = string.Join(", ", Enumerable.Range(0, n).Select(i => "argument[" + i + "]"));
+        sb.Append("            case " + n + ": return " + twinName + "(" + args + ");\n");
+    }
+    sb.Append("        }\n        return undefined;");
+    string call = sb.ToString();
+
+    return decl.Replace(modGml,
+        "$1\n    // Idioma nativo del juego: ejecutar la funcion original.\n"
+        + "    if (is_native_lang())\n    {\n" + call + "\n    }\n", 1);
 }
 
 // Objetos cuyas entradas van con gemelo. Se decide POR OBJETO, no por entrada:
@@ -588,7 +701,9 @@ string MakeVanillaTwin(string codeName, string vanillaGml)
     if (!TwinAllowed(codeName) || string.IsNullOrEmpty(vanillaGml))
         return null;
 
-    string twinName = "scr_native_" + codeName.Substring("gml_Object_".Length);
+    bool isScript = codeName.StartsWith("gml_GlobalScript_");
+    string plainName = codeName.Substring(isScript ? "gml_GlobalScript_".Length : "gml_Object_".Length);
+    string twinName = "scr_native_" + plainName;
 
     if (twinDone.Contains(twinName))
         return twinName;
@@ -597,6 +712,34 @@ string MakeVanillaTwin(string codeName, string vanillaGml)
         return null;
 
     string header = "function " + twinName + "() //gml_Script_" + twinName + "\n{\n";
+    string cuerpo;
+
+    if (isScript)
+    {
+        // El vanilla de un script YA viene envuelto en su `function X(...)` (y a
+        // veces con preambulo delante, como el `var fnt;` de `scr_get_font`).
+        // Basta renombrar cada declaracion, conservando firmas y preambulo.
+        var funcs = TwinFuncNames(vanillaGml);
+
+        if (funcs.Count == 0)
+        {
+            twinFailed.Add(codeName + ": el vanilla no declara ninguna funcion");
+            twinBad.Add(twinName);
+            return null;
+        }
+
+        cuerpo = vanillaGml;
+
+        foreach (var f in funcs)
+        {
+            cuerpo = new System.Text.RegularExpressions.Regex(@"function\s+" + f + @"\s*\(")
+                         .Replace(cuerpo, "function scr_native_" + f + "(", 1);
+        }
+    }
+    else
+    {
+        cuerpo = header + vanillaGml + "\n}";
+    }
 
     try
     {
@@ -608,7 +751,7 @@ string MakeVanillaTwin(string codeName, string vanillaGml)
         // binding.
         ExecuteInUIThread(() => CreateBlankFunction(twinName));
 
-        if (!TwinCompile(twinName, header + vanillaGml + "\n}"))
+        if (!TwinCompile(twinName, cuerpo))
         {
             // Que la funcion quede vacia pero valida. Al devolver null no se
             // pone el desvio, asi que esa entrada se queda con la version del
@@ -739,8 +882,11 @@ await Task.Run(() =>
                 vanillaText[codeName] = vgml;
 
                 // Basta con que UNA entrada del objeto tenga logica por idioma
-                // para que el objeto entero vaya con gemelo.
-                if (!string.IsNullOrEmpty(vgml) && twinLangPattern.IsMatch(vgml))
+                // para que el objeto entero vaya con gemelo. (Los scripts no
+                // pasan por aqui: su criterio es "existe en vanilla", y se
+                // resuelve en la pasada 2 con `TwinScriptQualifies`.)
+                if (!codeName.StartsWith("gml_GlobalScript_")
+                    && !string.IsNullOrEmpty(vgml) && twinLangPattern.IsMatch(vgml))
                     twinObjects.Add(TwinObjectOf(codeName));
             }
             catch (Exception) { }
@@ -756,16 +902,50 @@ await Task.Run(() =>
         // Data.Code.ByName(code.Item1).ReplaceGML(code.Item2, Data);
 
         string twinName = null;
-
-        if (twinEnabled && vanillaText.ContainsKey(code.Item1)
-            && twinObjects.Contains(TwinObjectOf(code.Item1)))
-        {
-            twinName = MakeVanillaTwin(code.Item1, vanillaText[code.Item1]);
-        }
-
+        bool isScript = code.Item1.StartsWith("gml_GlobalScript_");
         var gml = code.Item2;
 
-        if (twinName != null)
+        if (twinEnabled && vanillaText.ContainsKey(code.Item1))
+        {
+            if (isScript)
+            {
+                if (TwinScriptQualifies(code.Item1, vanillaText[code.Item1]))
+                    twinName = MakeVanillaTwin(code.Item1, vanillaText[code.Item1]);
+            }
+            else if (twinObjects.Contains(TwinObjectOf(code.Item1)))
+            {
+                twinName = MakeVanillaTwin(code.Item1, vanillaText[code.Item1]);
+            }
+        }
+
+        if (twinName != null && isScript)
+        {
+            // Un desvio por cada funcion que declare el vanilla. Las que declare
+            // solo el mod se quedan sin desvio, que es lo correcto: no hay
+            // vanilla al que volver.
+            var puestos = 0;
+            var sinSitio = new List<string>();
+
+            foreach (var f in TwinFuncNames(vanillaText[code.Item1]))
+            {
+                var conDesvio = TwinScriptDivert(gml, f, "scr_native_" + f);
+
+                if (conDesvio == null)
+                    sinSitio.Add(f);
+                else
+                {
+                    gml = conDesvio;
+                    puestos++;
+                }
+            }
+
+            if (sinSitio.Count > 0)
+                twinFailed.Add(code.Item1 + ": sin sitio para el desvio de " + string.Join(", ", sinSitio));
+
+            if (puestos == 0)
+                twinFailed.Add(code.Item1 + ": el gemelo existe pero no se desvio ninguna funcion");
+        }
+        else if (twinName != null)
         {
             gml = "// Idioma nativo del juego: ejecutar el codigo original.\n"
                 + "if (is_native_lang())\n{\n    " + twinName + "();\n    exit;\n}\n\n"
@@ -839,7 +1019,11 @@ await Task.Run(() =>
 
     if (twinEnabled)
     {
+        var twinScripts = twinDone.Count(t => !t.StartsWith("scr_native_obj_")
+                                           && !t.StartsWith("scr_native_DEVICE_"));
+
         ScriptMessage("Gemelos vanilla creados: " + twinDone.Count
+            + " (" + (twinDone.Count - twinScripts) + " eventos, " + twinScripts + " scripts)"
             + (twinFailed.Count > 0 ? ("  | FALLIDOS: " + twinFailed.Count + "\n" + string.Join("\n", twinFailed)) : ""));
     }
 
