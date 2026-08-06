@@ -513,14 +513,30 @@ var twinBlock = new string[] {
     // misma regla que `DEVICE_MENU_*`. Se pierden los ajustes finos de vanilla
     // en ese menu (offsets tipo `(global.lang == "ja") ? -4 : 0`) a cambio de
     // que la fila este y el cursor cuadre en todos los idiomas.
-    "obj_darkcontroller_"
+    "obj_darkcontroller_",
+
+    // --- Menu raiz ---------------------------------------------------------
+    // `obj_init_pc_Create_0` es el arranque: fija `global.lang` leyendo la
+    // clave del mod (`LANG_DT`). Con gemelo leeria la del juego y la eleccion
+    // del fork se perderia antes de empezar.
+    "obj_init_pc_",
+    // El pie de pantalla es de donde cuelga el selector de idiomas del fork.
+    // En vanilla ahi solo hay un interruptor que alterna en<->ja, asi que con
+    // gemelo te quedarias en japones sin forma de volver al español: es el
+    // mismo caso que `DEVICE_MENU_*` en los capitulos.
+    "obj_screen_select_footer_"
 };
 
 var twinLangPattern = new System.Text.RegularExpressions.Regex(@"global\.lang|langopt\s*\(|is_english\s*\(");
 var twinDone = new HashSet<string>();
 var twinBad = new HashSet<string>();
 var twinFailed = new List<string>();
-bool twinEnabled = !ScriptPath.Contains("Menu");
+// El menu raiz tambien lleva gemelos. Le sirve el mismo mecanismo aunque no
+// comparta `SharedCodeEntries`: tiene su propia copia de `is_native_lang()` en
+// `Menu/CodeEntries`, y su vanilla es hasta mas facil de recuperar que el de los
+// capitulos, porque ahi el ingles y el japones no salen de ningun pack sino de
+// ternarios `(global.lang == "en") ? "..." : "..."` y de ids de fuente.
+bool twinEnabled = true;
 
 // Nombre del objeto al que pertenece una entrada, quitando el sufijo de evento:
 // "gml_Object_obj_darkcontroller_Draw_0" -> "obj_darkcontroller".

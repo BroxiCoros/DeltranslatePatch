@@ -197,6 +197,30 @@ scan_languages = function() {
         array_push(global.languages_list, code)
         variable_struct_set(global.all_lang_settings, code, s)
     }
+
+    // ---------------------------------------------------------------
+    // Idiomas NATIVOS del juego (inglés y japonés)
+    // ---------------------------------------------------------------
+    // Igual que en el gamecontroller compartido de los capítulos, y por los
+    // mismos motivos: se ofrecen siempre (también en modo pack-suelto, donde
+    // el menú de idioma sigue existiendo) y un pack que declare el mismo
+    // `lang_code` gana.
+    //
+    // Aquí no hay nada que cargar: el menú raíz lleva los dos idiomas dentro,
+    // en ternarios sobre `global.lang`. Basta con ofrecerlos.
+    var native_codes = ["en", "ja"]
+    var native_names = ["English", "日本語"]
+
+    for (var i = 0; i < array_length(native_codes); i++) {
+        if (!variable_struct_exists(global.all_lang_settings, native_codes[i])) {
+            var ns = {}
+            variable_struct_set(ns, "name", native_names[i])
+            variable_struct_set(ns, "lang_code", native_codes[i])
+            variable_struct_set(ns, "native", true)
+            array_push(global.languages_list, native_codes[i])
+            variable_struct_set(global.all_lang_settings, native_codes[i], ns)
+        }
+    }
 }
 
 if (!lang_scan_valid)
