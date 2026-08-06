@@ -475,7 +475,27 @@ IterateOverCodeEntries(scriptFolder + "CodeEntries");
 //     quedarias en japones sin forma de volver al español.
 //   - En idioma nativo el `obj_darkcontroller` corre vanilla, asi que NO sale
 //     la fila del borde que añade Borders.csx. Es asumible: ese ajuste se
-//     cambia desde un idioma con pack y se sigue respetando.
+//     cambia desde un idioma con pack y se sigue respetando (el borde en si
+//     sigue dibujandose: lo llevan `obj_time` y `obj_border_controller`, que
+//     estan en la lista negra y por tanto no tienen gemelo).
+//
+//     NO parchear el gemelo desde `Borders.csx` para intentar recuperar esa
+//     fila. Se probo y sale mal: los parches de UNA linea son iguales en
+//     vanilla y en el codigo del mod, asi que casan contra el gemelo, pero los
+//     bloques MULTILINEA estan escritos contra el texto del mod y no casan. El
+//     gemelo queda a medio parchear, que es peor que las dos opciones puras:
+//       * Cap.5: el Step del gemelo pasaba a 8 filas navegables (`> 6` -> `> 7`,
+//         una linea) mientras su Draw seguia sin dibujar la fila del borde (en
+//         vanilla solo existe dentro de la rama de consola, y el bloque que
+//         aplana ese gate es multilinea) -> el corazon bajaba a una fila que no
+//         se dibuja.
+//       * Cap.1-4: el corazon se movia a `yy + 140` (una linea) mientras las
+//         filas seguian en las posiciones vanilla (`yy + 150`, multilinea)
+//         -> cursor 10 px descolocado.
+//     Como el gemelo se congela ANTES de que Borders toque nada, dejarlo
+//     intacto lo hace consistente por construccion. Si algun dia se quiere la
+//     fila del borde en idioma nativo, hay que escribir esos parches una
+//     segunda vez CONTRA EL TEXTO VANILLA, no reutilizar los del mod.
 //   - El Menu raiz no comparte `SharedCodeEntries`, asi que ahi no existe
 //     `is_native_lang()` y el mecanismo se desactiva entero.
 
