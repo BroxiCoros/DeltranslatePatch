@@ -10,7 +10,14 @@ _fade_in = false;
 init = function(arg0)
 {
     _parent = arg0;
-    var language_text = scr_get_lang_string("Config", "gml_Object_obj_screen_select_footer_Create_0_0");
+    // Mismo caso que el "Quit" de abajo: en idioma nativo no hay pack, asi que
+    // `scr_get_lang_string` devolveria el literal ingles. Este "Config" es
+    // etiqueta del fork y no existe en vanilla (ahi el boton dice
+    // "日本語"/"English" porque es el interruptor de idioma), asi que el japones
+    // va escrito a mano.
+    var language_text = is_native_lang()
+        ? ((global.lang == "en") ? "Config" : "設定")
+        : scr_get_lang_string("Config", "gml_Object_obj_screen_select_footer_Create_0_0");
     var language_choice = instance_create(x + 260, y + 24, obj_ui_choice);
     language_choice.init(id, language_text, UnknownEnum.Value_5);
     language_choice.set_alpha(0);
@@ -106,7 +113,26 @@ trigger_event = function(arg0, arg1)
         
         case UnknownEnum.Value_5:
             disable_input();
-            _parent.trigger_event(arg0, arg1);
+
+            // Este es el boton de "Config". Normalmente sube por
+            // `obj_screen_select` hasta el `trigger_event` de
+            // `obj_CHAPTER_SELECT`, cuyo `toggle_language()` el mod
+            // redefine para abrir el selector del fork.
+            //
+            // Pero `obj_CHAPTER_SELECT` SI lleva gemelo vanilla (su Create
+            // esta lleno de ternarios `global.lang`: los titulos, los
+            // "はい/いいえ", los dialogos de importar partida), asi que en
+            // idioma nativo el que corre es el `toggle_language()` original
+            // del juego: el interruptor en<->ja. Resultado: el boton dice
+            // "Config" y hace otra cosa, y no hay forma de volver a un pack.
+            //
+            // Este objeto esta en la lista negra justo para casos asi, o sea
+            // que puede abrir el selector el mismo.
+            if (is_native_lang())
+                instance_create_depth(0, 0, 0, asset_get_index("obj_lang_settings"));
+            else
+                _parent.trigger_event(arg0, arg1);
+
             break;
     }
 };
