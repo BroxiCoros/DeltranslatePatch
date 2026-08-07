@@ -271,6 +271,19 @@ update_lang_version = function() {
 }
 
 update_language = function() {
+    // Un idioma nativo del juego no tiene carpeta ni `settings.json`: su struct
+    // lo monta `scan_languages` (name / lang_code / native) y vive en
+    // `global.all_lang_settings`. Sin esta rama, arrancar YA en inglés o
+    // japonés caía al `{"name": "English"}` de relleno de abajo, así que el
+    // selector anunciaba el japonés como "English" y `get_lang_setting` no
+    // encontraba ningún otro ajuste. Al ciclar con ←/→ no se ve porque ahí
+    // `change_language` sí lo coge de la caché.
+    if (is_native_lang()) {
+        global.lang_settings = variable_struct_get(global.all_lang_settings, global.lang)
+        update_lang_version()
+        exit
+    }
+
     if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
         var settings = scr_load_json(get_lang_folder_path() + "settings.json")
 
