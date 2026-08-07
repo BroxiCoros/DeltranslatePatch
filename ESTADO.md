@@ -1,6 +1,6 @@
 # Estado: idiomas nativos (inglés y japonés)
 
-Última actualización: **2026-08-06**. Rama `idiomas-nativos`, punta en `caf95c1`.
+Última actualización: **2026-08-06**. Rama `idiomas-nativos`, punta en `2bf2b94`.
 
 Este documento es para retomar el trabajo sin reconstruir el contexto. El `CHANGES.md` del
 repo explica *qué hace* el mod; esto explica *dónde está esta rama*, *qué está comprobado* y
@@ -53,8 +53,10 @@ retorna de la función.
 | Pack de idiomas usado en las pruebas | `~/Proyectos/Letra Delta - Repos/DELTARUNE - LETRA DELTA/lang` |
 | UndertaleModCli | `~/Proyectos/Letra Delta - Repos/LETRA DELTA/letradelta/herramientas/UTMT_CLI_v0.9.1.1-Ubuntu/UndertaleModCli` |
 
-La rama no está pusheada. `origin` ya apunta a GitHub, así que `git push -u origin
-idiomas-nativos` la sube cuando se quiera.
+La rama está pusheada a `origin` (GitHub, `BroxiCoros/DeltranslatePatch`). Ese repo no tiene
+`credential.helper` configurado a ningún nivel, así que un `git push` a secas se queda colgado
+esperando credenciales; con `gh` ya autenticado, sale con
+`git -c credential.helper='!gh auth git-credential' push` (no deja nada escrito en la config).
 
 ## Reconstruir el build
 
@@ -103,6 +105,9 @@ Números de referencia con esta rama (si salen otros, algo pasó):
 
 - Los cinco capítulos, en español y en los dos idiomas nativos. El japonés sale con sus fuentes
   y sus assets.
+- **El menú raíz**, en los dos idiomas nativos: el selector de idiomas se abre y funciona, el
+  japonés sale con su fuente, los textos siguen al idioma y la esquina del copyright se ve
+  igual que en vanilla. Costó cuatro fallos encadenados; están todos abajo, en su sección.
 - El crash de `scr_asterskip` (Cap.5, hablando con Flowery, **solo en inglés**) resuelto.
 - La fila "Borde" del menú de opciones aparece y el cursor cuadra, en todos los idiomas.
 
@@ -118,21 +123,22 @@ Números de referencia con esta rama (si salen otros, algo pasó):
 
 ### Sin probar todavía
 
-- **El menú raíz en el juego** (commit `caf95c1`). Es lo último que se tocó y no se ha visto en
-  pantalla: pantalla de inicio, selector de capítulo, diálogo de "¿empezar desde el Capítulo 1?"
-  y el de importar partida, en japonés.
+- **Los diálogos del menú raíz**: "¿empezar desde el Capítulo 1?" y el de importar partida, en
+  japonés. El resto del menú sí se ha visto en pantalla.
 - **La GUI de UndertaleModTool.** El arreglo del hilo de UI (`ExecuteInUIThread` alrededor de
   `CreateBlankFunction`) no se puede validar por CLI: ahí ese fallo no se manifiesta nunca.
 - **Cambio de idioma en caliente** hacia y desde un nativo, sin reiniciar.
 
 ## Lo que falta
 
-1. Probar el menú en japonés (arriba).
-2. **"Config" del pie del menú sigue en inglés.** Es una etiqueta del fork que no existe en
-   vanilla, así que no hay original japonés que copiar. Habría que decidir uno (`設定`).
-3. **Los `gml_Script_*` con ajustes por idioma no están cubiertos**: unos 15 de los 164, en
+1. Probar los dos diálogos del menú en japonés (arriba).
+2. **Los `gml_Script_*` con ajustes por idioma no están cubiertos**: unos 15 de los 164, en
    `scr_charbox`, `scr_roomname`, `scr_credit`, `scr_84_get_sound`. **Leer antes la sección de
    abajo sobre los gemelos de script**: se intentó dos veces y rompió el juego las dos.
+3. **El selector de idiomas del menú sale en inglés cuando el idioma nativo es el japonés,**
+   salvo las cinco etiquetas que se tradujeron a mano (ver abajo). Las que quedan son las de
+   `special_mode` y `translated_songs`, que hoy no se dibujan nunca en idioma nativo porque un
+   idioma sin pack no ofrece esos interruptores. Si algún día se ofrecen, hay que traducirlas.
 4. `TwinObjectOf` no reconoce los eventos `Collision_<objeto>` (la regex pide `_\d+$`). Si un
    objeto con gemelo tiene evento de colisión, ese evento se queda con el código del mod
    mientras el resto corre vanilla. Conviene excluirlos **a propósito** (dentro de una función,
@@ -248,8 +254,58 @@ desactivaba con `!ScriptPath.Contains("Menu")`), más una copia propia de `is_na
 `scr_init_localization` que aquí no carga nada: solo escribe `LANG.LANG` y suelta las fuentes
 del pack anterior.
 
-Nota: las fuentes japonesas del menú usan **prefijo** (`fnt_ja_main`), no sufijo
-(`fnt_main_ja`). La nota antigua que decía lo contrario era falsa.
+Nota sobre el nombre de las fuentes japonesas, que **las dos versiones son ciertas** y por eso
+lío tanto: en el `data.win` **vanilla** llevan prefijo (`fnt_ja_main`), y en el **parcheado**
+llevan sufijo (`fnt_main_ja`), porque el propio `BaseFix.csx` las renombra al final (el bucle
+sobre `Data.Fonts` que hace `Replace("_ja_", "_") + "_ja"`). La nota antigua que hablaba de
+sufijo no era falsa: describía el estado después de parchear, que es el único que existe en
+tiempo de ejecución. **Cualquier `asset_get_index` sobre una fuente japonesa tiene que usar el
+nombre CON SUFIJO**, y si se saca la lista de un volcado, ojo con volcar el vanilla.
+
+### Los cuatro fallos del menú raíz en idioma nativo (2026-08-06)
+
+El menú se dio por hecho en `caf95c1` sin haberlo visto en pantalla. Al probarlo salieron cuatro
+fallos encadenados, y ninguno daba error: todos fallaban **en silencio**. Van juntos aquí porque
+comparten moraleja — el menú no tiene sistema de localización, así que cada pieza del fork que
+vive ahí hay que mirarla una por una.
+
+1. **El botón "Config" hacía el interruptor en↔ja de vanilla.** El pie sube el evento a
+   `obj_screen_select` y de ahí al `trigger_event` de `obj_CHAPTER_SELECT`, cuyo
+   `toggle_language()` el mod redefine para abrir el selector. Pero `obj_CHAPTER_SELECT` **sí
+   lleva gemelo** (su Create está lleno de ternarios `global.lang`), así que en idioma nativo
+   corría el `toggle_language()` original: botón que dice "Config" y hace otra cosa, y sin forma
+   de volver a un pack. Meterlo en la lista negra habría tirado todo el japonés del menú, que es
+   justo lo que se buscaba; se arregla en el pie, que ya está en la lista negra y puede abrir el
+   selector él mismo.
+2. **`global.lang_map` no se creaba nunca en idioma nativo.** Dos consecuencias. Una, el selector
+   seguía sirviendo los textos del **pack anterior** (se quedaba en español, y encima cortado,
+   porque la fuente del juego no tiene tildes). Y dos, la gorda:
+   `obj_gamecontroller_Create_0` empieza con `if (variable_global_exists("lang_map")) return;`,
+   así que sin ese global **cada `room_restart` reejecutaba el Create entero** — y salir del
+   selector es un `room_restart` —, que rehace `global.font_map` vacío. Creándolo vacío en la
+   rama nativa, el idioma nativo entra por la misma puerta que un pack.
+3. **`asset_get_index("fnt_ja_main")` devolvía -1.** Por el renombrado de fuentes de arriba. Con
+   una guarda `!= -1`, las cinco altas al `font_map` se saltaban sin decir nada y el selector
+   caía a la fuente latina: japonés en blanco. Es el fallo que costó dos rondas de "ya está
+   arreglado" y no lo estaba.
+4. **`update_language()` caía al relleno `{"name": "English"}`.** No hay carpeta de pack que
+   mirar, así que arrancar el juego **ya** en japonés dejaba `global.lang_settings` con ese
+   struct de mentira y el selector anunciaba el japonés como "English". Ciclando con ←/→ no se
+   ve, porque ahí `change_language` sí lo coge de `global.all_lang_settings`. La rama nativa lo
+   saca de esa caché.
+
+Y dos detalles de paridad visual en `obj_ui_version` (la esquina del copyright), que **no lleva
+gemelo** porque su vanilla no menciona `global.lang`: vanilla clava `_font = 2` (la fuente
+latina) y no consulta el idioma, así que esa esquina se ve igual en inglés que en japonés; el
+mod la había cambiado a `scr_get_font("fnt_main")`, que en cuanto el mapa apuntó bien empezó a
+devolver la japonesa. Y la línea "Translation version - X" es de cosecha del mod: en idioma
+nativo no hay pack cuya versión anunciar, así que se cae y las otras dos vuelven a las
+coordenadas de vanilla (`y + 24` e `y + 40`), que el mod había subido 8 px para hacerle sitio.
+
+Traducciones japonesas escritas a mano para las etiquetas del fork que no existen en vanilla
+(o sea, sin original que copiar): `設定` (Config, en el pie), `言語設定` (título del selector),
+`言語` (Language) y `戻る` (Return). Las de `Yes`/`No` sí son las del juego, `はい` / `いいえ`,
+copiadas de `obj_CHAPTER_SELECT_Create_0`.
 
 ### Lo que no puede delegar en el gemelo tiene que llevar los idiomas encima
 
