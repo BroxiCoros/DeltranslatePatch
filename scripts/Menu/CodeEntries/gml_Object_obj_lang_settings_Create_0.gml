@@ -21,12 +21,26 @@ xx_mid = 160 * scale
 
 yy_return = (205 + 12) * scale
 
+// En idioma nativo no hay pack, así que `stringsetloc` devuelve su literal:
+// el inglés. Este objeto está en la lista negra (es de donde se cambia de
+// idioma, no puede correr un gemelo vanilla), así que le toca traerse los dos
+// idiomas del juego encima, igual que el "Quit" del pie.
+//
+// Estas etiquetas son del fork y no existen en vanilla, o sea que no hay
+// original japonés que copiar: van escritas a mano. Las únicas sacadas del
+// juego son はい / いいえ, que salen tal cual en `obj_CHAPTER_SELECT_Create_0`.
+native_text = function(en_str, ja_str) {
+    return (global.lang == "en") ? en_str : ja_str
+}
+
 update_strings = function() {
-    config_text = stringsetloc("LANGUAGE CONFIG", "obj_lang_settings_1_0")
-    return_text = stringsetloc("Return", "obj_lang_settings_2_0")
-    yes_text = stringsetloc("Yes", "obj_lang_settings_3_0")
-    no_text = stringsetloc("No", "obj_lang_settings_4_0")
-    lang_choice_text = stringsetloc("Language", "obj_lang_settings_5_0") + ": "
+    var nat = is_native_lang()
+
+    config_text = nat ? native_text("LANGUAGE CONFIG", "言語設定") : stringsetloc("LANGUAGE CONFIG", "obj_lang_settings_1_0")
+    return_text = nat ? native_text("Return", "戻る") : stringsetloc("Return", "obj_lang_settings_2_0")
+    yes_text = nat ? native_text("Yes", "はい") : stringsetloc("Yes", "obj_lang_settings_3_0")
+    no_text = nat ? native_text("No", "いいえ") : stringsetloc("No", "obj_lang_settings_4_0")
+    lang_choice_text = (nat ? native_text("Language", "言語") : stringsetloc("Language", "obj_lang_settings_5_0")) + ": "
     spec_mode_text = stringsetloc("Special Mode", "obj_lang_settings_6_0") + ": "
     tr_songs_text = stringsetloc("Translated Songs", "obj_lang_settings_7_0") + ": "
     spec_mode_desc_disabled = stringsetloc("Special Mode disabled\ndescription (leave space\nif no need)", "obj_lang_settings_8_0")
