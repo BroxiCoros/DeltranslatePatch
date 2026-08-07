@@ -38,7 +38,7 @@ repeat (timerspeed)
     }
     
     var xx_off = 0
-    for (var i = 1; i < stringlength; i++)
+    for (var i = 1; i <= stringlength; i++)
     {
         var mychar = string_char_at(mystring, i);
         var myyyy = min(0, yyy + (i * 20));
