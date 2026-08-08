@@ -207,24 +207,77 @@ if (!lang_scan_valid)
 // ---------------------------------------------------------------
 // Prioridad (mantener en sincronía con el gamecontroller compartido):
 //   1) El que estaba guardado en config.ini, si sigue siendo válido.
-//   2) `es_mx` si está instalado (idioma por defecto fijo del fork).
+//   2) El idioma del sistema operativo, si hay un pack que lo sirva.
 //   3) El primero que encontramos al escanear (el orden es el del FS).
 //   4) "en" como último recurso (sin pack).
 //
-// Sin el paso 2 el idioma de arranque de una instalación nueva dependía del
-// orden del file system, o sea que salía al azar. No pisa la elección del
-// jugador: `LANG_DT` (paso 1) gana siempre.
-var default_lang = "es_mx"
+// El paso 2 sustituye al `es_mx` fijo que había aquí antes; con un único
+// pack instalado es indistinto (gana el paso 3), pero con varios cada
+// jugador arranca en el suyo en vez de a merced del orden del file system.
+// No pisa la elección del jugador: `LANG_DT` (paso 1) gana siempre.
+//
+// OJO con la forma del código: `os_get_language()` devuelve SOLO el idioma
+// en ISO 639 de dos letras ("es", "en", "ja"), nunca la región, así que no
+// puede coincidir tal cual con un `lang_code` tipo "es_mx". Por eso se
+// prueba primero el código entero (packs llamados "en"/"ja") y después se
+// compara solo la base del idioma de cada pack. Si el sistema no expone el
+// dato devuelve "" y el paso se salta. `os_get_region()` no se usa para
+// desempatar variantes (es_mx vs es_es): no está en la tabla de funciones
+// del data.win de DELTARUNE. Ver el gamecontroller compartido.
 
-if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang)) {
-    global.lang = saved_lang
-} else if (variable_struct_exists(global.all_lang_settings, default_lang)) {
-    global.lang = default_lang
-} else if (array_length(global.languages_list) > 0) {
-    global.lang = global.languages_list[0]
-} else {
-    global.lang = "en"
+// "es_mx" -> "es", "pt-BR" -> "pt", "en" -> "en"
+lang_base_code = function(code) {
+    var c = string_lower(code)
+    var sep = string_pos("_", c)
+    if (sep == 0)
+        sep = string_pos("-", c)
+    if (sep > 0)
+        c = string_copy(c, 1, sep - 1)
+    return c
 }
+
+// Idioma que pide el sistema, normalizado a dos letras. En Switch
+// `os_get_language` no es de fiar (el juego base tampoco la usa ahí):
+// `switch_language_get_desired_language` devuelve códigos con región
+// ("en-US", "es-419"), de ahí que también pase por `lang_base_code`.
+detect_os_lang = function() {
+    var raw = ""
+    if (scr_is_switch_os())
+        raw = switch_language_get_desired_language()
+    else
+        raw = os_get_language()
+
+    if (!is_string(raw) || raw == "")
+        return ""
+
+    return lang_base_code(raw)
+}
+
+var os_lang = detect_os_lang()
+var picked = ""
+
+if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang))
+    picked = saved_lang
+
+if (picked == "" && os_lang != "" && variable_struct_exists(global.all_lang_settings, os_lang))
+    picked = os_lang
+
+if (picked == "" && os_lang != "") {
+    for (var i = 0; i < array_length(global.languages_list); i++) {
+        if (lang_base_code(global.languages_list[i]) == os_lang) {
+            picked = global.languages_list[i]
+            break
+        }
+    }
+}
+
+if (picked == "" && array_length(global.languages_list) > 0)
+    picked = global.languages_list[0]
+
+if (picked == "")
+    picked = "en"
+
+global.lang = picked
 
 update_lang_version = function() {
     var version = string_to_version("0.0.0")

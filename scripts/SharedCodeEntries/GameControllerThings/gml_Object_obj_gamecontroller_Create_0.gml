@@ -139,28 +139,84 @@ if (!lang_scan_valid)
 // ---------------------------------------------------------------
 // Prioridad:
 //   1) El que el jugador eligió la última vez (persistido en INI).
-//   2) `es_mx` si está instalado (este fork es de Letra Delta y solo lo
-//      usamos nosotros, así que el idioma por defecto va fijo aquí).
+//   2) El idioma del sistema operativo, si hay un pack que lo sirva.
 //   3) El primero encontrado al escanear (orden del file system).
 //   4) "en" como fallback si no hay pack alguno.
 //
-// Sin el paso 2, una instalación nueva arrancaba en el idioma que el sistema
-// de archivos devolviera primero, que no es alfabético ni coincide entre
-// máquinas: en la práctica salía al azar (casi siempre inglés).
+// El paso 2 sustituye al `es_mx` fijo que había aquí antes. Con un único
+// pack instalado da igual (el paso 3 elige ese mismo), pero con varios
+// (en/ja junto a es_mx) cada jugador arranca en el suyo en vez de en el que
+// el file system devolviera primero, que salía al azar entre máquinas.
 //
-// Esto NO pisa la elección del jugador: en cuanto cambia de idioma una vez se
-// guarda en `LANG_DT` y el paso 1 gana siempre.
-var default_lang = "es_mx"
+// Nada de esto pisa la elección del jugador: en cuanto cambia de idioma una
+// vez se guarda en `LANG_DT` y el paso 1 gana siempre.
+//
+// OJO con la forma del código: `os_get_language()` devuelve SOLO el idioma
+// en ISO 639 de dos letras ("es", "en", "ja"), nunca la región, así que no
+// puede coincidir tal cual con un `lang_code` tipo "es_mx". Por eso el paso
+// 2 prueba primero el código entero (sirve para packs que se llamen "en" o
+// "ja") y después compara solo la base del idioma de cada pack. Si el
+// sistema no expone el dato devuelve "" y el paso se salta entero.
+// No usamos `os_get_region()` para desempatar entre variantes del mismo
+// idioma (es_mx vs es_es) porque esa función NO está en la tabla de
+// funciones del data.win de DELTARUNE: habría que inyectarla y no está
+// probado que el runner la resuelva. Con varias variantes gana la primera
+// que devuelva el escaneo.
 
-if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang)) {
-    global.lang = saved_lang
-} else if (variable_struct_exists(global.all_lang_settings, default_lang)) {
-    global.lang = default_lang
-} else if (array_length(global.languages_list) > 0) {
-    global.lang = global.languages_list[0]
-} else {
-    global.lang = "en"
+// "es_mx" -> "es", "pt-BR" -> "pt", "en" -> "en"
+lang_base_code = function(code) {
+    var c = string_lower(code)
+    var sep = string_pos("_", c)
+    if (sep == 0)
+        sep = string_pos("-", c)
+    if (sep > 0)
+        c = string_copy(c, 1, sep - 1)
+    return c
 }
+
+// Idioma que pide el sistema, normalizado a dos letras.
+// En Switch `os_get_language` no es de fiar (el juego base tampoco la usa
+// ahí, ver `scr_84_init_localization`): se pregunta a
+// `switch_language_get_desired_language`, que devuelve códigos con región
+// ("en-US", "es-419") y por eso también pasa por `lang_base_code`.
+detect_os_lang = function() {
+    var raw = ""
+    if (scr_is_switch_os())
+        raw = switch_language_get_desired_language()
+    else
+        raw = os_get_language()
+
+    if (!is_string(raw) || raw == "")
+        return ""
+
+    return lang_base_code(raw)
+}
+
+var os_lang = detect_os_lang()
+var picked = ""
+
+if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang))
+    picked = saved_lang
+
+if (picked == "" && os_lang != "" && variable_struct_exists(global.all_lang_settings, os_lang))
+    picked = os_lang
+
+if (picked == "" && os_lang != "") {
+    for (var i = 0; i < array_length(global.languages_list); i++) {
+        if (lang_base_code(global.languages_list[i]) == os_lang) {
+            picked = global.languages_list[i]
+            break
+        }
+    }
+}
+
+if (picked == "" && array_length(global.languages_list) > 0)
+    picked = global.languages_list[0]
+
+if (picked == "")
+    picked = "en"
+
+global.lang = picked
 
 // Cargar el settings.json del idioma activo. Si el pack no declara
 // `lang_code` explícitamente, conservamos el `global.lang` que ya
