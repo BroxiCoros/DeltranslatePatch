@@ -71,6 +71,17 @@ if (global.menuno == 5)
         var _xPos = xx + 150;
         var _heartXPos = xx + 125;
         var _selectXPos = xx + 385;
+        
+        // En idioma nativo, la geometria del vanilla. 150/125/385 son los
+        // valores de japones-en-consola: el mod los fijo para todos los casos
+        // para que quepan las cadenas traducidas, pero con las del propio
+        // juego la columna de valores se monta encima de la etiqueta.
+        if (is_native_lang())
+        {
+            _xPos = (global.lang == "en") ? (xx + 170) : (xx + 150);
+            _heartXPos = (global.lang == "en") ? (xx + 145) : (xx + 125);
+            _selectXPos = (global.lang == "ja" && global.is_console) ? (xx + 385) : (xx + 430);
+        }
         draw_set_color(c_white);
         draw_text(xx + 270, yy + 100, string_hash_to_newline(stringsetloc("CONFIG", "obj_darkcontroller_slash_Draw_0_gml_74_0")));
         audvol = string(round(abs(global.flag[17] * 100))) + "%";
@@ -247,7 +258,7 @@ if (global.menuno == 5)
                     if (obj_gamecontroller.gamepad_active)
                     {
                         var _sprite = (scr_getbuttonsprite(global.input_g[i], false) != noone) ? scr_getbuttonsprite(global.input_g[i], false) : button_switch_left_0;
-                        var _xPos = xx + 465;
+                        var _xPos = is_native_lang() ? ((global.lang == "en") ? (xx + 475) : (xx + 465)) : (xx + 465);
                         
                         if (_sprite == button_switch_lStickClick_0 || _sprite == button_switch_rStickClick_0)
                             _xPos -= 3;
@@ -262,7 +273,7 @@ if (global.menuno == 5)
                     if (obj_gamecontroller.gamepad_active)
                     {
                         var _sprite = scr_getbuttonsprite(global.input_g[i], false);
-                        var _xPos = xx + 465;
+                        var _xPos = is_native_lang() ? ((global.lang == "en") ? (xx + 475) : (xx + 465)) : (xx + 465);
                         
                         if (sprite_get_width(_sprite) < 12)
                             _xPos += 2;

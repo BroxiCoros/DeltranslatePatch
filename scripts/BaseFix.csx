@@ -971,7 +971,13 @@ await Task.Run(() =>
         GetOrig(code.Key);
         foreach (var spr in code.Value)
         {
-            if (!ReplacePart(code.Key, spr, string.Format("scr_84_get_sprite(\"{0}\")", spr), true)) // scr_84_get_sprite
+            // Mismo caso que las fuentes: el vanilla clava el sprite latino a
+            // proposito en sitios que no se localizan (los carteles de nombre del
+            // minijuego de ritmo, por ejemplo), y chemg_sprite_map lo desviaria a
+            // su variante spr_ja_*. En idioma nativo, el asset literal.
+            // Donde el mapa no tiene entrada japonesa el ternario es un no-op.
+            if (!ReplacePart(code.Key, spr,
+                string.Format("(is_native_lang() ? {0} : scr_84_get_sprite(\"{0}\"))", spr), true)) // scr_84_get_sprite
             {
                 ScriptMessage(string.Format("Ошибка при добавлении спрайта \"{0}\" в \"{1}\".", spr, code.Key));
             }
@@ -1098,7 +1104,14 @@ await Task.Run(() =>
         foreach (var scr in font.Value)
         {
             GetOrig(scr);
-            ReplacePart(scr, font.Key, "scr_84_get_font(\"" + font.Key.Substring(4) + "\")", true);
+            // El vanilla clava la fuente aqui a proposito: son sitios que salen en
+            // latino aunque el juego este en japones (resultados del concierto, la
+            // cuenta 3-2-1, el marcador del ritmo...). Convertirlo en una busqueda
+            // por idioma a secas se los lleva a la fuente japonesa, porque
+            // scr_84_init_localization registra font_map["8bit"] = fnt_ja_8bit.
+            // En idioma nativo hay que devolver el asset literal del vanilla.
+            ReplacePart(scr, font.Key,
+                "(is_native_lang() ? " + font.Key + " : scr_84_get_font(\"" + font.Key.Substring(4) + "\"))", true);
             IncrementProgress();
             UpdateProgressValue(GetProgress());
         }
@@ -1112,6 +1125,109 @@ await Task.Run(() =>
         }
     }
 });
+
+#endregion
+
+#region Fuentes clavadas del vanilla en las entradas escritas a mano
+
+// `CodesWithFonts.json` cubre una poblacion: las entradas donde el patcher
+// mismo cambia `fnt_X` por `scr_84_get_font("X")`. Hay una SEGUNDA poblacion
+// que no cubre: las entradas que el mod sustituye enteras con GML escrito a
+// mano en `CodeEntries/`, donde esa conversion ya viene hecha en el archivo.
+//
+// El fallo es el mismo. Donde el vanilla clava el asset (`draw_set_font(fnt_8bit)`)
+// esta diciendo "aqui la latina siempre", porque son pantallas que no se
+// localizan; la busqueda las manda a la japonesa, que `scr_84_init_localization`
+// registra como `font_map["8bit"] = fnt_ja_8bit`.
+//
+// El criterio para decidirlo es el respaldo `_old`, que ES el vanilla: si para
+// una fuente el vanilla usaba SOLO el asset literal y nunca la busqueda, todas
+// las llamadas de esa entrada tienen que volver al literal en idioma nativo.
+// Si usaba las dos formas el criterio no distingue cual es cual, y esas se
+// dejan como estan y se reportan: hay que mirarlas sitio por sitio.
+
+string[] nativeFontKeys = {
+    "main", "mainbig", "tinynoelle", "dotumche", "comicsans",
+    "small", "8bit", "8bit_mixed", "legend", "legend_alt"
+};
+
+// El `_old` no guarda GML compilable, sino el vanilla como literal escapado
+// (ver `GetOrig`). Hay que deshacer el escapado para poder leerlo.
+string VanillaOf(string codeName)
+{
+    var oldCode = Data.Code.ByName(codeName + "_old");
+    if (oldCode == null)
+        return null;
+
+    var t = Decompile(oldCode);
+    if (!t.StartsWith("var code = \"") || t.Length < 15)
+        return null;
+
+    t = t.Substring(12);
+    return t.Remove(t.Length - 3)
+            .Replace("\\n", "\n").Replace("\\\"", "\"")
+            .Replace("\\_n", "\\n").Replace("\\\\", "\\");
+}
+
+var fontAmbiguous = new List<string>();
+int fontPinned = 0;
+
+await Task.Run(() =>
+{
+    SetProgressBar(null, "Native fonts pinning", 0, Math.Max(1, backedList.Count));
+
+    foreach (var codeName in backedList.ToList())
+    {
+        var code = Data.Code.ByName(codeName);
+        if (code == null || codeName.EndsWith("_old") || codeName.Contains("scr_native_"))
+            continue;
+
+        var text = Decompile(code);
+        if (!text.Contains("scr_84_get_font("))
+            continue;
+
+        var vanilla = VanillaOf(codeName);
+        if (vanilla == null)
+            continue;
+
+        var updated = text;
+        foreach (var key in nativeFontKeys)
+        {
+            var call = "scr_84_get_font(\"" + key + "\")";
+
+            // Se salta lo que ya lleva el ternario puesto por CodesWithFonts.
+            var rx = new Regex(@"(?<!is_native_lang\(\) \? fnt_" + key + @" : )" + Regex.Escape(call));
+            if (!rx.IsMatch(updated))
+                continue;
+
+            bool usaLiteral = Regex.IsMatch(vanilla, @"\bfnt_" + key + @"\b");
+            bool usaBusqueda = vanilla.Contains(call);
+
+            if (!usaLiteral)
+                continue;
+
+            if (usaBusqueda)
+            {
+                fontAmbiguous.Add(codeName + " / fnt_" + key);
+                continue;
+            }
+
+            fontPinned += rx.Matches(updated).Count;
+            updated = rx.Replace(updated, "(is_native_lang() ? fnt_" + key + " : " + call + ")");
+        }
+
+        if (updated != text)
+            ReplaceGML(code, updated);
+
+        IncrementProgress();
+        UpdateProgressValue(GetProgress());
+    }
+});
+
+// La lista de ambiguos esta en ESTADO.md; aqui solo el recuento, para poder
+// ver de un vistazo si una actualizacion del juego mueve los numeros.
+ScriptMessage(string.Format("Fuentes clavadas en idioma nativo: {0} sitios  |  ambiguos (a mano): {1}",
+    fontPinned, fontAmbiguous.Count));
 
 #endregion
 

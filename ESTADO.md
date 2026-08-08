@@ -1,6 +1,6 @@
 # Estado: idiomas nativos (inglés y japonés)
 
-Última actualización: **2026-08-07**. Rama `idiomas-nativos`, punta en `088581b`.
+Última actualización: **2026-08-08**. Rama `idiomas-nativos`, punta en `677acb4`.
 
 Este documento es para retomar el trabajo sin reconstruir el contexto. El `CHANGES.md` del
 repo explica *qué hace* el mod; esto explica *dónde está esta rama*, *qué está comprobado* y
@@ -101,32 +101,39 @@ Números de referencia con esta rama (si salen otros, algo pasó):
 
 ### Cuánto tarda, y cuánto cuestan los gemelos
 
-Medido el 2026-08-07 en el equipo de siempre (Ryzen 5 5500, 12 hilos, NVMe), parcheando desde
-el vanilla limpio y con la caché de disco caliente. Dos rondas de cada uno, que salieron dentro
-de ~1 s la una de la otra: la diferencia no es ruido. **Los tiempos absolutos son de esta
-máquina y no valen como referencia en otra**; lo que sí viaja es la proporción.
+Medido el 2026-08-08 en el equipo de siempre (Ryzen 5 5500, 12 hilos, NVMe), parcheando desde
+el vanilla limpio y con la caché de disco caliente. Tres rondas de esta rama (84,2 / 82,4 /
+85,1 s) y dos de `main`. **Los tiempos absolutos son de esta máquina y no valen como referencia
+en otra**; lo que sí viaja es la proporción.
 
 | Segundos | Cap.1 | Cap.2 | Cap.3 | Cap.4 | Cap.5 | Menú | **Total** |
 |---|---|---|---|---|---|---|---|
-| `Fix.csx` esta rama | 3,9 | 7,9 | 11,8 | 13,0 | 14,2 | 2,4 | **53,1** |
+| `Fix.csx` esta rama | 4,2 | 8,5 | 13,1 | 14,1 | 15,1 | 2,5 | **57,4** |
 | `Fix.csx` en `main` | 3,3 | 5,1 | 7,1 | 7,4 | 9,1 | 2,2 | **34,3** |
-| Sobrecoste | +0,6 | +2,7 | +4,7 | +5,6 | +5,1 | +0,2 | **+18,8** |
-| `Borders.csx` | 2,8 | 4,3 | 5,3 | 5,7 | 6,9 | — | **25,0** |
+| Sobrecoste | +0,8 | +3,4 | +5,9 | +6,7 | +6,0 | +0,3 | **+23,1** |
+| `Borders.csx` | 3,0 | 4,6 | 5,6 | 5,9 | 7,0 | — | **26,1** |
 
-Build entero (los seis `data.win`): **78,6 s esta rama contra 59,3 s en `main`, +33 %.** Un
-minuto pasa a ser minuto y veinte, así que el coste no molesta en la práctica.
+Build entero (los seis `data.win`): **83,9 s esta rama contra 59,3 s en `main`, +41 %.** Un
+minuto pasa a ser minuto y veinticinco, así que el coste no molesta en la práctica.
 
-Dos cosas que confirma el reparto:
+Ojo con la **dispersión**: antes de la pasada de fuentes clavadas, dos rondas seguidas caían
+dentro de ~1 s. Ahora el rango es de ~3 s (y una ronda suelta llegó a 89,5 s con la máquina
+ocupada). Para comparar dos versiones no basta una ronda de cada una.
+
+Tres cosas que confirma el reparto:
 
 - **Todo el sobrecoste está en `Fix.csx`.** Los `Borders.csx` son byte-idénticos a `main` y
-  tardan lo mismo (+2 %, dentro del ruido). Es la comprobación cruzada de que el reloj mide lo
+  tardan lo mismo (+3 %, dentro del ruido). Es la comprobación cruzada de que el reloj mide lo
   que debe.
-- **El coste sale de los gemelos, no del tamaño del `data.win`.** El Cap.4 es el más caro en
-  absoluto (+5,6 s) aunque el Cap.5 es 54 MB más grande: el Cap.4 tiene 185 gemelos y el Cap.5,
-  127. Dividiendo, el gemelo sale entre **~12 ms** (Cap.1 y menú) y **~40 ms** (Cap.5): no es
-  constante, sube con el tamaño de las entradas, que es lo esperable si lo que se paga es
-  decompilar la entrada y recompilarla en su propio `CompileGroup` (el `TwinCompile` aislado que
-  exige el diseño; ver arriba por qué no puede ir en el grupo común).
+- **La mayor parte sale de los gemelos, no del tamaño del `data.win`.** El Cap.4 es el más caro
+  en absoluto aunque el Cap.5 es 54 MB más grande: el Cap.4 tiene 185 gemelos y el Cap.5, 127.
+  El gemelo sale entre **~12 ms** (Cap.1 y menú) y **~40 ms** (Cap.5): no es constante, sube con
+  el tamaño de las entradas, que es lo esperable si lo que se paga es decompilar la entrada y
+  recompilarla en su propio `CompileGroup` (el `TwinCompile` aislado que exige el diseño; ver
+  arriba por qué no puede ir en el grupo común).
+- **La pasada de fuentes clavadas cuesta ~4,3 s** de los 57,4 (era 53,1 sin ella). Recorre
+  `backedList` decompilando cada entrada y su `_old`; el `_old` es trivial, pero son dos
+  decompilaciones por entrada tocada.
 
 Para dimensionar lo que falta: cubrir los ~15 `gml_Script_*` de la lista de pendientes añadiría
 medio segundo por capítulo, más o menos. El presupuesto de tiempo no es argumento en esa
@@ -153,9 +160,16 @@ decisión.
   (ahora mismo trivial: no hay ninguno).
 - Menú: 15 gemelos en `obj_CHAPTER_SELECT`, `obj_screen_start`, `obj_screen_loading`,
   `obj_ui_chapter` y `obj_ui_choice`; `obj_init_pc` y `obj_screen_select_footer` sin gemelo.
+- **Fuentes clavadas** (2026-08-08): 95 sitios devueltos al asset del vanilla y **0 residuos
+  inequívocos** en los cinco capítulos; quedan los 16 ambiguos de la lista de pendientes. El
+  verificador es el `Ambig2.csx` del anexo.
 
 ### Sin probar todavía
 
+- **Los dos arreglos del 2026-08-08 en pantalla**: las fuentes del Cap.4 en japonés nativo
+  (resultados del concierto, cuenta 3-2-1, rango) y el menú de opciones del Cap.5, que era
+  donde la columna de valores se montaba encima de la etiqueta. Comprobados sobre el
+  `data.win`, no vistos todavía en el juego.
 - **Los diálogos del menú raíz**: "¿empezar desde el Capítulo 1?" y el de importar partida, en
   japonés. El resto del menú sí se ha visto en pantalla.
 - **La GUI de UndertaleModTool.** El arreglo del hilo de UI (`ExecuteInUIThread` alrededor de
@@ -180,6 +194,27 @@ decisión.
    de un guard eliminado.
 6. Ya **no hace falta compatibilidad con UndertaleModLib 0.8** (confirmado por el usuario,
    2026-08-06): el `#region Обратная совместимость` de `BaseFix.csx` se puede simplificar.
+7. **Los 16 pares (entrada, fuente) ambiguos** que la pasada de fuentes clavadas no puede
+   decidir sola, porque el vanilla usa **las dos formas** para la misma fuente en la misma
+   entrada. Hay que mirarlos sitio por sitio. Son:
+
+   | Cap. | Entrada | Fuente |
+   |---|---|---|
+   | 2, 3, 4, 5 | `obj_fusionmenu_Draw_0` | `fnt_dotumche` |
+   | 3, 4, 5 | `obj_rhythmgame_Draw_0` | `fnt_main` |
+   | 3 | `obj_dw_gameshow_screen_Draw_0`, `obj_quizsequence_Draw_0`, `obj_b2westshop_Draw_0` | `fnt_8bit` |
+   | 3 | `obj_couchwriter_Draw_0` | `fnt_dotumche` |
+   | 4 | `obj_mike_minigame_controller_Draw_0`, `obj_mike_minigame_tv_Draw_0`, `obj_mike_controller_Draw_0` | `fnt_mainbig` |
+   | 4 | `obj_mike_attack_controller_Draw_0` | `fnt_main` |
+   | 5 | `obj_dw_fcastle_cafe_Draw_0` | `fnt_mainbig` |
+
+   El recuento sale en el log de cada `Fix.csx` ("ambiguos (a mano): N"); si una actualización
+   del juego lo mueve, es que cambió el reparto y hay que repasar la tabla.
+8. **Los sprites tienen la misma pasada pero sin verificador.** El ternario de
+   `CodesWithSprites.json` se aplica a ciegas a todas las entradas: donde
+   `chemg_sprite_map` no tiene variante japonesa es un no-op inofensivo, pero **no se ha
+   medido la población equivalente en las entradas escritas a mano**, como sí se hizo con las
+   fuentes. Conviene portar el `Ambig2.csx` del anexo a sprites antes de darlo por cerrado.
 
 ## Cosas que costó averiguar (para no repetirlas)
 
@@ -363,6 +398,55 @@ objeto tenga lógica por idioma para que vaya el objeto entero, y por eso existe
 congela también las entradas que el mod no reemplaza pero que tocan después `Borders.csx` o
 `CodeChanges.txt`.
 
+### El criterio de gemelo NO ve los fallos que introduce el propio mod (2026-08-08)
+
+Esta es la clase de fallo que se destapó probando el Cap.4 en japonés nativo, y conviene
+entenderla porque **el gemelo no la cubre por diseño**.
+
+El criterio para dar gemelo es "¿el vanilla menciona `global.lang` o `langopt`?". Eso encuentra
+los sitios donde el vanilla **tiene** lógica de idioma. No encuentra el caso contrario: donde el
+vanilla es deliberadamente **ciego** al idioma y es el mod el que le añade la dependencia.
+
+El ejemplo canónico son las fuentes. El vanilla escribe:
+
+```gml
+draw_set_font(fnt_8bit);                  // "aqui la latina SIEMPRE"
+draw_set_font(scr_84_get_font("8bit"));   // "aqui la del idioma"
+```
+
+Las dos formas conviven a propósito: la primera está en pantallas que no se localizan (los
+resultados del concierto, la cuenta 3-2-1, el marcador del ritmo salen en inglés aunque el juego
+esté en japonés). El mod convierte **la primera en la segunda**, y como
+`scr_84_init_localization` registra `font_map["8bit"] = fnt_ja_8bit`, en japonés nativo esas
+pantallas se van a la fuente japonesa y se ven finas. Esa entrada no menciona `global.lang` en
+vanilla, así que nunca iba a tener gemelo.
+
+Son **dos poblaciones distintas** y hacen falta dos arreglos:
+
+1. **Las que convierte el patcher**, por `CodesWithFonts.json`. Se arregla en el sitio donde se
+   emite la conversión (`BaseFix.csx`, región *Замена шрифтов*): en vez de la llamada pelada, el
+   ternario `(is_native_lang() ? fnt_X : scr_84_get_font("X"))`. Una línea, 133 entradas.
+2. **Las que ya vienen convertidas** en el GML escrito a mano de `CodeEntries/`. El patcher no
+   las toca, así que hay que ir a buscarlas: región *Fuentes clavadas del vanilla en las
+   entradas escritas a mano*, al final de `BaseFix.csx`. **95 sitios en 27 pares.**
+
+La clave del segundo arreglo es que **el respaldo `_old` ES el vanilla**, así que sirve de
+oráculo: si para una fuente el vanilla usaba solo el literal y nunca la búsqueda, todas las
+llamadas de esa entrada vuelven al literal. Si usaba las dos, el criterio no distingue cuál es
+cuál y se deja quieta (son los 16 de la lista de pendientes).
+
+Dos trampas al leer el `_old`:
+
+- **No guarda GML, guarda el vanilla como literal escapado** (`var code = "...";`). Hay que
+  deshacer el escapado antes de buscar nada; ver `VanillaOf()`. Si se busca en crudo,
+  `scr_84_get_font("main")` **nunca casa**, porque en el escapado es `scr_84_get_font(\"main\")`.
+  Eso da un falso "0 ambiguos" muy convincente: pasó, y solo se notó al cuadrar los recuentos.
+- Los `_old` solo existen para las entradas que el mod toca, que es justo lo que se quiere
+  mirar. Iterar `backedList` en vez de `Data.Code` evita decompilar el juego entero.
+
+Los sprites tienen el mismo mecanismo (`CodesWithSprites.json` → `scr_84_get_sprite`) y el mismo
+arreglo del punto 1, pero **el del punto 2 no se ha hecho ni medido** para ellos.
+
 ### La lista negra y por qué está cada uno
 
 `obj_gamecontroller_`, `obj_lang_settings_`, `DEVICE_MENU_`, `obj_time_`,
@@ -433,3 +517,54 @@ el número de entradas con desvío coincide con el de gemelos.
 `obj_darkcontroller_Step_0` tenía `submenucoord[30] > 6` (7 filas) y la entrada `> 7` (8 filas);
 en Cap.5 los dos `> 7`. Ya no aplica desde que `obj_darkcontroller_` está en la lista negra, pero
 sirve si alguna vez se le devuelve el gemelo.
+
+**Fuentes clavadas** (`Ambig2.csx`) — el que hay que dejar en cero. Para cada entrada con
+respaldo, compara el texto parcheado con el vanilla que guarda su `_old` y clasifica cada par
+(entrada, fuente) en tres cajones. **INEQUÍVOCOS debe ser 0**: si sale otra cosa, hay sitios que
+en idioma nativo se van a la fuente japonesa donde el vanilla usa la latina. AMBIGUOS es la
+lista de pendientes (16 hoy) y CORRECTOS son los que ya estaban bien.
+
+```csharp
+using System; using System.Linq; using System.Text; using System.Text.RegularExpressions;
+var ctx = new GlobalDecompileContext(Data); var st = Data.ToolInfo.DecompilerSettings;
+string Dec(UndertaleCode c){ try { return new Underanalyzer.Decompiler.DecompileContext(ctx,c,st).DecompileToString(); } catch { return ""; } }
+
+// OJO: el _old guarda el vanilla como literal ESCAPADO, no como GML. Sin
+// deshacer el escapado, scr_84_get_font("main") no casa nunca (ahi es
+// scr_84_get_font(\"main\")) y sale un falso "0 ambiguos".
+string Van(string name)
+{
+    var o = Data.Code.ByName(name + "_old"); if (o == null) return null;
+    var t = Dec(o); if (!t.StartsWith("var code = \"")) return null;
+    t = t.Substring(12); if (t.Length < 3) return null;
+    return t.Remove(t.Length - 3).Replace("\\n","\n").Replace("\\\"","\"")
+            .Replace("\\_n","\\n").Replace("\\\\","\\");
+}
+
+string[] ja = {"main","mainbig","tinynoelle","dotumche","comicsans","small","8bit","8bit_mixed","legend","legend_alt"};
+int limpio=0, ambiguo=0, sitios=0, soloLookup=0; var sb=new StringBuilder();
+foreach (var c in Data.Code.Where(x => x.ParentEntry == null && !x.Name.Content.EndsWith("_old")
+                                    && !x.Name.Content.Contains("scr_native_")))
+{
+    var van = Van(c.Name.Content); if (van == null) continue;
+    var tNew = Dec(c);
+    foreach (var k in ja)
+    {
+        var llamada = "scr_84_get_font(\"" + k + "\")";
+        var rx = new Regex(@"(?<!is_native_lang\(\) \? fnt_" + k + @" : )" + Regex.Escape(llamada));
+        int n = rx.Matches(tNew).Count; if (n == 0) continue;
+        bool literal = Regex.IsMatch(van, @"\bfnt_" + k + @"\b");
+        bool lookup  = van.Contains(llamada);
+        if (literal && !lookup) { limpio++; sitios += n; sb.AppendLine("  RESIDUO: " + c.Name.Content + " / " + k); }
+        else if (literal && lookup) { ambiguo++; sb.AppendLine("  AMBIGUO: " + c.Name.Content + " / " + k); }
+        else if (!literal && lookup) soloLookup++;
+    }
+}
+Console.WriteLine("INEQUIVOCOS (debe ser 0): " + limpio + " pares, " + sitios + " sitios");
+Console.WriteLine("AMBIGUOS (a mano): " + ambiguo);
+Console.WriteLine("CORRECTOS ya: " + soloLookup);
+Console.Write(sb.ToString());
+```
+
+Portarlo a sprites es cambiar `scr_84_get_font`/`fnt_` por `scr_84_get_sprite`/`spr_` y la lista
+`ja` por las claves de `chemg_sprite_map`. Está sin hacer.
