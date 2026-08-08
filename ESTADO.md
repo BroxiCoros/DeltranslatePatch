@@ -1,6 +1,6 @@
 # Estado: idiomas nativos (inglés y japonés)
 
-Última actualización: **2026-08-06**. Rama `idiomas-nativos`, punta en `2bf2b94`.
+Última actualización: **2026-08-07**. Rama `idiomas-nativos`, punta en `088581b`.
 
 Este documento es para retomar el trabajo sin reconstruir el contexto. El `CHANGES.md` del
 repo explica *qué hace* el mod; esto explica *dónde está esta rama*, *qué está comprobado* y
@@ -98,6 +98,39 @@ Números de referencia con esta rama (si salen otros, algo pasó):
 |---|---|---|---|---|---|---|
 | Gemelos | 45 | 96 | 169 | 185 | 127 | 15 |
 | Tamaño final | 19,8 MB | 78,6 MB | 158,8 MB | 146,8 MB | 200,7 MB | 3,0 MB |
+
+### Cuánto tarda, y cuánto cuestan los gemelos
+
+Medido el 2026-08-07 en el equipo de siempre (Ryzen 5 5500, 12 hilos, NVMe), parcheando desde
+el vanilla limpio y con la caché de disco caliente. Dos rondas de cada uno, que salieron dentro
+de ~1 s la una de la otra: la diferencia no es ruido. **Los tiempos absolutos son de esta
+máquina y no valen como referencia en otra**; lo que sí viaja es la proporción.
+
+| Segundos | Cap.1 | Cap.2 | Cap.3 | Cap.4 | Cap.5 | Menú | **Total** |
+|---|---|---|---|---|---|---|---|
+| `Fix.csx` esta rama | 3,9 | 7,9 | 11,8 | 13,0 | 14,2 | 2,4 | **53,1** |
+| `Fix.csx` en `main` | 3,3 | 5,1 | 7,1 | 7,4 | 9,1 | 2,2 | **34,3** |
+| Sobrecoste | +0,6 | +2,7 | +4,7 | +5,6 | +5,1 | +0,2 | **+18,8** |
+| `Borders.csx` | 2,8 | 4,3 | 5,3 | 5,7 | 6,9 | — | **25,0** |
+
+Build entero (los seis `data.win`): **78,6 s esta rama contra 59,3 s en `main`, +33 %.** Un
+minuto pasa a ser minuto y veinte, así que el coste no molesta en la práctica.
+
+Dos cosas que confirma el reparto:
+
+- **Todo el sobrecoste está en `Fix.csx`.** Los `Borders.csx` son byte-idénticos a `main` y
+  tardan lo mismo (+2 %, dentro del ruido). Es la comprobación cruzada de que el reloj mide lo
+  que debe.
+- **El coste sale de los gemelos, no del tamaño del `data.win`.** El Cap.4 es el más caro en
+  absoluto (+5,6 s) aunque el Cap.5 es 54 MB más grande: el Cap.4 tiene 185 gemelos y el Cap.5,
+  127. Dividiendo, el gemelo sale entre **~12 ms** (Cap.1 y menú) y **~40 ms** (Cap.5): no es
+  constante, sube con el tamaño de las entradas, que es lo esperable si lo que se paga es
+  decompilar la entrada y recompilarla en su propio `CompileGroup` (el `TwinCompile` aislado que
+  exige el diseño; ver arriba por qué no puede ir en el grupo común).
+
+Para dimensionar lo que falta: cubrir los ~15 `gml_Script_*` de la lista de pendientes añadiría
+medio segundo por capítulo, más o menos. El presupuesto de tiempo no es argumento en esa
+decisión.
 
 ## Qué está hecho y comprobado
 
