@@ -1,6 +1,6 @@
 # Estado: idiomas nativos (inglés y japonés)
 
-Última actualización: **2026-08-08**. Rama `idiomas-nativos`, punta en `677acb4`.
+Última actualización: **2026-08-08**. Rama `idiomas-nativos`, punta en `8e0ebd4`.
 
 Este documento es para retomar el trabajo sin reconstruir el contexto. El `CHANGES.md` del
 repo explica *qué hace* el mod; esto explica *dónde está esta rama*, *qué está comprobado* y
