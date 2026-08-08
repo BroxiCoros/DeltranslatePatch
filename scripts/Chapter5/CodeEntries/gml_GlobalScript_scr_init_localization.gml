@@ -48,10 +48,22 @@ function scr_init_localization()
         // delante cuatro maps desechables y no los del pack. Antes aqui se
         // borraban las fuentes del pack a mano; ya no hace falta, porque no se
         // destruye nada suyo.
+        // OJO con la condicion: el detach va SOLO cuando venimos de un pack.
+        //
+        // Al salir al menu del capitulo hay un `game_restart()`, y ni los
+        // globales ni los ds_map se pierden ahi. O sea que se vuelve a entrar
+        // aqui con `lang_loaded` ya valiendo el idioma nativo, y entonces
+        // `scr_84_init_localization` NO reconstruye nada (su gate es
+        // `lang_loaded != lang`, y son iguales). Si hubieramos hecho el detach
+        // igualmente, `global.lang_map` se habria quedado en el map vacio que
+        // deja el detach y nadie lo volveria a llenar: en el Cap.1 eso reventaba
+        // en el `window_set_caption` del Create de `obj_initializer2`, que pide
+        // un string antes de que nada reinicialice la localizacion.
         if (global.lang_loaded != "" && !is_native_lang(global.lang_loaded))
+        {
             scr_lang_cache_save(global.lang_loaded);
-
-        scr_lang_cache_detach();
+            scr_lang_cache_detach();
+        }
 
         global.chapter_lang_settings = json_parse("{}");
 

@@ -165,6 +165,13 @@ function scr_lang_cache_discard_current()
 // cuatro globales, y si apuntan a los de un pack cacheado se lleva por delante
 // la cache del pack, dejando ids muertas dentro del struct. Con esto destruye
 // los desechables que le dejamos y la cache queda intacta.
+//
+// SOLO se llama cuando el idioma que dejamos era un pack, o sea cuando hay
+// cache que proteger. Llamarlo viniendo de un nativo deja los globales en
+// blanco sin que nadie los rellene, porque `scr_84_init_localization` se salta
+// el trabajo cuando `lang_loaded` ya coincide con `lang` (es lo que pasa al
+// volver del `game_restart` que hace salir al menu del capitulo). Ver la
+// condicion en los `scr_init_localization` de cada capitulo.
 function scr_lang_cache_detach()
 {
     global.chemg_sprite_map = ds_map_create()
