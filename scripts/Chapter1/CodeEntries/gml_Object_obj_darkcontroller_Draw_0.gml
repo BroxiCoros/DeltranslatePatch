@@ -57,9 +57,20 @@ if (global.menuno == 5)
     
     if ((global.submenu >= 30 && global.submenu <= 33) || global.submenu == 36)
     {
-        var _xPos = xx + 150
+        var _xPos = xx + 150;
         var _heartXPos = xx + 125;
         var _selectXPos = xx + 385;
+        
+        // En idioma nativo, la geometria del vanilla. 150/125/385 son los
+        // valores de japones-en-consola: el mod los fijo para todos los casos
+        // para que quepan las cadenas traducidas, pero con las del propio
+        // juego la columna de valores se monta encima de la etiqueta.
+        if (is_native_lang())
+        {
+            _xPos = (global.lang == "en") ? (xx + 170) : (xx + 150);
+            _heartXPos = (global.lang == "en") ? (xx + 145) : (xx + 125);
+            _selectXPos = (global.lang == "ja" && global.is_console) ? (xx + 385) : (xx + 430);
+        }
         draw_set_color(c_white);
         draw_text(xx + 270, yy + 100, string_hash_to_newline(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_74_0"))); // CONFIG
         audvol = string(round(global.flag[17] * 100)) + "%";
@@ -233,7 +244,7 @@ if (global.menuno == 5)
                 else if (global.is_console || os_type == os_android)
                 {
                     var _sprite = (scr_getbuttonsprite(global.input_g[i], false) != noone) ? scr_getbuttonsprite(global.input_g[i], false) : button_switch_left_0;
-                    var _xPos = xx + 465;
+                    var _xPos = is_native_lang() ? ((global.lang == "en") ? (xx + 475) : (xx + 465)) : (xx + 465);
                     
                     if (_sprite == button_switch_lStickClick_0 || _sprite == button_switch_rStickClick_0)
                         _xPos -= 3;
@@ -247,7 +258,7 @@ if (global.menuno == 5)
                     if (obj_gamecontroller.gamepad_active)
                     {
                         var _sprite = scr_getbuttonsprite(global.input_g[i], false);
-                        var _xPos = xx + 465;
+                        var _xPos = is_native_lang() ? ((global.lang == "en") ? (xx + 475) : (xx + 465)) : (xx + 465);
                         
                         if (sprite_get_width(_sprite) < 12)
                             _xPos += 2;
@@ -280,7 +291,13 @@ if (global.menuno == 4)
     draw_sprite_ext(scr_84_get_sprite("spr_dmenu_captions"), 0, xx + 124, yy + 84, 2, 2, 0, c_white, 1);
     draw_sprite_ext(scr_84_get_sprite("spr_dmenu_captions"), 4, xx + 124, yy + 210, 2, 2, 0, c_white, 1);
     draw_sprite_ext(scr_84_get_sprite("spr_dmenu_captions"), 5, xx + 380, yy + 210, 2, 2, 0, c_white, 1);
-    draw_sprite_ext(scr_84_get_sprite("spr_dmenu_captions"), 6, xx + 340, yy + 225, 1, 1, 0, c_white, 1);
+    // La etiqueta "TP" se dibuja del sprite CRUDO, no del localizado, igual que
+    // en vanilla: `spr_ja_dmenu_captions` no tiene el frame 6 y GameMaker lo
+    // envuelve al 0, que es "キャラ" (por eso salía esa palabra donde va "TP").
+    // El -30 en japonés también es de vanilla.
+    var _tp_caption = is_native_lang() ? spr_dmenu_captions : scr_84_get_sprite("spr_dmenu_captions");
+    var _tp_xoff = (global.lang == "ja") ? -30 : 0;
+    draw_sprite_ext(_tp_caption, 6, xx + 340 + _tp_xoff, yy + 225, 1, 1, 0, c_white, 1);
     coord = global.submenucoord[20];
     charcoord = global.char[coord];
     menusiner += 1;
@@ -316,19 +333,19 @@ if (global.menuno == 4)
         ch_y[ch_i] = ch_yoff + (ch_i * ch_vspace);
     
     var statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_207_0"); // Attack: 
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_set_color(c_white);
     draw_text_transformed(xx + 100, ch_y[0], statname, xx_scale, 1, 0);
     statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_208_0"); // Defense: 
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_item_icon(xx + 74, ch_y[0] + 6, 1);
     draw_text_transformed(xx + 100, ch_y[1], statname, xx_scale, 1, 0);
     statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_209_0"); // Magic: 
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_item_icon(xx + 74, ch_y[1] + 6, 4);
     draw_text_transformed(xx + 100, ch_y[2], statname, xx_scale, 1, 0);
     statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_212_0"); // Guts: 
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_item_icon(xx + 74, ch_y[2] + 6, 5);
     draw_text_transformed(xx + 100, ch_y[5], statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, ch_y[5] + 6, 9);
@@ -345,7 +362,7 @@ if (global.menuno == 4)
         if (dograndom >= 99)
         {
             statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_231_0"); // Dog:
-            xx_scale = min(1, 122 / string_width(statname));
+            xx_scale = scr_lang_fit(122, statname);
             draw_set_color(c_white);
             draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
             draw_sprite_ext(spr_dog_sleep, -threebuffer / 30, xx + 220, ch_y[3] + 5, 2, 2, 0, c_white, 1);
@@ -379,7 +396,7 @@ if (global.menuno == 4)
             crude_amount = 101;
         
         statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_251_0"); // Rudeness 
-        xx_scale = min(1, 122 / string_width(statname));
+        xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[3], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[3] + 6, 13);
         
@@ -391,7 +408,7 @@ if (global.menuno == 4)
         else
         {
             statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_252_0"); // Crudeness 
-            xx_scale = min(1, 122 / string_width(statname));
+            xx_scale = scr_lang_fit(122, statname);
             draw_text_transformed(xx + 100, ch_y[4], statname, xx_scale, 1, 0);
             draw_item_icon(xx + 74, ch_y[4] + 6, 13);
         }
@@ -430,12 +447,12 @@ if (global.menuno == 4)
             fluff_amount += 1;
         }
         
-        xx_scale = min(1, 122 / string_width(kind_text));
+        xx_scale = scr_lang_fit(122, kind_text);
         draw_text_transformed(xx + 100, ch_y[3], string_hash_to_newline(kind_text), xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[3] + 6, kind_icon);
         draw_text(xx + 230, ch_y[3], string_hash_to_newline(kindness_amount));
         statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_286_0"); // Fluffiness
-        xx_scale = min(1, 122 / string_width(statname));
+        xx_scale = scr_lang_fit(122, statname);
         draw_text_transformed(xx + 100, ch_y[4], statname, xx_scale, 1, 0);
         draw_item_icon(xx + 74, ch_y[4] + 6, 12);
         
@@ -448,7 +465,9 @@ if (global.menuno == 4)
     var guts_xoff = -max(0, guts_amount - 3) * 20;
     
     for (var i = 0; i < guts_amount; i += 1)
-        draw_item_icon(xx + 230 + (i * 20) + guts_xoff, ch_y[5] + 6, 9);
+        // Vanilla los dibuja en xx + 190; el mod los movio a 230 para dejar sitio
+        // a etiquetas traducidas mas largas.
+        draw_item_icon(xx + (is_native_lang() ? 190 : 230) + (i * 20) + guts_xoff, ch_y[5] + 6, 9);
     
     atsum = global.at[global.char[coord]] + global.itemat[global.char[coord]][0] + global.itemat[global.char[coord]][1] + global.itemat[global.char[coord]][2];
     dfsum = global.df[global.char[coord]] + global.itemdf[global.char[coord]][0] + global.itemdf[global.char[coord]][1] + global.itemdf[global.char[coord]][2];
@@ -490,16 +509,30 @@ if (global.menuno == 4)
             if (g == 1)
                 draw_set_color(c_gray);
             
-            draw_set_halign(fa_right);
-            draw_text(xx + 340 + 42, ch_y[i], string_hash_to_newline(string(round((global.spellcost[charcoord][i] / global.maxtension) * 100)) + "%"));
-            draw_set_halign(fa_left);
-            xx_scale = min(1, 198 / string_width(global.spellname[charcoord][i]));
+            // En japones vanilla dibuja el coste a la IZQUIERDA en xx + 310. El
+            // mod lo normalizo a alineado a la derecha terminando en xx + 382, que
+            // es justo donde cae el corazon (xx + 360) y se solapaban.
+            if (global.lang == "ja")
+            {
+                draw_text(xx + 310, ch_y[i], string_hash_to_newline(string(round((global.spellcost[charcoord][i] / global.maxtension) * 100)) + "%"));
+            }
+            else
+            {
+                draw_set_halign(fa_right);
+                draw_text(xx + 340 + 42, ch_y[i], string_hash_to_newline(string(round((global.spellcost[charcoord][i] / global.maxtension) * 100)) + "%"));
+                draw_set_halign(fa_left);
+            }
+            xx_scale = scr_lang_fit(198, global.spellname[charcoord][i]);
             draw_text_transformed(xx + 390, ch_y[i], string_hash_to_newline(global.spellname[charcoord][i]), xx_scale, 1, 0);
         }
     }
     
     if (global.submenu == 21)
-        draw_sprite(spr_heart, 0, xx + 320, yy + 240 + (global.submenucoord[21] * ch_vspace));
+    {
+        // Vanilla desplaza el corazon 40 px en japones (`spellnameoff`).
+        var spellnameoff = (global.lang == "ja") ? 40 : 0;
+        draw_sprite(spr_heart, 0, xx + spellnameoff + 320, yy + 240 + (global.submenucoord[21] * ch_vspace));
+    }
     
     if (deschaver == 1)
     {
@@ -589,7 +622,7 @@ if (global.menuno == 2)
     
     if (charweaponname[charcoord] != " ")
     {
-        xx_scale = min(1, 230 / string_width(charweaponname[charcoord]));
+        xx_scale = scr_lang_fit(230, charweaponname[charcoord]);
         draw_text_transformed(xx + 365, yy + 112, string_hash_to_newline(charweaponname[charcoord]), xx_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 118, charweaponicon[charcoord]);
     }
@@ -602,7 +635,7 @@ if (global.menuno == 2)
     
     if (global.chararmor1[charcoord] != 0)
     {
-        xx_scale = min(1, 230 / string_width(chararmor1name[charcoord]));
+        xx_scale = scr_lang_fit(230, chararmor1name[charcoord]);
         draw_text_transformed(xx + 365, yy + 142, string_hash_to_newline(chararmor1name[charcoord]), xx_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 148, chararmor1icon[charcoord]);
     }
@@ -615,7 +648,7 @@ if (global.menuno == 2)
     
     if (global.chararmor2[charcoord] != 0)
     {
-        xx_scale = min(1, 230 / string_width(chararmor2name[charcoord]));
+        xx_scale = scr_lang_fit(230, chararmor2name[charcoord]);
         draw_text_transformed(xx + 365, yy + 172, string_hash_to_newline(chararmor2name[charcoord]), xx_scale, 1, 0);
         draw_item_icon(xx + 343, yy + 178, chararmor2icon[charcoord]);
     }
@@ -655,7 +688,7 @@ if (global.menuno == 2)
             
             if (global.weapon[i] != 0)
             {
-                xx_scale = min(1, 210 / string_width(weaponname[i]));
+                xx_scale = scr_lang_fit(210, weaponname[i]);
                 draw_text_transformed(xx + 384 + eq_xoff, yy + 230 + (j * ch_vspace), string_hash_to_newline(weaponname[i]), xx_scale, 1, 0);
             }
             else
@@ -695,7 +728,7 @@ if (global.menuno == 2)
             
             if (global.armor[i] != 0)
             {
-                xx_scale = min(1, 210 / string_width(armorname[i]));
+                xx_scale = scr_lang_fit(210, armorname[i]);
                 draw_text_transformed(xx + 384 + eq_xoff, yy + 230 + (j * ch_vspace), string_hash_to_newline(armorname[i]), xx_scale, 1, 0);
             }
             else
@@ -775,15 +808,15 @@ if (global.menuno == 2)
     
     draw_set_color(c_white);
     var statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_556_0"); // Attack: 
-    var xx_scale = min(1, 122 / string_width(statname));
+    var xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 0), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 0), 1);
     statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_557_0"); // Defense: 
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 1), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 1), 4);
     statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_558_0"); // Magic: 
-    xx_scale = min(1, 122 / string_width(statname));
+    xx_scale = scr_lang_fit(122, statname);
     draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * 2), statname, xx_scale, 1, 0);
     draw_item_icon(xx + 74, yy + 236 + (ch_vspace * 2), 5);
     atsum = global.at[global.char[coord]] + global.itemat[global.char[coord]][0] + global.itemat[global.char[coord]][1] + global.itemat[global.char[coord]][2];
@@ -960,13 +993,13 @@ if (global.menuno == 2)
             if (_abilitytext[i] == " ")
             {
                 statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_736_0"); // (No ability.)
-                xx_scale = min(1, 182 / string_width(statname));
+                xx_scale = scr_lang_fit(182, statname);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), statname, xx_scale, 1, 0);
             }
             else
             {
-                xx_scale = min(1, 182 / string_width(_abilitytext[i]));
+                xx_scale = scr_lang_fit(182, _abilitytext[i]);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), string_hash_to_newline(_abilitytext[i]), xx_scale, 1, 0);
                 draw_set_color(c_orange);
@@ -994,13 +1027,13 @@ if (global.menuno == 2)
             if (_abilitytext[i] == " ")
             {
                 statname = scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_773_0"); // (No ability.)
-                xx_scale = min(1, 182 / string_width(statname));
+                xx_scale = scr_lang_fit(182, statname);
                 draw_set_color(c_dkgray);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), statname, xx_scale, 1, 0);
             }
             else
             {
-                xx_scale = min(1, 182 / string_width(_abilitytext[i]));
+                xx_scale = scr_lang_fit(182, _abilitytext[i]);
                 draw_set_color(_abilitycolor[i]);
                 draw_text_transformed(xx + 100, yy + 230 + (ch_vspace * (i + 3)), string_hash_to_newline(_abilitytext[i]), xx_scale, 1, 0);
                 draw_set_color(c_orange);

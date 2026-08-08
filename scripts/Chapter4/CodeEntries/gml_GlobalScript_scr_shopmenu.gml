@@ -215,7 +215,7 @@ function scr_shopmenu(arg0)
                     draw_set_color(c_dkgray);
                 }
                 
-                var text_scale = min(1, 226 / string_width(string_hash_to_newline(_itempname)))
+                var text_scale = scr_lang_fit(226, string_hash_to_newline(_itempname))
                 draw_text_transformed(camerax() + 60, cameray() + 260 + (j * 40), string_hash_to_newline(_itempname), text_scale, 1, 0);
                 
                 draw_set_halign(fa_right)
@@ -375,7 +375,7 @@ function scr_shopmenu(arg0)
                     draw_set_color(c_dkgray);
                 }
                 
-                var text_scale = min(1, 226 / string_width(string_hash_to_newline(_itempname)))
+                var text_scale = scr_lang_fit(226, string_hash_to_newline(_itempname))
                 draw_text_transformed(camerax() + 60, cameray() + 260 + (j * 40), string_hash_to_newline(_itempname), text_scale, 1, 0);
                 
                 draw_set_halign(fa_right)
@@ -513,7 +513,7 @@ function scr_shopmenu(arg0)
                     draw_set_color(c_dkgray);
                 }
                 
-                var text_scale = min(1, 226 / string_width(string_hash_to_newline(_itempname)))
+                var text_scale = scr_lang_fit(226, string_hash_to_newline(_itempname))
                 draw_text_transformed(camerax() + 60, cameray() + 260 + (j * 40), string_hash_to_newline(_itempname), text_scale, 1, 0);
                 
                 draw_set_halign(fa_right)

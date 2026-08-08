@@ -28,12 +28,16 @@ for (var i = 0; i < options_count; i++) {
 
         xx_off += string_width(lang_display) * scale
 
-        draw_text_transformed(xx_options, yy_options + yyoff_options * i + yyoff_options / 3 * 2,
-            string(version_text,
-                obj_gamecontroller.version_to_string(obj_gamecontroller.cur_translation_version),
-                obj_gamecontroller.version_to_string(obj_gamecontroller.last_translation_version),
-            )
-        , scale * 0.5, scale * 0.5, 0)
+        // Un idioma nativo del juego no es un pack: no tiene versión ni
+        // actualizaciones que anunciar, así que la línea sobra.
+        if (!is_native_lang()) {
+            draw_text_transformed(xx_options, yy_options + yyoff_options * i + yyoff_options / 3 * 2,
+                string(version_text,
+                    obj_gamecontroller.version_to_string(obj_gamecontroller.cur_translation_version),
+                    obj_gamecontroller.version_to_string(obj_gamecontroller.last_translation_version),
+                )
+            , scale * 0.5, scale * 0.5, 0)
+        }
 
         if (option == i) {
             var lang_desc = get_lang_setting("description", "")

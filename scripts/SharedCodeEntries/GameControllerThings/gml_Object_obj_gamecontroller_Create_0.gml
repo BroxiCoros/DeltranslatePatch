@@ -129,6 +129,40 @@ scan_languages = function() {
         array_push(global.languages_list, code)
         variable_struct_set(global.all_lang_settings, code, s)
     }
+
+    // ---------------------------------------------------------------
+    // Idiomas NATIVOS del juego (inglés y japonés)
+    // ---------------------------------------------------------------
+    // Se ofrecen siempre, sin carpeta en `lang/`: sus strings, sprites,
+    // sonidos y fuentes ya están dentro del data.win, y el juego trae el
+    // código que los carga (`scr_84_init_localization`, que el mod nunca
+    // reemplaza). `is_native_lang()` es lo que hace que el resto del mod se
+    // aparte y deje trabajar a ese código.
+    //
+    // Si un pack declara el mismo `lang_code`, el pack gana: quien instala
+    // un pack "en" quiere el suyo, no el inglés de fábrica.
+    //
+    // Se añaden TAMBIÉN en modo pack-suelto (`is_single_lang_mode`). Al
+    // principio esto iba detrás de un `if (!global.is_single_lang_mode)`,
+    // asumiendo que en ese modo no hay selector; es falso: el modo suelto solo
+    // significa que el pack está en la raíz de `lang/` en vez de en una
+    // subcarpeta, y el menú de idioma sigue existiendo. Con el guard, en una
+    // instalación de pack suelto los idiomas nativos no aparecían nunca.
+    if (true) {
+        var native_codes = ["en", "ja"]
+        var native_names = ["English", "日本語"]
+
+        for (var i = 0; i < array_length(native_codes); i++) {
+            if (!variable_struct_exists(global.all_lang_settings, native_codes[i])) {
+                var ns = {}
+                variable_struct_set(ns, "name", native_names[i])
+                variable_struct_set(ns, "lang_code", native_codes[i])
+                variable_struct_set(ns, "native", true)
+                array_push(global.languages_list, native_codes[i])
+                variable_struct_set(global.all_lang_settings, native_codes[i], ns)
+            }
+        }
+    }
 }
 
 if (!lang_scan_valid)
@@ -221,7 +255,13 @@ global.lang = picked
 // Cargar el settings.json del idioma activo. Si el pack no declara
 // `lang_code` explícitamente, conservamos el `global.lang` que ya
 // eligió el escaneo (normalmente el nombre de la subcarpeta).
-if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
+//
+// Los idiomas nativos no tienen carpeta ni settings.json: su struct lo
+// fabricó `scan_languages()`, así que se toma de ahí (si no, el nombre del
+// menú se perdería y saldría "English" para el japonés).
+if (is_native_lang()) {
+    global.lang_settings = variable_struct_get(global.all_lang_settings, global.lang)
+} else if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
     var settings = scr_load_json(get_lang_folder_path() + "settings.json")
     var lang_code = variable_struct_get(settings, "lang_code")
     if (is_undefined(lang_code))
