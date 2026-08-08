@@ -1,10 +1,36 @@
-# Estado: idiomas nativos (inglés y japonés)
+# Estado: idioma nativo (inglés)
 
-Última actualización: **2026-08-08**. Rama `idiomas-nativos`, punta en `8e0ebd4`.
+Última actualización: **2026-08-08**. Rama `idiomas-nativos-en` del repo principal.
 
 Este documento es para retomar el trabajo sin reconstruir el contexto. El `CHANGES.md` del
-repo explica *qué hace* el mod; esto explica *dónde está esta rama*, *qué está comprobado* y
+repo explica *qué hace* el mod; esto explica *dónde está esto*, *qué está comprobado* y
 sobre todo *qué ya se intentó y salió mal*, que es lo que más tiempo costó.
+
+---
+
+## El japonés se descartó (2026-08-08)
+
+Este trabajo nació cubriendo los **dos** idiomas de fábrica del juego, inglés y japonés, y
+así se probó en pantalla. Decisión del usuario: **se queda solo el inglés.** El japonés
+funcionaba, pero es el que arrastra todo lo caro y lo que quedaba a medias — las fuentes y
+sprites `_ja`, los 16 pares (entrada, fuente) ambiguos sin resolver, y los textos del selector
+traducidos a mano. El inglés nativo es, literalmente, "correr el código vanilla".
+
+**Qué cambió al quitarlo:** solo las dos listas `native_codes` / `native_names` de los
+`scan_languages()` (el del gamecontroller compartido y el del menú), que pasan de
+`["en", "ja"]` a `["en"]`. Nada más. El mecanismo entero — `is_native_lang()`, los gemelos
+vanilla, `is_english()`, la rama nativa de los `scr_init_localization` — es **agnóstico del
+idioma**: mira el flag `native` del settings inyectado, no el código concreto.
+
+**Volver a ofrecer el japonés = volver a añadirlo a esas dos listas.** Lo que quedaba
+pendiente para él sigue documentado abajo, sin tocar. Todo el código japonés que quedó por
+en medio (los ternarios `(global.lang == "en") ? "Config" : "設定"`, las ramas
+`(global.lang == "ja")` de la geometría del menú de opciones, la pasada de fuentes clavadas)
+se dejó a propósito: es inalcanzable mientras "ja" no sea nativo, y borrarlo solo añadía
+riesgo a algo ya probado.
+
+Abajo, todo lo que hable del japonés describe el estado del mecanismo, no lo que se ofrece
+hoy en el selector.
 
 ---
 

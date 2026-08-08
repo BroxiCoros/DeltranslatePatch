@@ -199,17 +199,19 @@ scan_languages = function() {
     }
 
     // ---------------------------------------------------------------
-    // Idiomas NATIVOS del juego (inglés y japonés)
+    // Idioma NATIVO del juego (inglés)
     // ---------------------------------------------------------------
     // Igual que en el gamecontroller compartido de los capítulos, y por los
-    // mismos motivos: se ofrecen siempre (también en modo pack-suelto, donde
+    // mismos motivos: se ofrece siempre (también en modo pack-suelto, donde
     // el menú de idioma sigue existiendo) y un pack que declare el mismo
     // `lang_code` gana.
     //
-    // Aquí no hay nada que cargar: el menú raíz lleva los dos idiomas dentro,
-    // en ternarios sobre `global.lang`. Basta con ofrecerlos.
-    var native_codes = ["en", "ja"]
-    var native_names = ["English", "日本語"]
+    // Aquí no hay nada que cargar: el menú raíz lleva el inglés dentro, en
+    // ternarios sobre `global.lang`. Basta con ofrecerlo.
+    //
+    // El japonés se descartó a propósito; ver el gamecontroller compartido.
+    var native_codes = ["en"]
+    var native_names = ["English"]
 
     for (var i = 0; i < array_length(native_codes); i++) {
         if (!variable_struct_exists(global.all_lang_settings, native_codes[i])) {
@@ -277,18 +279,29 @@ detect_os_lang = function() {
     return lang_base_code(raw)
 }
 
+// La autodetección solo considera PACKS instalados, nunca el idioma nativo
+// del juego: quien instala una traducción no quiere arrancar en el inglés de
+// fábrica solo porque tenga el sistema en inglés. Ver el gamecontroller
+// compartido.
+lang_is_native = function(code) {
+    if (!variable_struct_exists(global.all_lang_settings, code))
+        return false
+
+    return get_struct_field(variable_struct_get(global.all_lang_settings, code), "native", false) == true
+}
+
 var os_lang = detect_os_lang()
 var picked = ""
 
 if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang))
     picked = saved_lang
 
-if (picked == "" && os_lang != "" && variable_struct_exists(global.all_lang_settings, os_lang))
+if (picked == "" && os_lang != "" && variable_struct_exists(global.all_lang_settings, os_lang) && !lang_is_native(os_lang))
     picked = os_lang
 
 if (picked == "" && os_lang != "") {
     for (var i = 0; i < array_length(global.languages_list); i++) {
-        if (lang_base_code(global.languages_list[i]) == os_lang) {
+        if (!lang_is_native(global.languages_list[i]) && lang_base_code(global.languages_list[i]) == os_lang) {
             picked = global.languages_list[i]
             break
         }
