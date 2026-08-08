@@ -1,10 +1,17 @@
 // Hook del cambio de idioma en caliente (sprites y sonidos diferidos):
 // al detectar cambio de sala, aplicamos las recargas pendientes ANTES
 // de que los objetos de la sala nueva pidan un sprite/sonido (por si
-// nadie llamó a scr_84_get_sprite/get_sound todavía) y luego limpiamos
-// los recursos del idioma viejo (los objetos de la sala anterior ya se
-// destruyeron, así que es seguro; los streams que aún suenan se
-// conservan gracias al guard de audio_is_playing en el cleanup).
+// nadie llamó a scr_84_get_sprite/get_sound todavía).
+//
+// Ya no hay cleanup de los recursos del idioma viejo: con la cache
+// (`scr_lang_cache`) no se destruye nada, se guarda para poder volver sin
+// recargar. De paso desaparece el riesgo que tenia ese cleanup, que era
+// borrar un sprite que alguna instancia siguiera usando o cortar una voz
+// a mitad (de ahi el guard de `audio_is_playing`).
+//
+// Con la precarga estas dos llamadas casi nunca hacen nada: los packs ya
+// estan cargados desde el arranque. Siguen aqui para consola, donde no se
+// precarga, y para un pack que aparezca despues del boot.
 if (variable_global_exists("lang_sprites_pending")) {
     if (!variable_instance_exists(self, "last_room_for_lang"))
         last_room_for_lang = room
@@ -12,10 +19,8 @@ if (variable_global_exists("lang_sprites_pending")) {
         last_room_for_lang = room
         if (global.lang_sprites_pending)
             scr_apply_pending_sprite_reload()
-        scr_cleanup_outdated_sprites()
         if (variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending)
             scr_apply_pending_sound_reload()
-        scr_cleanup_outdated_sounds()
     }
 }
 

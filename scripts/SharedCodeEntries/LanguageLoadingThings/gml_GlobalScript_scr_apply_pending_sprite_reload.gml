@@ -7,9 +7,9 @@
 //      garantiza que los sprites del idioma nuevo estén cargados
 //      antes de hacer cleanup de los outdated.
 //
-// La función limpia el `chemg_sprite_map` (las entradas viejas son
-// simplemente desreferenciadas; los sprites siguen vivos en RAM hasta
-// que `scr_cleanup_outdated_sprites` los borre) y luego llama a
+// La función limpia el `chemg_sprite_map` (las entradas viejas quedan
+// desreferenciadas, pero los sprites siguen vivos: son los del idioma
+// anterior, que esta guardado en la cache) y luego llama a
 // `scr_load_lang_sprites_only` para cargar los nuevos.
 //
 // Es idempotente: si no hay reload pendiente, no hace nada.

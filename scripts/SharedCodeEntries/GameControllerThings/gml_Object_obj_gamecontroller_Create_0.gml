@@ -375,17 +375,15 @@ add_new_translation = function(arg0, arg1)
     }
 };
 
-// Globales para el sistema de cambio de idioma en caliente con
-// sprites diferidos. Inicializadas aquí (no en otro lado) para que
-// estén listas antes del primer scr_init_localization, y para que
-// los chequeos defensivos en scr_84_get_sprite no fallen.
-global.outdated_sprites = [];
+// Globales del cambio de idioma en caliente. Inicializadas aquí (no en otro
+// lado) para que estén listas antes del primer `scr_init_localization`, y para
+// que los chequeos defensivos de `scr_84_get_sprite` no fallen.
+//
+// Los flags de pendiente solo entran en juego cuando toca cargar un idioma que
+// no esta en la cache; `lang_sounds_loader` lo registra cada capitulo con su
+// propio bloque de carga de sonidos. Ya no hay `outdated_sprites` /
+// `outdated_sounds`: con la cache no se destruye ningun asset.
 global.lang_sprites_pending = false;
-// Mismo mecanismo diferido para sonidos: los streams del idioma viejo
-// se preservan en `outdated_sounds` y se borran tras cambiar de sala
-// (con guard de audio_is_playing). `lang_sounds_loader` lo registra
-// cada capitulo con su propio bloque de carga de sonidos.
-global.outdated_sounds = [];
 global.lang_sounds_pending = false;
 last_room_for_lang = room;
 

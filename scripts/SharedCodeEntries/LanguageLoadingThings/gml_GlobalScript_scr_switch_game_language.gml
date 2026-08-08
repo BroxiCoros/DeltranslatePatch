@@ -5,27 +5,18 @@
 // `global.orig_en` (el "modo traductor" que compara el texto con el
 // original en inglés). Por eso aquí se define una función nueva.
 //
-// Estrategia: reutilizamos `scr_init_localization` pero difiriendo la
-// parte pesada (los ~120-300 sprites y los streams de sonido del capítulo,
-// ~100 clips de voz en el Cap.5):
+// El trabajo de verdad lo hace `scr_init_localization`. En el caso normal ese
+// trabajo es ninguno: el idioma ya esta en la cache (`scr_lang_cache`), porque
+// o se precargo al arrancar el capitulo o ya se paso por el antes, y entrar en
+// el es reasignar cuatro ds_map. Es lo mismo que hace el juego con sus idiomas
+// nativos, y por eso ahora cuesta lo mismo: nada.
 //
-//   1. Recarga inmediata de fuentes y strings vía `scr_init_localization`.
-//      Los loops de sprites y de sonidos de `init` estan guardados por
-//      `global.lang_sprites_pending` / `global.lang_sounds_pending`, asi
-//      que NO se recargan ni sprites ni sonidos aqui (se difieren).
-//   2. Un diferido de sprites y otro de sonidos: los recursos del idioma
-//      viejo se mueven a `global.outdated_sprites` / `global.outdated_sounds`,
-//      y se marcan los flags de pendiente. La carga real del idioma nuevo
-//      se dispara de forma perezosa cuando algún objeto pide un sprite
-//      (`scr_84_get_sprite`) o un sonido (`scr_84_get_sound`), o al cambiar
-//      de sala (detector en el Step de `obj_gamecontroller`).
-//   3. Tras cambiar de sala, los sprites viejos se borran con
-//      `scr_cleanup_outdated_sprites` y los streams viejos con
-//      `scr_cleanup_outdated_sounds`. Los sprites persistentes que aún
-//      tuvieran sprite_index a un sprite viejo no deberían existir (la
-//      lista incluye solo props/UI/batalla, no Kris/etc.). Los streams que
-//      aún estén sonando NO se destruyen: se conservan para el siguiente
-//      cleanup (guard `audio_is_playing`), evitando cortar una voz a mitad.
+// Solo cuando el idioma NO esta cacheado hay que leer del disco de verdad
+// (consola, que no precarga; o un pack instalado despues del arranque). Para
+// ese caso siguen los dos flags de pendiente que se marcan abajo: los loops de
+// sprites y sonidos de `init` se saltan y la carga se difiere al primer
+// `scr_84_get_sprite` / `scr_84_get_sound` o al cambio de sala (detector en el
+// Step de `obj_gamecontroller`), en vez de congelar el frame del cambio.
 //
 // Sí toca el modo traductor: es una propiedad del pack (`translator_mode` en
 // su settings.json), no del jugador, así que viaja con el idioma. Ver el
@@ -67,39 +58,19 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     global.translated_songs = ini_read_real("LANG", "translated_songs_" + global.lang, 1)
     ossafe_ini_close()
 
-    // ----- Defer sprites: trasladar los actuales a outdated_sprites -----
-    // Pueden encadenarse varios cambios de idioma sin pasar de sala;
-    // por eso concatenamos en lugar de sobrescribir.
-    if (!variable_global_exists("outdated_sprites"))
-        global.outdated_sprites = []
-    if (variable_global_exists("loaded_sprites"))
-    {
-        for (var i = 0; i < array_length(global.loaded_sprites); i++)
-            array_push(global.outdated_sprites, global.loaded_sprites[i])
-    }
-    global.loaded_sprites = []
-
-    // Marcar reload pendiente. La carga real ocurre en el primer
-    // `scr_84_get_sprite` o en el Step del gamecontroller al detectar
-    // cambio de sala.
+    // ----- Marcar la recarga como pendiente -----
+    // Los assets del idioma que dejamos NO se tocan aqui: `scr_init_localization`
+    // los guarda enteros en la cache (`scr_lang_cache_save`) un momento despues,
+    // y por eso volver a este idioma sale gratis. Antes se trasladaban a
+    // `outdated_sprites` / `outdated_sounds` para borrarlos al cambiar de sala;
+    // ese mecanismo ya no existe, y con el se fue el riesgo de dejar un
+    // `sprite_index` apuntando a un sprite borrado o de cortar una voz a mitad.
+    //
+    // Los flags siguen porque el diferido sigue haciendo falta cuando el idioma
+    // nuevo NO esta cacheado: en consola no se precarga, y un pack instalado
+    // despues del arranque tampoco estara. Si esta cacheado,
+    // `scr_init_localization` los apaga acto seguido y no llega a diferirse nada.
     global.lang_sprites_pending = true
-
-    // ----- Defer sonidos: misma estrategia que los sprites -----
-    // Los streams del idioma viejo se preservan en `outdated_sounds`
-    // (siguen sonando si una voz estaba en curso) y se borran despues,
-    // en `scr_cleanup_outdated_sounds`, cuando ya no se reproducen.
-    if (!variable_global_exists("outdated_sounds"))
-        global.outdated_sounds = []
-    if (variable_global_exists("loaded_sounds"))
-    {
-        for (var i = 0; i < array_length(global.loaded_sounds); i++)
-            array_push(global.outdated_sounds, global.loaded_sounds[i])
-    }
-    global.loaded_sounds = []
-
-    // Marcar reload de sonidos pendiente. La carga real (los ~100
-    // `audio_create_stream`) se difiere al primer `scr_84_get_sound` o al
-    // cambio de sala, igual que los sprites.
     global.lang_sounds_pending = true
 
     // ----- Recarga inmediata de fuentes y strings -----

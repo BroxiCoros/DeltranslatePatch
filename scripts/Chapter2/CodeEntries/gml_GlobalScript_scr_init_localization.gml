@@ -7,6 +7,11 @@ function scr_init_localization()
         global.loaded_sounds = [];
         global.loaded_fonts = [];
     }
+
+    // Primer arranque del capitulo (aun no se ha cargado ningun idioma). Es
+    // cuando toca precargar los demas packs: hay pantalla de carga y el coste
+    // se paga ahi en vez de en mitad de la partida.
+    var is_boot = (global.lang_loaded == "");
     
     // ---------------------------------------------------------------
     // Idiomas NATIVOS del juego (inglés / japonés): apartarse
@@ -32,25 +37,23 @@ function scr_init_localization()
     //     mod), así que hay que escribirla antes o pisaría nuestra elección.
     //   - NO se toca `global.lang_loaded` aquí: esa función tiene su propio
     //     gate `lang_loaded != lang` y se encarga de marcarla.
-    //   - Los sprites/sonidos externos que hubiera cargado un pack anterior
-    //     los libera el mecanismo de `outdated_*` de
-    //     `scr_switch_game_language`; aquí solo se reconstruyen los mapas.
+    //   - Los sprites/sonidos del pack que estuviera activo NO se liberan: se
+    //     guardan enteros en la cache (`scr_lang_cache`) para poder volver a el
+    //     sin recargar nada. Aqui solo se reconstruyen los mapas.
     if (is_native_lang())
     {
+        // El pack que estuviera activo se guarda entero en la cache antes de
+        // ceder el control al vanilla, y los globales se desconectan para que
+        // el `ds_map_destroy` de `scr_84_init_localization` se lleve por
+        // delante cuatro maps desechables y no los del pack. Antes aqui se
+        // borraban las fuentes del pack a mano; ya no hace falta, porque no se
+        // destruye nada suyo.
+        if (global.lang_loaded != "" && !is_native_lang(global.lang_loaded))
+            scr_lang_cache_save(global.lang_loaded);
+
+        scr_lang_cache_detach();
+
         global.chapter_lang_settings = json_parse("{}");
-
-        // Las fuentes que hubiera añadido un pack sí se liberan aquí (igual
-        // que hace la rama normal de más abajo): no las cubre el mecanismo
-        // de `outdated_*`, que solo difiere sprites y sonidos, y
-        // `scr_84_init_localization` va a destruir el `font_map` que las
-        // referencia.
-        if (variable_global_exists("loaded_fonts"))
-        {
-            for (var i = 0; i < array_length(global.loaded_fonts); i++)
-                font_delete(global.loaded_fonts[i]);
-
-            global.loaded_fonts = [];
-        }
 
         ossafe_ini_open("true_config.ini");
         ini_write_string("LANG", "LANG", global.lang);
@@ -62,71 +65,118 @@ function scr_init_localization()
         // los mapas, no hay recarga diferida que disparar.
         global.lang_sprites_pending = false;
         global.lang_sounds_pending = false;
+
+        // Arrancar en el idioma nativo no exime de precargar los packs: el
+        // jugador puede cambiarse a uno en cualquier momento.
+        if (is_boot)
+            scr_lang_preload_others();
+
         exit;
     }
 
     if (global.lang_loaded != global.lang)
     {
+        var prev = global.lang_loaded;
+
+        // El idioma que dejamos: si es un pack se guarda tal cual (nada se
+        // destruye, por eso volver a el es gratis); si era nativo, sus maps
+        // los creo el vanilla, nadie mas los referencia y se destruyen aqui.
+        if (prev != "")
+        {
+            if (is_native_lang(prev))
+                scr_lang_cache_discard_current();
+            else
+                scr_lang_cache_save(prev);
+        }
+
         global.lang_loaded = global.lang;
-        
-        if (variable_global_exists("lang_map"))
-        {
-            for (var i = 0; i < array_length(global.loaded_sprites); i++)
-                sprite_delete(global.loaded_sprites[i]);
-            
-            for (var i = 0; i < array_length(global.loaded_fonts); i++)
-                font_delete(global.loaded_fonts[i]);
-            
-            for (var i = 0; i < array_length(global.loaded_sounds); i++)
-                audio_destroy_stream(global.loaded_sounds[i]);
-            
-            ds_map_destroy(global.lang_map);
-            ds_map_destroy(global.font_map);
-            ds_map_destroy(global.chemg_sprite_map);
-            ds_map_destroy(global.chemg_sound_map);
-            global.chapter_lang_settings = {};
-            global.loaded_sprites = [];
-            global.loaded_sounds = [];
-            global.loaded_fonts = [];
-        }
-        
-        global.chapter_lang_settings = scr_load_json(get_lang_folder_path() + "chapter2/chapter_settings.json");
-        global.font_map = ds_map_create();
-        global.lang_missing_map = ds_map_create();
-        global.chemg_sprite_map = ds_map_create();
-        global.chemg_sound_map = ds_map_create();
-        font_add_enable_aa(false);
-        
-        for (var i = 0; i < array_length(global.fonts_list); i++)
-            add_font(global.fonts_list[i][0], global.fonts_list[i][1]);
-        
-        // El loop de sprites se salta cuando hay una recarga de idioma en
-        // caliente pendiente: los sprites se difieren y los carga
-        // `scr_load_lang_sprites_only`. En el boot (pending = false) se
-        // cargan normalmente aqui.
-        if (!(variable_global_exists("lang_sprites_pending") && global.lang_sprites_pending))
-        {
-            for (var i = 0; i < array_length(global.sprites_list); i++)
-                add_sprite(global.sprites_list[i]);
 
-            // Sprites adicionales declarados por el pack para esta lengua.
-            var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
-            for (var i = 0; i < array_length(additional_funny_words); i++)
-                add_sprite(additional_funny_words[i]);
-        }
-        
-        // Sonidos diferidos: en el boot se cargan aqui; en un cambio de
-        // idioma en caliente el loop se salta (pending) y los carga
-        // `scr_load_lang_sounds_only` de forma perezosa. El loader se
-        // registra siempre para que el codigo compartido pueda invocarlo.
+        // El loader de sonidos se registra siempre, venga el idioma de la
+        // cache o del disco: el codigo compartido lo invoca por su cuenta.
         global.lang_sounds_loader = scr_load_lang_sounds_only;
-        if (!(variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending))
-            scr_load_lang_sounds_only();
 
-        global.lang_map = ds_map_create();
-        scr_lang_load();
+        // ¿Ya lo teniamos cargado? Entonces esto es solo reasignar punteros:
+        // ni disco, ni decodificar PNG, ni rasterizar fuentes. Es el camino
+        // que hace que cambiar de idioma sea instantaneo como en nativo.
+        if (scr_lang_cache_load(global.lang))
+        {
+            global.lang_sprites_pending = false;
+            global.lang_sounds_pending = false;
+
+            // Las fuentes-sprite (tvlandfont en el Cap.3, las de dano en el
+            // Cap.5) se construyen a partir de sprites que el pack localiza,
+            // asi que hay que rehacerlas contra el map recien activado.
+            if (variable_global_exists("lang_fonts_loader"))
+                global.lang_fonts_loader();
+
+            scr_ascii_input_names();
+            exit;
+        }
+
+        scr_lang_load_assets();
         scr_ascii_input_names();
+
+        if (is_boot)
+            scr_lang_preload_others();
     }
+}
+
+// Carga desde el disco los assets del idioma activo al estado global.
+//
+// Sale del cuerpo de `scr_init_localization` para que la precarga
+// (`scr_lang_preload_others`) pueda reutilizarla con otro idioma activo
+// temporalmente. No toca `lang_loaded` ni `scr_ascii_input_names`: de eso se
+// encarga quien llama.
+//
+// Sigue respetando `lang_sprites_pending` / `lang_sounds_pending`. Con la
+// cache ese diferido casi nunca entra en juego (si el idioma se precargo, ni
+// se llega aqui), pero sigue haciendo falta para el caso en que toca cargar de
+// verdad en mitad de la partida: en consola no hay precarga, y un pack que se
+// instale despues del arranque tampoco estara cacheado. La precarga apaga los
+// dos flags antes de llamar, porque ahi si queremos la carga completa.
+function scr_lang_load_assets()
+{
+    // Los recursos creados en runtime son por idioma; los del anterior ya
+    // estan a salvo en la cache, asi que aqui se empieza de cero.
+    global.loaded_sprites = [];
+    global.loaded_sounds = [];
+    global.loaded_fonts = [];
+
+    global.chapter_lang_settings = scr_load_json(get_lang_folder_path() + "chapter2/chapter_settings.json");
+    global.font_map = ds_map_create();
+    global.lang_missing_map = ds_map_create();
+    global.chemg_sprite_map = ds_map_create();
+    global.chemg_sound_map = ds_map_create();
+    font_add_enable_aa(false);
+    
+    for (var i = 0; i < array_length(global.fonts_list); i++)
+        add_font(global.fonts_list[i][0], global.fonts_list[i][1]);
+    
+    // El loop de sprites se salta cuando hay una recarga de idioma en
+    // caliente pendiente: los sprites se difieren y los carga
+    // `scr_load_lang_sprites_only`. En el boot (pending = false) se
+    // cargan normalmente aqui.
+    if (!(variable_global_exists("lang_sprites_pending") && global.lang_sprites_pending))
+    {
+        for (var i = 0; i < array_length(global.sprites_list); i++)
+            add_sprite(global.sprites_list[i]);
+
+        // Sprites adicionales declarados por el pack para esta lengua.
+        var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
+        for (var i = 0; i < array_length(additional_funny_words); i++)
+            add_sprite(additional_funny_words[i]);
+    }
+    
+    // Sonidos diferidos: en el boot se cargan aqui; en un cambio de
+    // idioma en caliente el loop se salta (pending) y los carga
+    // `scr_load_lang_sounds_only` de forma perezosa. El loader se
+    // registra siempre para que el codigo compartido pueda invocarlo.
+    global.lang_sounds_loader = scr_load_lang_sounds_only;
+    if (!(variable_global_exists("lang_sounds_pending") && global.lang_sounds_pending))
+        scr_load_lang_sounds_only();
+
+    global.lang_map = ds_map_create();
+    scr_lang_load();
 }
 
 // Carga (o recarga) los streams de sonido del idioma activo al

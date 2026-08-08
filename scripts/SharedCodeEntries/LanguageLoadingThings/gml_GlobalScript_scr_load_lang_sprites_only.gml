@@ -2,11 +2,10 @@
 // Chapter-agnóstico: itera `global.sprites_list` (la define
 // `init_global_vars`, así que persiste tras el boot).
 //
-// NO borra los sprites viejos: el codigo que llama
-// (`scr_switch_game_language`) ya los movio a `global.outdated_sprites`
-// para borrarlos despues, en `scr_cleanup_outdated_sprites` al cambiar
-// de sala. Aqui solo vaciamos el map (desreferencia) y lo repoblamos
-// con los sprites del idioma nuevo.
+// NO borra los sprites viejos: son los del idioma anterior y estan
+// guardados en la cache (`scr_lang_cache`), que es lo que permite volver
+// a el sin recargar. Aqui solo vaciamos el map (desreferencia) y lo
+// repoblamos con los sprites del idioma nuevo.
 
 function scr_load_lang_sprites_only() //gml_Script_scr_load_lang_sprites_only
 {
