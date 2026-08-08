@@ -121,12 +121,24 @@ function scr_init_localization()
                 add_sprite(additional_funny_words[i]);
         }
         
-        var additional_funny_words = get_chapter_lang_setting("additional_funny_words", []);
-        
-        for (var i = 0; i < array_length(additional_funny_words); i++)
-            add_sprite(additional_funny_words[i]);
-        
-        global.tvlandfont = font_add_sprite_ext(scr_84_get_sprite("spr_tvlandfont"), get_chapter_lang_setting("tvlangfont_string", "ABCDEFGHIJKLMNOPQRSTUVWXYZ.?!:…abcdefghijklmnopqrstuvwxyz1234567890"), 0, 1);
+        // La fuente-sprite de TV Land depende de `spr_tvlandfont`, que el pack
+        // localiza, asi que hay que rehacerla en cada cambio de idioma. La
+        // registramos como loader para que `scr_load_lang_sprites_only` la
+        // reconstruya DESPUES de la recarga diferida de sprites.
+        //
+        // Antes esto era una llamada suelta aqui, y anulaba el diferido entero:
+        // `scr_84_get_sprite` aplica la recarga pendiente antes de resolver, y
+        // `scr_switch_game_language` ya habia marcado `lang_sprites_pending`, o
+        // sea que los 356 sprites del capitulo se cargaban de golpe en el frame
+        // del cambio. Ver `scr_reload_tvlandfont`.
+        global.lang_fonts_loader = scr_reload_tvlandfont;
+
+        // En el boot no hay recarga pendiente y los sprites acaban de cargarse
+        // justo arriba, asi que la fuente se construye ya (ahi
+        // `scr_84_get_sprite` no dispara nada). En el cambio en caliente NO se
+        // toca aqui: la hace el loader al terminar de cargar los sprites.
+        if (!(variable_global_exists("lang_sprites_pending") && global.lang_sprites_pending))
+            scr_reload_tvlandfont();
 
         // Sonidos diferidos: en el boot se cargan aqui; en un cambio de
         // idioma en caliente el loop se salta (pending) y los carga
