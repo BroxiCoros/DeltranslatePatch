@@ -44,7 +44,20 @@ if (drawchar == 1)
         
         draw_set_color(c_white);
         scr_84_set_draw_font("mainbig");
-        draw_text(xx + 520, (yy + tp) - 60, scr_84_get_subst_string(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_47_0"), string(global.gold))); // D$ 
+        // El mod pasa la cantidad por sustitucion (`~1`) para que el pack pueda
+        // ponerla donde quiera; el vanilla del Cap.1 concatena a secas:
+        // `scr_84_get_lang_string(clave) + string(global.gold)`. En idioma
+        // nativo la cadena viene del `lang_en.json` del juego, que NO lleva
+        // `~1`, asi que la sustitucion no encontraba nada y el numero
+        // desaparecia: salia "D$ " a secas. Ahi hay que concatenar como vanilla.
+        //
+        // Esta entrada esta en la lista negra (corre el codigo del mod tambien
+        // en idioma nativo), por eso el arreglo va aqui y no lo resuelve solo
+        // el gemelo.
+        if (is_native_lang())
+            draw_text(xx + 520, (yy + tp) - 60, string_hash_to_newline(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_47_0", "D$ ") + string(global.gold))); // D$
+        else
+            draw_text(xx + 520, (yy + tp) - 60, scr_84_get_subst_string(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_47_0", "D$ ~1"), string(global.gold))); // D$
     }
 }
 
@@ -1114,7 +1127,15 @@ if (global.menuno == 1)
     if (global.submenu == 7)
     {
         draw_set_color(c_white);
-        draw_text(xx + 20, yy + 10, string_hash_to_newline(scr_84_get_subst_string(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_829_0"), scr_item_localized_name_acc(global.item[global.submenucoord[2]], 0)))); // Really throw away the#
+        // Mismo caso que el "D$" de arriba: en vanilla esto se arma
+        // concatenando (`clave + global.itemname[...] + "?"`), sin `~1`, asi
+        // que en idioma nativo la sustitucion se quedaba sin el nombre del
+        // objeto. Se replica la forma inglesa del vanilla, con `itemname` en
+        // vez del nombre declinado del pack.
+        if (is_native_lang())
+            draw_text(xx + 20, yy + 10, string_hash_to_newline(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_829_0") + global.itemname[global.submenucoord[2]] + "?")); // Really throw away the#
+        else
+            draw_text(xx + 20, yy + 10, string_hash_to_newline(scr_84_get_subst_string(scr_84_get_lang_string("obj_darkcontroller_slash_Draw_0_gml_829_0"), scr_item_localized_name_acc(global.item[global.submenucoord[2]], 0)))); // Really throw away the#
     }
     
     if (global.submenucoord[1] != 2)

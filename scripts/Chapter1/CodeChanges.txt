@@ -39,7 +39,7 @@ scr_84_get_subst_string(scr_84_get_lang_string("obj_shop1_slash_Draw_0_gml_366_0
                 draw_set_halign(fa_right)
 
                 if (global.itemvalue[i] > 1) {
-                    draw_text(300 + 8 + 54, 260 + (j * 40), scr_84_get_subst_string(scr_84_get_lang_string("gml_Object_obj_shop2_Draw_0"), string(ceil(global.itemvalue[i] / 2))));
+                    draw_text(300 + 8 + 54, 260 + (j * 40), scr_84_get_subst_string(scr_84_get_lang_string("gml_Object_obj_shop2_Draw_0", "$~1"), string(ceil(global.itemvalue[i] / 2))));
                 }
 
                 draw_set_halign(fa_left)
@@ -53,7 +53,7 @@ scr_84_get_subst_string(scr_84_get_lang_string("obj_shop1_slash_Draw_0_gml_366_0
                 draw_set_halign(fa_right)
 
                 if (weaponvalue[i] > 1) {
-                    draw_text(300 + 8 + 54, 260 + (j * 40), scr_84_get_subst_string(scr_84_get_lang_string("gml_Object_obj_shop2_Draw_0"), string(ceil(weaponvalue[i] / 2))));
+                    draw_text(300 + 8 + 54, 260 + (j * 40), scr_84_get_subst_string(scr_84_get_lang_string("gml_Object_obj_shop2_Draw_0", "$~1"), string(ceil(weaponvalue[i] / 2))));
                 }
 
                 draw_set_halign(fa_left)
@@ -67,7 +67,7 @@ scr_84_get_subst_string(scr_84_get_lang_string("obj_shop1_slash_Draw_0_gml_366_0
                 draw_set_halign(fa_right)
 
                 if (armorvalue[i] > 1) {
-                    draw_text(300 + 8 + 54, 260 + (j * 40), scr_84_get_subst_string(scr_84_get_lang_string("gml_Object_obj_shop2_Draw_0"), string(ceil(armorvalue[i] / 2))));
+                    draw_text(300 + 8 + 54, 260 + (j * 40), scr_84_get_subst_string(scr_84_get_lang_string("gml_Object_obj_shop2_Draw_0", "$~1"), string(ceil(armorvalue[i] / 2))));
                 }
 
                 draw_set_halign(fa_left)
