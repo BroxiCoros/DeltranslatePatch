@@ -675,6 +675,61 @@ if (!global.is_console && variable_global_exists(""screen_border_id""))
     border_size_fs = _fs;
 }");
 
+// =====================================================================
+// obj_smallface  (port de NXRUNE b12d9bc0 "Fix obj_smallface")
+// =====================================================================
+// obj_smallface dibuja en Draw GUI (Draw_64) usando coordenadas de MUNDO
+// menos la camara (x - cx). La capa GUI no sigue a la application_surface,
+// asi que cuando el marco mete el juego hacia dentro el retrato pequeno y
+// su texto se quedan colocados respecto a la ventana entera, no respecto
+// al area de juego: aparecen desplazados hacia fuera y mas grandes.
+//
+// Se corrige recolocandolos dentro del rectangulo que publica
+// obj_border_controller.application_surface_rects.
+//
+// Solo Ch2 y Ch3: en Ch4 y Ch5 este evento es un `exit;` ya en el vanilla
+// (el objeto no dibuja nada), asi que no hay nada que corregir. NXRUNE hace
+// lo mismo: su fix solo esta en NXRUNE_CH2.csx y NXRUNE_CH3.csx.
+//
+// DIFERENCIAS DELIBERADAS CON NXRUNE:
+//   - NXRUNE multiplica por la constante 3 (3 * border_scale). Eso solo
+//     cuadra con SU display_set_gui_maximize(), que nosotros no aplicamos,
+//     y aun asi queda 1.5x por encima de la escala real del area de juego
+//     (w / 640 = 2 a 1080p). Aqui la escala se DERIVA del rectangulo, que
+//     es lo que hace que la imagen coincida con el juego.
+//   - Los factores x e y se calculan por separado (display_get_gui_* /
+//     window_get_*), asi que la formula vale tanto si la capa GUI esta
+//     maximizada como si no. Con la GUI maximizada se reduce exactamente
+//     a la de NXRUNE salvo por la constante 3.
+//   - Con el borde en "None" los factores quedan en identidad (0/0/1/1),
+//     de modo que el dibujo es byte a byte el vanilla y ese modo no puede
+//     regresionar.
+// =====================================================================
+
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "cx = camerax();", @"var _sfx = 0;
+    var _sfy = 0;
+    var _sfsx = 1;
+    var _sfsy = 1;
+    if (instance_exists(obj_border_controller) && global.screen_border_id != ""None"" && global.screen_border_id != ""なし"")
+    {
+        var _r = obj_border_controller.application_surface_rects;
+        var _kx = display_get_gui_width() / window_get_width();
+        var _ky = display_get_gui_height() / window_get_height();
+        _sfx = _r.xx * _kx;
+        _sfy = _r.yy * _ky;
+        _sfsx = (_r.w / 640) * _kx;
+        _sfsy = (_r.h / 480) * _ky;
+    }
+    cx = camerax();");
+
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_sprite_ext(sprite_index, image_index, x - cx, y - cy, image_xscale, image_yscale, image_angle, image_blend, facealpha);", "draw_sprite_ext(sprite_index, image_index, _sfx + ((x - cx) * _sfsx), _sfy + ((y - cy) * _sfsy), image_xscale * _sfsx, image_yscale * _sfsy, image_angle, image_blend, facealpha);");
+
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70) - cx, (y + 10) - cy, string_hash_to_newline(mystring));", "draw_text_transformed(_sfx + ((((x + 70) - cx)) * _sfsx), _sfy + ((((y + 10) - cy)) * _sfsy), string_hash_to_newline(mystring), _sfsx, _sfsy, 0);");
+
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70) - cx, (y + 15) - cy, string_hash_to_newline(mystring));", "draw_text_transformed(_sfx + ((((x + 70) - cx)) * _sfsx), _sfy + ((((y + 15) - cy)) * _sfsy), string_hash_to_newline(mystring), _sfsx, _sfsy, 0);");
+
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70 + random(1)) - cx, (y + 15 + random(1)) - cy, string_hash_to_newline(partstring));", "draw_text_transformed(_sfx + ((((x + 70 + random(1)) - cx)) * _sfsx), _sfy + ((((y + 15 + random(1)) - cy)) * _sfsy), string_hash_to_newline(partstring), _sfsx, _sfsy, 0);");
+
 importGroup.Import();
 
 ScriptMessage("All done! :3  (NXRUNE_CH2 + deltranslate compat)");
