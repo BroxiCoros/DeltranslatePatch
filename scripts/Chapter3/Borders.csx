@@ -694,10 +694,12 @@ if (!global.is_console && variable_global_exists(""screen_border_id""))
 //     y aun asi queda 1.5x por encima de la escala real del area de juego
 //     (w / 640 = 2 a 1080p). Aqui la escala se DERIVA del rectangulo, que
 //     es lo que hace que la imagen coincida con el juego.
-//   - Los factores x e y se calculan por separado (display_get_gui_* /
+//   - La POSICION usa factores x e y por separado (display_get_gui_* /
 //     window_get_*), asi que la formula vale tanto si la capa GUI esta
-//     maximizada como si no. Con la GUI maximizada se reduce exactamente
-//     a la de NXRUNE salvo por la constante 3.
+//     maximizada como si no. El DIBUJO, en cambio, usa un factor unico:
+//     con dos factores distintos los glifos salen deformados (probado en
+//     juego el 2026-08-09: en 16:9 el texto salia un 25% mas estrecho que
+//     alto, que es justo el cociente (4/3)/(16/9) = 0.75).
 //   - Con el borde en "None" los factores quedan en identidad (0/0/1/1),
 //     de modo que el dibujo es byte a byte el vanilla y ese modo no puede
 //     regresionar.
@@ -707,6 +709,7 @@ importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "cx
     var _sfy = 0;
     var _sfsx = 1;
     var _sfsy = 1;
+    var _sfs = 1;
     if (instance_exists(obj_border_controller) && global.screen_border_id != ""None"" && global.screen_border_id != ""なし"")
     {
         var _r = obj_border_controller.application_surface_rects;
@@ -716,16 +719,23 @@ importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "cx
         _sfy = _r.yy * _ky;
         _sfsx = (_r.w / 640) * _kx;
         _sfsy = (_r.h / 480) * _ky;
+        // La POSICION necesita los dos factores por separado (la capa GUI no
+        // tiene el mismo aspecto que la ventana), pero DIBUJAR con escalas
+        // distintas en x e y deforma los glifos y el sprite: en 16:9 el
+        // cociente es (4/3)/(16/9) = 0.75, o sea 25% mas estrecho que alto.
+        // Asi que para dibujar se usa un factor UNICO. Se toma el vertical
+        // porque es el que quedo correcto al probarlo en juego.
+        _sfs = _sfsy;
     }
     cx = camerax() - xoffset_console;");
 
-importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_sprite_ext(sprite_index, image_index, x - cx, y - cy, image_xscale, image_yscale, image_angle, image_blend, facealpha);", "draw_sprite_ext(sprite_index, image_index, _sfx + ((x - cx) * _sfsx), _sfy + ((y - cy) * _sfsy), image_xscale * _sfsx, image_yscale * _sfsy, image_angle, image_blend, facealpha);");
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_sprite_ext(sprite_index, image_index, x - cx, y - cy, image_xscale, image_yscale, image_angle, image_blend, facealpha);", "draw_sprite_ext(sprite_index, image_index, _sfx + ((x - cx) * _sfsx), _sfy + ((y - cy) * _sfsy), image_xscale * _sfs, image_yscale * _sfs, image_angle, image_blend, facealpha);");
 
-importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70) - cx, (y + 10) - cy, string_hash_to_newline(mystring));", "draw_text_transformed(_sfx + ((((x + 70) - cx)) * _sfsx), _sfy + ((((y + 10) - cy)) * _sfsy), string_hash_to_newline(mystring), _sfsx, _sfsy, 0);");
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70) - cx, (y + 10) - cy, string_hash_to_newline(mystring));", "draw_text_transformed(_sfx + ((((x + 70) - cx)) * _sfsx), _sfy + ((((y + 10) - cy)) * _sfsy), string_hash_to_newline(mystring), _sfs, _sfs, 0);");
 
-importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70) - cx, (y + 15) - cy, string_hash_to_newline(mystring));", "draw_text_transformed(_sfx + ((((x + 70) - cx)) * _sfsx), _sfy + ((((y + 15) - cy)) * _sfsy), string_hash_to_newline(mystring), _sfsx, _sfsy, 0);");
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70) - cx, (y + 15) - cy, string_hash_to_newline(mystring));", "draw_text_transformed(_sfx + ((((x + 70) - cx)) * _sfsx), _sfy + ((((y + 15) - cy)) * _sfsy), string_hash_to_newline(mystring), _sfs, _sfs, 0);");
 
-importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70 + random(1)) - cx, (y + 15 + random(1)) - cy, string_hash_to_newline(partstring));", "draw_text_transformed(_sfx + ((((x + 70 + random(1)) - cx)) * _sfsx), _sfy + ((((y + 15 + random(1)) - cy)) * _sfsy), string_hash_to_newline(partstring), _sfsx, _sfsy, 0);");
+importGroup.QueueTrimmedLinesFindReplace("gml_Object_obj_smallface_Draw_64", "draw_text((x + 70 + random(1)) - cx, (y + 15 + random(1)) - cy, string_hash_to_newline(partstring));", "draw_text_transformed(_sfx + ((((x + 70 + random(1)) - cx)) * _sfsx), _sfy + ((((y + 15 + random(1)) - cy)) * _sfsy), string_hash_to_newline(partstring), _sfs, _sfs, 0);");
 
 importGroup.Import();
 
