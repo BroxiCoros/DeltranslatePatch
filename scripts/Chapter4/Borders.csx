@@ -266,12 +266,13 @@ importGroup.QueueFindReplace("gml_Object_obj_time_Draw_77", "window_set_size(640
 importGroup.QueueFindReplace("gml_Object_obj_border_controller_Draw_77", @"var xx = floor((ww - (sw * global.window_scale)) / 2);
 var yy = floor((wh - (sh * global.window_scale)) / 2);",
 @"var _border_off = (global.screen_border_id == ""None"" || global.screen_border_id == ""なし"");
-var xx, yy;
+var xx, yy, _bscale;
 
 if (_border_off)
 {
     xx = floor((ww - (sw * global.window_scale)) / 2);
     yy = floor((wh - (sh * global.window_scale)) / 2);
+    _bscale = global.window_scale;
 }
 else
 {
@@ -285,6 +286,7 @@ else
         border_h *= scale;
         xx = (320 * (wh / 1080)) + (abs(ww - border_w) / 2);
         yy = 60 * (wh / 1080);
+        _bscale = scale;
     }
     else
     {
@@ -293,13 +295,38 @@ else
         border_h *= scale;
         xx = 320 * (ww / 1920);
         yy = (60 * (ww / 1920)) + (abs(wh - border_h) / 2);
+        _bscale = scale;
     }
-}");
+}
+
+// Publica la geometria final del area de juego para que lo que se dibuje en
+// capa GUI pueda situarse dentro del marco y no sobre la ventana entera.
+// Con el borde en None quedan los valores vanilla, asi que quien lo lea
+// obtiene el rectangulo correcto en los dos modos.
+application_surface_rects =
+{
+    xx: xx,
+    yy: yy,
+    w: (_border_off ? (sw * global.window_scale) : (ww - (2 * xx))),
+    h: (_border_off ? (sh * global.window_scale) : (wh - (2 * yy))),
+    border_scale: _bscale
+};");
 
 importGroup.QueueFindReplace("gml_Object_obj_border_controller_Draw_77", "draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);", @"if (_border_off)
     draw_surface_ext(application_surface, xx, yy, global.window_scale, global.window_scale, 0, c_white, 1);
 else
     draw_surface_stretched(application_surface, xx, yy, ww - (2 * xx), wh - (2 * yy));");
+
+// Valores por defecto para el primer frame, antes de que el Draw_77 haya
+// corrido ni una vez: identidad (juego a 640x480 sin desplazar).
+importGroup.QueueAppend("gml_Object_obj_border_controller_Create_0", @"application_surface_rects =
+{
+    xx: 0,
+    yy: 0,
+    w: 640,
+    h: 480,
+    border_scale: 1
+};");
 
 
 // scr_draw_background_ps4
