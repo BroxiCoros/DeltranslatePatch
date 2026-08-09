@@ -45,7 +45,10 @@ get_lang_count = function() {
 
 
 SUBTYPE = 0
-CH = string(global.chapter)
+DOORDRAWN = 1;
+CH = string(global.chapter);
+if (CH == "1")
+    DOORDRAWN = 0;
 if ossafe_file_exists("filech" + CH + "_3")
     SUBTYPE = 1
 if ossafe_file_exists("filech" + CH + "_4")
@@ -58,9 +61,6 @@ BG_SINER = DEVICE_MENU.BG_SINER
 OB_DEPTH = DEVICE_MENU.OB_DEPTH
 obacktimer = DEVICE_MENU.obacktimer
 OBM = DEVICE_MENU.OBM
-COL_A = DEVICE_MENU.COL_A
-COL_B = DEVICE_MENU.COL_B
-COL_PLUS = DEVICE_MENU.COL_PLUS
 // DEVICE_MENU solo define estas cinco dentro de su `if (TYPE == 1)`, es decir
 // cuando hay partidas guardadas y sale la UI oscura de DELTARUNE. Sin partidas
 // se dibuja la UI verde de Gaster y no existen, asi que leerlas crasheaba al
