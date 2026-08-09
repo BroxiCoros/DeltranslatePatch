@@ -80,6 +80,15 @@ del upstream, entra correctamente.
     por frame; de ahí la animación del perro con barra de progreso, y varios
     segundos de espera, al entrar a un capítulo. Se vuelve a la carga perezosa
     del PC vanilla.
+  - **Retratos pequeños alineados con el marco (Cap. 2 y 3):** `obj_smallface`
+    dibuja en capa GUI con coordenadas de mundo, así que con el borde puesto la
+    cabecita que asoma al leer un cartel, y su texto, quedaban colocados
+    respecto a la ventana entera en vez de respecto al área de juego.
+    `obj_border_controller` publica ahora esa geometría en
+    `application_surface_rects` y el retrato se sitúa dentro de ella. Es el fix
+    de NXRUNE, con la escala **derivada** del rectángulo en lugar de su
+    constante fija, para no depender de `display_set_gui_maximize()`, que aquí
+    no se aplica.
 
 ### Correcciones
 
