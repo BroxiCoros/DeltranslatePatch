@@ -237,7 +237,7 @@ prevemptyname = scr_84_get_lang_string("DEVICE_MENU_slash_Step_0_gml_105_0"); //
 COPYTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_200_0", "COPY"); // <localization fetch error>
 ERASETEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_201_0", "ERASE"); // <localization fetch error>
 CHSELECTTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_202_0", "CHAPTER SELECT"); // <localization fetch error>
-QUITTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_203_0", "QUIT"); // <localization fetch error>
+QUITTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_203_0", "END PROGRAM"); // <localization fetch error>
 CONFIGTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_204_0", "CONFIG"); // <localization fetch error>
 
 if (TYPE == 1)
@@ -245,7 +245,7 @@ if (TYPE == 1)
     COPYTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_200_1", "Copy"); // <localization fetch error>
     ERASETEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_201_1", "Erase"); // <localization fetch error>
     CHSELECTTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_202_1", "Chapter Select"); // <localization fetch error>
-    QUITTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_203_1", "Quit"); // <localization fetch error>
+    QUITTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_203_1", "End Program"); // <localization fetch error>
     CONFIGTEXT = scr_84_get_lang_string("DEVICE_MENU_slash_Draw_0_gml_204_1", "Config"); // <localization fetch error>
 }
 
