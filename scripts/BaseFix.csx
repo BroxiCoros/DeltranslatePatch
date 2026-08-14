@@ -524,7 +524,24 @@ var twinBlock = new string[] {
     // En vanilla ahi solo hay un interruptor que alterna en<->ja, asi que con
     // gemelo te quedarias en japones sin forma de volver al español: es el
     // mismo caso que `DEVICE_MENU_*` en los capitulos.
-    "obj_screen_select_footer_"
+    "obj_screen_select_footer_",
+    // `obj_screen_start` y `obj_ui_choice` definen metodos que el juego NO tiene
+    // (`adjust_choices_x`, `adjust_x`, `shift_y`) y que se llaman desde fuera, desde
+    // `obj_CHAPTER_SELECT`. Con gemelo, en idioma nativo el Create es el vanilla, esos
+    // metodos no se definen y quien los llame revienta:
+    //   Variable <unknown_object>.adjust_choices_x(...) not set before reading it
+    // En PC sale ese dialogo; en consola es un aborto mudo (pantalla negra). Fue el
+    // fallo del 2026-08-14 en Switch: solo salta si hay partida a medias, porque la
+    // pantalla de "continuar desde el capitulo N" es la que llama a `adjust_choices_x`.
+    // Regla general: un Create que define funciones del fork no puede tener gemelo.
+    "obj_screen_start_", "obj_ui_choice_",
+    // `obj_CHAPTER_SELECT` tambien sostiene funciones del fork: su
+    // `toggle_language()` redefinido (que abre el selector del mod en vez del
+    // interruptor en<->ja de vanilla) y la opcion de Ajustes de idioma del
+    // aviso de "continuar desde el capitulo N". Con gemelo, en idioma nativo
+    // esa opcion no se dibujaba y no habia forma de volver a un pack desde
+    // esa pantalla. Misma regla que `DEVICE_MENU_*`.
+    "obj_CHAPTER_SELECT_"
 };
 
 var twinLangPattern = new System.Text.RegularExpressions.Regex(@"global\.lang|langopt\s*\(|is_english\s*\(");
