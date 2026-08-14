@@ -1,3 +1,16 @@
+// En consola el juego repone `global.lang` a "en" el solo cada vez que carga la
+// savedata (`obj_init_console` -> `load_default_settings`), y eso pasa tambien en
+// cada `room_restart`. Lo deshacemos aqui, que corre en todas las pantallas: si
+// no, el menu de idioma escribe sus claves por idioma con el codigo equivocado
+// (`translated_songs_en` en vez de `translated_songs_es_mx`) y la primera
+// pulsacion de izquierda/derecha en "Language" se gasta en reparar el valor en
+// vez de cambiar de idioma. `lang_choice` es la eleccion real del jugador.
+if (variable_global_exists("is_console") && global.is_console
+    && variable_global_exists("lang_choice") && global.lang != global.lang_choice)
+{
+    global.lang = global.lang_choice
+}
+
 if (!instance_exists(obj_CHAPTER_SELECT))
     exit;
 
