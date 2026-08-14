@@ -22,7 +22,13 @@ _load_type = UnknownEnum.Value_0;
 init = function()
 {
     var max_chapter = UnknownEnum.Value_7;
-    var max_available_chapter = UnknownEnum.Value_4;
+    // OJO: son 5, no 4. Esta copia venia de cuando el juego solo traia cuatro
+    // capitulos, y los dos bucles de abajo recorren `1..max_available_chapter`:
+    // con un 4, el capitulo 5 era invisible para el selector. Con partidas a
+    // medias en el 3 y en el 5, el aviso de "continuar" ofrecia el 3 (y llevaba
+    // al 3), mientras el juego sin parchear ofrecia el 5. Al actualizar el
+    // parche a una version nueva del juego, revisar este numero.
+    var max_available_chapter = UnknownEnum.Value_5;
     _current_state = UnknownEnum.Value_1;
     
     for (var i = 0; i < max_available_chapter; i++)
@@ -47,7 +53,19 @@ init = function()
     if (_chapter_completed > 0)
     {
         _current_state = UnknownEnum.Value_3;
-        
+
+        // Bloque del juego que esta copia tampoco tenia: si la partida a medias
+        // va por delante del ultimo capitulo terminado, manda la de "continuar";
+        // y si le saca dos o mas capitulos, ninguna de las dos pantallas encaja y
+        // se va directo al selector.
+        if (_chapter_in_progress > _chapter_completed)
+        {
+            _current_state = UnknownEnum.Value_2;
+
+            if ((_chapter_in_progress - _chapter_completed) >= 2)
+                _current_state = UnknownEnum.Value_4;
+        }
+
         if (_chapter_completed >= max_available_chapter)
             _current_state = UnknownEnum.Value_4;
     }
