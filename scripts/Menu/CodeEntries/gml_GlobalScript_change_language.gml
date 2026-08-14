@@ -15,6 +15,9 @@ function change_language(argument0) //gml_Script_change_language
 {
     var target_lang = argument0;
     global.lang = target_lang
+    // Eleccion explicita del jugador: es de lo unico que se fia
+    // `is_native_lang` en consola.
+    global.lang_choice = target_lang
 
     // Si ya tenemos el `settings.json` del idioma en caché (lo hace
     // `scan_languages` en obj_gamecontroller_Create_0), lo usamos

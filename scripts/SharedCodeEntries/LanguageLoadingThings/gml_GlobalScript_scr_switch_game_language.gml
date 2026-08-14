@@ -30,6 +30,8 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
     }
 
     global.lang = target_lang
+    // Eleccion explicita del jugador; ver `is_native_lang`.
+    global.lang_choice = target_lang
 
     // Usar la caché si el Create del gamecontroller ya escaneó todos
     // los idiomas; si no (por seguridad), leer del disco. Los idiomas

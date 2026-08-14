@@ -267,6 +267,13 @@ if (picked == "")
     picked = "en"
 
 global.lang = picked
+// Eleccion vigente del jugador, aparte de `global.lang`: en consola el juego
+// pisa `global.lang` con "en" en cada carga de savedata. Ver `is_native_lang`.
+// Sobrevive al `room_restart` porque este Create sale antes por su
+// early-return de `lang_map`.
+global.lang_choice = picked
+// Lo que decidio el escaneo, para que el hook diferido pueda restaurarlo.
+global.lang_scan_pick = picked
 
 // Cargar el settings.json del idioma activo. Si el pack no declara
 // `lang_code` explícitamente, conservamos el `global.lang` que ya

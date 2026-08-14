@@ -315,6 +315,13 @@ if (picked == "")
     picked = "en"
 
 global.lang = picked
+// Eleccion vigente del jugador, aparte de `global.lang`: en consola el juego
+// pisa `global.lang` con "en" en cada carga de savedata. Ver `is_native_lang`.
+// Sobrevive al `room_restart` porque este Create sale antes por su
+// early-return de `lang_map`.
+global.lang_choice = picked
+// Lo que decidio el escaneo, para que el hook diferido pueda restaurarlo.
+global.lang_scan_pick = picked
 
 update_lang_version = function() {
     var version = string_to_version("0.0.0")
