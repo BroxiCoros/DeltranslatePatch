@@ -11,8 +11,10 @@
 // el es reasignar cuatro ds_map. Es lo mismo que hace el juego con sus idiomas
 // nativos, y por eso ahora cuesta lo mismo: nada.
 //
-// Solo cuando el idioma NO esta cacheado hay que leer del disco de verdad
-// (consola, que no precarga; o un pack instalado despues del arranque). Para
+// Solo cuando el idioma NO esta cacheado hay que leer del disco de verdad (un
+// pack instalado despues del arranque del capitulo). En consola ese camino
+// ademas ABORTA el proceso -ver `scr_lang_preload_others`-, y por eso alli la
+// precarga no es opcional: si un idioma llega hasta aqui sin cachear, mal. Para
 // ese caso siguen los dos flags de pendiente que se marcan abajo: los loops de
 // sprites y sonidos de `init` se saltan y la carga se difiere al primer
 // `scr_84_get_sprite` / `scr_84_get_sound` o al cambio de sala (detector en el

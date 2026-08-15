@@ -143,9 +143,9 @@ function scr_init_localization()
 // Sigue respetando `lang_sprites_pending` / `lang_sounds_pending`. Con la
 // cache ese diferido casi nunca entra en juego (si el idioma se precargo, ni
 // se llega aqui), pero sigue haciendo falta para el caso en que toca cargar de
-// verdad en mitad de la partida: en consola no hay precarga, y un pack que se
-// instale despues del arranque tampoco estara cacheado. La precarga apaga los
-// dos flags antes de llamar, porque ahi si queremos la carga completa.
+// verdad en mitad de la partida: un pack que se instale despues del arranque
+// no estara cacheado. La precarga apaga los dos flags antes de llamar, porque
+// ahi si queremos la carga completa.
 function scr_lang_load_assets()
 {
     // Los recursos creados en runtime son por idioma; los del anterior ya

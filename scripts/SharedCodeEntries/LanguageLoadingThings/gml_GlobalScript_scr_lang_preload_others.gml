@@ -15,16 +15,32 @@
 // `lang_loaded` estaba vacio). En un cambio en caliente no tiene nada que
 // hacer.
 //
-// NO corre en consola: en Switch/PS la RAM esta mucho mas ajustada y mantener
-// vivos los assets de varios idiomas a la vez no compensa. Ahi se sigue
-// cargando solo el idioma activo, con el diferido de siempre para suavizar el
-// cambio.
+// CORRE TAMBIEN EN CONSOLA, y ahi no es una optimizacion: es lo unico que hace
+// que un segundo pack funcione.
+//
+// Estuvo detras de un `if (global.is_console)` por RAM. Dos razones para
+// quitarlo:
+//
+//   1. En Switch, `buffer_load` deja de resolver contra el romfs en cuanto la
+//      savedata esta montada -lo avisa el upstream en `scr_buffer_load`: las
+//      funciones que cargan sprites, fuentes y audio se cambiaron para usar la
+//      ruta ROM primero, `buffer_load` no-, y un `nn::fs::OpenFile` que falla
+//      NO devuelve error alli: ABORTA el proceso (2002-6006, pantalla negra).
+//      Esta funcion se llama desde `scr_init_localization` en el boot, o sea
+//      desde el Create de `obj_gamecontroller`, que es la unica ventana en que
+//      la savedata todavia no esta montada. Cargar aqui los demas packs es
+//      cargarlos en el unico momento seguro; despues, cambiar de idioma es un
+//      acierto de cache que no toca ni un fichero. Sin esto, el pack con el que
+//      arranca el capitulo funcionaba y cualquier otro mataba el juego.
+//   2. El ahorro de RAM era menor de lo que parecia: la cache deja los dos
+//      packs residentes en cuanto el jugador cambia de idioma una vez, asi que
+//      la guarda no bajaba el pico, solo lo aplazaba. Solo ahorraba memoria a
+//      quien nunca cambiase de idioma.
+//
+// Y de paso el codigo de consola deja de divergir del de PC en este camino.
 
 function scr_lang_preload_others()
 {
-    if (variable_global_exists("is_console") && global.is_console)
-        exit;
-
     if (!variable_global_exists("languages_list") || !variable_global_exists("all_lang_settings"))
         exit;
 
