@@ -5,19 +5,19 @@
 // la respaldaba se recarga (y luego se borra en el cleanup), asi que la fuente
 // hay que rehacerla contra el sprite del idioma nuevo.
 //
-// Por que existe esta funcion y no la linea suelta que habia antes:
-// `scr_84_get_sprite` empieza aplicando la recarga pendiente
-// (`scr_apply_pending_sprite_reload`). Como `scr_switch_game_language` marca
-// `lang_sprites_pending = true` ANTES de llamar a `scr_init_localization`,
-// tener esa llamada dentro del cuerpo de `init` anulaba el diferido entero:
-// los 356 sprites del capitulo (6,2 MB de PNG en el pack de Letra Delta) se
-// cargaban sincronos en el frame del cambio de idioma. Era el unico capitulo
-// con una llamada asi, y de ahi que el tiron del Cap.3 fuera tan visible.
+// Es funcion y no una linea suelta porque hay dos momentos en que hace falta:
+// cuando el idioma se carga del disco (la llama `scr_init_localization` justo
+// despues de los sprites) y cuando se activa desde la cache, donde no se carga
+// nada y hay que rehacerla a mano. Para ese segundo caso se registra en
+// `global.lang_fonts_loader`, que invocan la rama de cache de
+// `scr_init_localization` y `scr_lang_preload_others`.
 //
-// Se registra como `global.lang_fonts_loader` en `scr_init_localization` y la
-// invoca `scr_load_lang_sprites_only` al terminar de cargar los sprites del
-// idioma nuevo. En el boot la llama el propio `scr_init_localization`, donde
-// los sprites ya estan cargados y `scr_84_get_sprite` no dispara nada.
+// Nota historica: cuando existia la carga diferida de sprites, tener esta
+// llamada dentro del cuerpo de `init` anulaba el diferido entero -porque
+// `scr_84_get_sprite` aplicaba la recarga pendiente antes de resolver- y los
+// 356 sprites del capitulo (6,2 MB de PNG en el pack de Letra Delta) se
+// cargaban sincronos en el frame del cambio. De ahi que el tiron del Cap.3
+// fuera el mas visible. Ese mecanismo ya no existe.
 
 function scr_reload_tvlandfont()
 {

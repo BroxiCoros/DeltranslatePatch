@@ -64,14 +64,6 @@ function scr_lang_preload_others()
     var keep_sounds = global.loaded_sounds
     var keep_fonts = global.loaded_fonts
 
-    var keep_spr_pending = variable_global_exists("lang_sprites_pending") ? global.lang_sprites_pending : false
-    var keep_snd_pending = variable_global_exists("lang_sounds_pending") ? global.lang_sounds_pending : false
-
-    // Aqui la carga tiene que ser completa: diferir no tiene sentido cuando el
-    // objetivo es precisamente dejarlo todo listo.
-    global.lang_sprites_pending = false
-    global.lang_sounds_pending = false
-
     for (var i = 0; i < array_length(global.languages_list); i++)
     {
         var code = global.languages_list[i]
@@ -108,9 +100,6 @@ function scr_lang_preload_others()
     global.loaded_sprites = keep_sprites
     global.loaded_sounds = keep_sounds
     global.loaded_fonts = keep_fonts
-    global.lang_sprites_pending = keep_spr_pending
-    global.lang_sounds_pending = keep_snd_pending
-
     // Las fuentes-sprite (`global.tvlandfont` en el Cap.3, las de dano en el
     // Cap.5) son globales sueltos, no van dentro de la cache, asi que la
     // precarga las dejo apuntando al ultimo idioma que cargo. Rehacerlas

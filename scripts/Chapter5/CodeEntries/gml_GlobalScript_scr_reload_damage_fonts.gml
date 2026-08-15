@@ -8,10 +8,10 @@
 //
 // Los glifos son identicos a los de `obj_initializer2_Create_0` (arranque), que
 // es la version activa en juego (incluye F$/P$). Se registra como
-// `global.lang_fonts_loader` en `scr_init_localization` y lo invoca
-// `scr_load_lang_sprites_only` al terminar de cargar los sprites del idioma
-// nuevo. Solo corre en el hot-switch: en el boot las crea el inicializador
-// vanilla y esta funcion no se llama.
+// `global.lang_fonts_loader` en `scr_init_localization`, y lo invoca quien
+// active un idioma: la rama de cache de `scr_init_localization` y
+// `scr_lang_preload_others`. Solo corre al cambiar de idioma; en el boot las
+// crea el inicializador vanilla y esta funcion no se llama.
 
 function scr_reload_damage_fonts()
 {

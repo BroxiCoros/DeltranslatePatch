@@ -382,18 +382,6 @@ add_new_translation = function(arg0, arg1)
     }
 };
 
-// Globales del cambio de idioma en caliente. Inicializadas aquí (no en otro
-// lado) para que estén listas antes del primer `scr_init_localization`, y para
-// que los chequeos defensivos de `scr_84_get_sprite` no fallen.
-//
-// Los flags de pendiente solo entran en juego cuando toca cargar un idioma que
-// no esta en la cache; `lang_sounds_loader` lo registra cada capitulo con su
-// propio bloque de carga de sonidos. Ya no hay `outdated_sprites` /
-// `outdated_sounds`: con la cache no se destruye ningun asset.
-global.lang_sprites_pending = false;
-global.lang_sounds_pending = false;
-last_room_for_lang = room;
-
 file_find_close();
 scr_init_localization();
 update_on_room_end = false;
