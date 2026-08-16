@@ -508,11 +508,16 @@ var twinBlock = new string[] {
     // El menu de opciones lleva la fila del BORDE, que es del fork y no existe
     // en el juego (en PC vanilla solo esta en la rama de consola). Con gemelo,
     // en idioma nativo esa fila desaparecia; y parchearla sobre el gemelo desde
-    // `Borders.csx` sale mal (ver la nota de LIMITES de mas arriba). Asi que
-    // este objeto corre SIEMPRE la version del mod, en todos los idiomas: la
-    // misma regla que `DEVICE_MENU_*`. Se pierden los ajustes finos de vanilla
-    // en ese menu (offsets tipo `(global.lang == "ja") ? -4 : 0`) a cambio de
-    // que la fila este y el cursor cuadre en todos los idiomas.
+    // `Borders.csx` sale mal si se reutilizan los parches del mod (ver la nota
+    // de LIMITES de mas arriba). Asi que este objeto corre SIEMPRE la version
+    // del mod: la misma regla que `DEVICE_MENU_*`.
+    //
+    // El 2026-08-15 se saco de aqui y se le escribieron parches del borde
+    // contra el texto vanilla, que funcionaba. **Se deshizo al quitar el
+    // japones**: lo que recuperaba eran los ajustes `langopt(en, ja)` y
+    // `global.lang == "ja"` de vanilla -el 62 % de los 164 medidos-, y esos son
+    // codigo muerto si "ja" no se ofrece. Sin japones ese trabajo pasaba a
+    // costar un camino nuevo sin comprar nada.
     "obj_darkcontroller_",
 
     // --- Menu raiz ---------------------------------------------------------
@@ -598,9 +603,43 @@ var twinObjects = new HashSet<string>();
 // data.win arbitrario. Basta con que una actualizacion del juego traiga algo
 // que Underanalyzer decompile mal para tumbar el parche entero sin avisar.
 //
-// Por eso cada gemelo se compila aparte: si falla, el peor caso es "ese objeto
-// no tiene paridad vanilla" en vez de "el parche no se aplico".
-bool TwinCompile(string twinName, string gml)
+// Por eso los gemelos se compilan aparte del grupo final: si fallan, el peor
+// caso es "ese objeto no tiene paridad vanilla" en vez de "el parche no se
+// aplico".
+//
+// Ahora bien, aparte NO quiere decir uno por uno. Antes cada gemelo tenia su
+// propio `CompileGroup` y eso resulto ser casi todo el coste del mecanismo:
+// medido en el Cap.5, 127 gemelos costaban 5,3 s de los 14,4 s del capitulo, y
+// agrupandolos en UN solo `CompileGroup` bajan a 1,3 s. O sea que lo que se
+// pagaba no era compilar, era montar el grupo 127 veces.
+//
+// Asi que se encolan todos y se compilan juntos (`TwinFlush`). El aislamiento
+// se conserva igual, porque el grupo sigue siendo distinto del final: si el
+// grupo de gemelos se cae entero, se reintenta uno por uno para quedarse solo
+// con el culpable, que es lo unico para lo que servia el grupo individual.
+var twinQueue = new List<(string Name, string Gml)>();
+
+// El desvio que se antepone a la version del mod. En un solo sitio porque
+// `TwinFlush` tiene que saber quitarlo si el gemelo resulta no compilar.
+string TwinDispatch(string twinName)
+{
+    return "// Idioma nativo del juego: ejecutar el codigo original.\n"
+        + "if (is_native_lang())\n{\n    " + twinName + "();\n    exit;\n}\n\n";
+}
+
+void TwinQueueCompile(string twinName, string gml)
+{
+    twinQueue.Add((twinName, gml));
+
+    // `CreateBlankFunction` deja apuntado un `function X() {}` en
+    // `changedCodes`. Fuera: de esa entrada se encarga el grupo de gemelos, y
+    // el grupo final ni la repite ni puede tumbarse por su culpa.
+    changedCodes.Remove("gml_GlobalScript_" + twinName);
+}
+
+// Compila UN gemelo en su propio grupo. Solo se usa en el camino de respaldo,
+// cuando el grupo entero se ha caido y hay que averiguar por culpa de quien.
+bool TwinCompileOne(string twinName, string gml)
 {
     var code = Data.Code.ByName("gml_GlobalScript_" + twinName);
 
@@ -618,11 +657,48 @@ bool TwinCompile(string twinName, string gml)
         return false;
     }
 
-    // Ya esta compilado en la entrada: fuera de `changedCodes` para que el
-    // grupo final ni lo repita ni pueda tumbarse por su culpa.
     changedCodes.Remove(code.Name.Content);
 
     return true;
+}
+
+void TwinFlush()
+{
+    if (twinQueue.Count == 0)
+        return;
+
+    CompileGroup group = new(Data)
+    {
+        MainThreadAction = ExecuteInUIThread
+    };
+
+    foreach (var t in twinQueue)
+        group.QueueCodeReplace(Data.Code.ByName("gml_GlobalScript_" + t.Name), t.Gml);
+
+    if (group.Compile().Successful)
+        return;
+
+    // Se cayo el grupo entero (`CompileGroup` es todo-o-nada, asi que no queda
+    // nada compilado a medias). Uno por uno para aislar al culpable.
+    foreach (var t in twinQueue)
+    {
+        if (TwinCompileOne(t.Name, t.Gml))
+            continue;
+
+        // Ese gemelo no compila. Que la funcion quede vacia pero valida, y
+        // fuera el desvio de su entrada: si no, en idioma nativo se llamaria a
+        // una funcion vacia y esa entrada no dibujaria nada. Sin desvio se
+        // queda con la version del mod, que es lo que habia antes del gemelo.
+        TwinCompileOne(t.Name, "function " + t.Name + "() //gml_Script_" + t.Name + "\n{\n}");
+        twinDone.Remove(t.Name);
+        twinBad.Add(t.Name);
+
+        var entryName = "gml_Object_" + t.Name.Substring("scr_native_".Length);
+        var dispatch = TwinDispatch(t.Name);
+
+        if (changedCodes.TryGetValue(entryName, out var text) && text.StartsWith(dispatch))
+            changedCodes[entryName] = text.Substring(dispatch.Length);
+    }
 }
 
 string MakeVanillaTwin(string codeName, string vanillaGml)
@@ -650,15 +726,9 @@ string MakeVanillaTwin(string codeName, string vanillaGml)
         // binding.
         ExecuteInUIThread(() => CreateBlankFunction(twinName));
 
-        if (!TwinCompile(twinName, header + vanillaGml + "\n}"))
-        {
-            // Que la funcion quede vacia pero valida. Al devolver null no se
-            // pone el desvio, asi que esa entrada se queda con la version del
-            // mod tambien en idioma nativo: es lo que habia antes del gemelo.
-            TwinCompile(twinName, header + "}");
-            twinBad.Add(twinName);
-            return null;
-        }
+        // Solo se encola. Si no compila se vera en `TwinFlush`, que ahi mismo
+        // deshace el desvio de esta entrada.
+        TwinQueueCompile(twinName, header + vanillaGml + "\n}");
 
         twinDone.Add(twinName);
         return twinName;
@@ -762,6 +832,17 @@ await Task.Run(() =>
     //   choice_text[0] = (global.lang == "en") ? "Continue to..." : "Chapter ~1へ進む";
     // y que el mod reescribe a una clave de loc que NO existe en el
     // `lang_ja.json` del juego, asi que en japones nativo caia al ingles.
+    //
+    // AMPLIAR ESTA LISTA es lo que se probo el 2026-08-15 y se deshizo al quitar
+    // el japones. Metiendo tambien las poblaciones de `CodesWithFonts`,
+    // `CodesWithSprites`, `CodesWithSounds`, `CodesWithSpritesIds` y
+    // `ObjectsWithAssignedSprites`, y dando gemelo a TODO objeto que el mod
+    // toque, la cobertura del Cap.5 pasaba del 49 % (127 de 260) al 96 % (512 de
+    // 532). Funcionaba y costaba ~10 s mas de parcheo, pero lo que compraba era
+    // paridad con el vanilla JAPONES; en ingles no se nota, porque las entradas
+    // del mod ya estan maquetadas para texto latino. Si algun dia se retoma el
+    // japones, esta es la primera pieza que hay que reponer: los detalles y los
+    // dos JSON con forma rara estan en el ESTADO.md.
     var twinCandidates = new List<string>();
     twinCandidates.AddRange(codeEntrs.Select(c => c.Item1));
     twinCandidates.AddRange(codeChanges.Keys);
@@ -782,6 +863,15 @@ await Task.Run(() =>
 
                 // Basta con que UNA entrada del objeto tenga logica por idioma
                 // para que el objeto entero vaya con gemelo.
+                //
+                // Este criterio tiene un punto ciego conocido: solo ve los sitios
+                // donde el VANILLA habla del idioma, no aquellos donde es el MOD
+                // quien le anade la dependencia (reescribir la maquetacion,
+                // convertir fuentes). Con japones eso importaba mucho -era la
+                // mitad de la superficie- y por eso se amplio y luego se
+                // deshizo; ver el comentario de `twinCandidates`. Sin japones el
+                // punto ciego apenas se nota, porque en ingles la version del mod
+                // y la de vanilla se ven casi igual.
                 if (!string.IsNullOrEmpty(vgml) && twinLangPattern.IsMatch(vgml))
                     twinObjects.Add(TwinObjectOf(codeName));
             }
@@ -808,11 +898,7 @@ await Task.Run(() =>
         var gml = code.Item2;
 
         if (twinName != null)
-        {
-            gml = "// Idioma nativo del juego: ejecutar el codigo original.\n"
-                + "if (is_native_lang())\n{\n    " + twinName + "();\n    exit;\n}\n\n"
-                + gml;
-        }
+            gml = TwinDispatch(twinName) + gml;
 
         ReplaceGML(Data.Code.ByName(code.Item1), gml);
         IncrementProgress();
@@ -873,14 +959,31 @@ await Task.Run(() =>
                 if (tn == null)
                     continue;
 
-                ReplaceGML(c, "// Idioma nativo del juego: ejecutar el codigo original.\n"
-                    + "if (is_native_lang())\n{\n    " + tn + "();\n    exit;\n}\n\n" + vgml);
+                ReplaceGML(c, TwinDispatch(tn) + vgml);
             }
         }
     }
 
+    // --- Comprobacion de integridad ------------------------------------------
+    // Toda entrada de `CodeEntries` tiene que haber pasado por la pasada 2. Si
+    // alguna se queda fuera, los scripts del fork se quedan como la funcion vacia
+    // que crea `CreateBlankFunction` y el juego arranca sin idiomas... con el
+    // patcher diciendo rc=0, 0 errores de compilacion y un data.win mas grande
+    // que el vanilla. Paso de verdad al tocar `twinCandidates`, que alimenta
+    // tambien `entriesOk`. Es barato comprobarlo y no hay forma de verlo si no.
+    var sinAplicar = codeEntrs.Select(c => c.Item1).Where(n => !entriesOk.Contains(n)).ToList();
+
+    if (sinAplicar.Count > 0)
+        ScriptMessage("AVISO: " + sinAplicar.Count + " entradas de CodeEntries NO se aplicaron.\n"
+            + "Si el juego es de una version antigua es lo esperado (arriba salen una a una).\n"
+            + "Si es la version actual, es un fallo del patcher.\n"
+            + string.Join("\n", sinAplicar.Take(20)));
+
     if (twinEnabled)
     {
+        // Ahora, con todos encolados, se compilan de una vez.
+        TwinFlush();
+
         ScriptMessage("Gemelos vanilla creados: " + twinDone.Count
             + (twinFailed.Count > 0 ? ("  | FALLIDOS: " + twinFailed.Count + "\n" + string.Join("\n", twinFailed)) : ""));
     }
