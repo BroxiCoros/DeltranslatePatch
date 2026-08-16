@@ -155,12 +155,37 @@ change_state = function(arg0, arg1)
     }
 };
 
+// Texto de las pantallas de aviso, en los tres casos posibles.
+//
+// Este objeto esta en la LISTA NEGRA de gemelos (`twinBlock` de BaseFix.csx):
+// de el cuelga la opcion de "Language" del aviso de continuar, que en vanilla
+// no existe, asi que tiene que correr codigo del mod SIEMPRE, tambien en idioma
+// nativo. Y en idioma nativo no hay pack: `scr_get_lang_string` devuelve su
+// primer argumento, o sea el literal ingles. Por eso en japones nativo estas
+// pantallas salian en ingles.
+//
+// Regla general del mecanismo: lo que por necesidad no puede delegar en el
+// gemelo tiene que traer los idiomas nativos incorporados. Mismo patron que el
+// "Quit"/"Config" del pie del selector y que los nombres de capitulo de
+// `scr_init`. Los textos japoneses estan copiados del vanilla del menu raiz,
+// que los lleva en ternarios `(global.lang == "en") ? ... : ...`.
+lang_text = function(en_text, ja_text, pack_key)
+{
+    if (is_native_lang())
+        return (global.lang == "en") ? en_text : ja_text;
+
+    return scr_get_lang_string(en_text, pack_key);
+};
+
 create_start_screen = function()
 {
-    var start_text = scr_get_lang_string("Would you like to start from Chapter 1?", "gml_Object_obj_CHAPTER_SELECT_Create_0_0");
-    var yes_text = scr_get_lang_string("Yes", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
-    var no_text = scr_get_lang_string("No", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
-    var language_config_text = scr_get_lang_string("Language", "obj_lang_settings_0_0");
+    var start_text = lang_text("Would you like to start from Chapter 1?", "Chapter 1から始めますか？", "gml_Object_obj_CHAPTER_SELECT_Create_0_0");
+    var yes_text = lang_text("Yes", "はい", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
+    var no_text = lang_text("No", "いいえ", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
+    // "Language" es etiqueta del fork: en vanilla ese boton no existe (el
+    // interruptor en<->ja vive en el pie y se llama "日本語"/"English"), asi que
+    // el japones es decision nuestra.
+    var language_config_text = lang_text("Language", "言語", "obj_lang_settings_0_0");
     var choices = [new create_choice(yes_text, UnknownEnum.Value_0), new create_choice(no_text, UnknownEnum.Value_1), new create_choice(language_config_text, UnknownEnum.Value_2)];
     var start_screen = instance_create(0, 0, obj_screen_start);
     start_screen.init(id, start_text, choices, -26, -40);
@@ -170,10 +195,16 @@ create_start_screen = function()
 
 create_continue_screen = function()
 {
-    var continue_text = scr_get_lang_string("Continue from Chapter ", "gml_Object_obj_CHAPTER_SELECT_Create_0_3") + string(_chapter_in_progress) + scr_get_lang_string("?", "gml_Object_obj_CHAPTER_SELECT_Create_0_4");
-    var yes_text = scr_get_lang_string("Yes", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
-    var no_text = scr_get_lang_string("No", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
-    var language_config_text = scr_get_lang_string("Language", "obj_lang_settings_0_0");
+    // El numero va en medio y el japones lo coloca distinto, asi que aqui no
+    // sirve `lang_text`: se arma la frase entera en cada caso.
+    var continue_text = is_native_lang()
+        ? ((global.lang == "en")
+            ? ("Continue from Chapter " + string(_chapter_in_progress) + "?")
+            : ("Chapter " + string(_chapter_in_progress) + "から続けますか？"))
+        : (scr_get_lang_string("Continue from Chapter ", "gml_Object_obj_CHAPTER_SELECT_Create_0_3") + string(_chapter_in_progress) + scr_get_lang_string("?", "gml_Object_obj_CHAPTER_SELECT_Create_0_4"));
+    var yes_text = lang_text("Yes", "はい", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
+    var no_text = lang_text("No", "いいえ", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
+    var language_config_text = lang_text("Language", "言語", "obj_lang_settings_0_0");
     var choices = [new create_choice(yes_text, UnknownEnum.Value_0), new create_choice(no_text, UnknownEnum.Value_1), new create_choice(language_config_text, UnknownEnum.Value_2)];
     var start_screen = instance_create(0, 0, obj_screen_start);
     start_screen.init(id, continue_text, choices, -26, -40);
@@ -183,9 +214,17 @@ create_continue_screen = function()
 
 create_start_next_screen = function()
 {
-    var continue_text = scr_get_lang_string("Chapter ", "gml_Object_obj_CHAPTER_SELECT_Create_0_5") + string(_chapter_completed) + scr_get_lang_string(" was completed.", "gml_Object_obj_CHAPTER_SELECT_Create_0_6");
-    var play_next_text = string(scr_get_lang_string("Play Chapter {0}", "gml_Object_obj_CHAPTER_SELECT_Create_0_7"), string(_chapter_completed + 1));
-    var chapter_select_text = scr_get_lang_string("Chapter Select", "gml_Object_obj_CHAPTER_SELECT_Create_0_8");
+    var continue_text = is_native_lang()
+        ? ((global.lang == "en")
+            ? ("Chapter " + string(_chapter_completed) + " was completed.")
+            : ("Chapter " + string(_chapter_completed) + "はクリア済みです。"))
+        : (scr_get_lang_string("Chapter ", "gml_Object_obj_CHAPTER_SELECT_Create_0_5") + string(_chapter_completed) + scr_get_lang_string(" was completed.", "gml_Object_obj_CHAPTER_SELECT_Create_0_6"));
+    var play_next_text = is_native_lang()
+        ? ((global.lang == "en")
+            ? ("Play Chapter " + string(_chapter_completed + 1))
+            : ("Chapter " + string(_chapter_completed + 1) + "をプレイ"))
+        : string(scr_get_lang_string("Play Chapter {0}", "gml_Object_obj_CHAPTER_SELECT_Create_0_7"), string(_chapter_completed + 1));
+    var chapter_select_text = lang_text("Chapter Select", "チャプター選択", "gml_Object_obj_CHAPTER_SELECT_Create_0_8");
     var choices = [new create_choice(play_next_text, UnknownEnum.Value_0), new create_choice(chapter_select_text, UnknownEnum.Value_1)];
     var start_screen = instance_create(0, 0, obj_screen_start);
     start_screen.init(id, continue_text, choices, -26, 0);
@@ -202,9 +241,9 @@ create_select_screen = function()
 
 create_load_prompt_screen = function(arg0)
 {
-    var load_text = scr_get_app_title(arg0) + scr_get_lang_string("Save Data found.\nImport this Save Data?\n(This will only be asked once.)", "gml_Object_obj_CHAPTER_SELECT_Create_0_9");
-    var yes_text = scr_get_lang_string("Yes", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
-    var no_text = scr_get_lang_string("No", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
+    var load_text = scr_get_app_title(arg0) + lang_text("Save Data found.\nImport this Save Data?\n(This will only be asked once.)", "セーブデータを検出しました。\nこのセーブデータを取り込みますか？\n（この確認は一度しか行いません）", "gml_Object_obj_CHAPTER_SELECT_Create_0_9");
+    var yes_text = lang_text("Yes", "はい", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
+    var no_text = lang_text("No", "いいえ", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
     var choices = [new create_choice(yes_text, UnknownEnum.Value_0), new create_choice(no_text, UnknownEnum.Value_1)];
     var choice_offset = -26;
     var start_screen = instance_create(0, 0, obj_screen_start);
@@ -214,7 +253,7 @@ create_load_prompt_screen = function(arg0)
 
 create_load_prompt_multiple_screen = function(arg0)
 {
-    var load_text = scr_get_lang_string("Multiple DELTARUNE Save Files found.\nWould you like to import one of these?\n(This will only be asked once.)\n \n ", "gml_Object_obj_CHAPTER_SELECT_Create_0_11");
+    var load_text = lang_text("Multiple DELTARUNE Save Files found.\nWould you like to import one of these?\n(This will only be asked once.)\n \n ", "複数の『DELTARUNE』セーブデータが存在します。\nどれか1つを取り込みますか？\n（この確認は一度しか行いません）\n \n ", "gml_Object_obj_CHAPTER_SELECT_Create_0_11");
     
     var choices = [];
     
@@ -226,7 +265,7 @@ create_load_prompt_multiple_screen = function(arg0)
         choices[array_length(choices)] = new_choice;
     }
     
-    var do_not_text = scr_get_lang_string("Do Not Import", "gml_Object_obj_CHAPTER_SELECT_Create_0_12");
+    var do_not_text = lang_text("Do Not Import", "取り込まない", "gml_Object_obj_CHAPTER_SELECT_Create_0_12");
     choices[array_length(choices)] = new create_choice(do_not_text, UnknownEnum.Value_1);
     var start_screen = instance_create(0, 0, obj_screen_start);
     start_screen.init(id, load_text, choices, 0, -32);
@@ -235,9 +274,9 @@ create_load_prompt_multiple_screen = function(arg0)
 
 create_load_deny_confirm_screen = function()
 {
-    var deny_text = scr_get_lang_string("Proceed without importing?", "gml_Object_obj_CHAPTER_SELECT_Create_0_10");
-    var yes_text = scr_get_lang_string("Yes", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
-    var no_text = scr_get_lang_string("No", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
+    var deny_text = lang_text("Proceed without importing?", "取り込まずに進めますか？", "gml_Object_obj_CHAPTER_SELECT_Create_0_10");
+    var yes_text = lang_text("Yes", "はい", "gml_Object_obj_CHAPTER_SELECT_Create_0_1");
+    var no_text = lang_text("No", "いいえ", "gml_Object_obj_CHAPTER_SELECT_Create_0_2");
     var choices = [new create_choice(yes_text, UnknownEnum.Value_0), new create_choice(no_text, UnknownEnum.Value_1)];
     var choice_offset = -26;
     var start_screen = instance_create(0, 0, obj_screen_start);
