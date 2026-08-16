@@ -81,6 +81,14 @@ function scr_switch_game_language(argument0) //gml_Script_scr_switch_game_langua
         global.orig_en = false
     }
 
+    // El título de la ventana está traducido, pero solo se pone al arrancar el
+    // capítulo (`obj_initializer2_Create_0` y el final de `PROCESS_LOGO_Draw_0`),
+    // así que sin esto se queda en el idioma anterior. La guarda es por el Cap.1:
+    // antes del logo `scr_windowcaption` usa su argumento tal cual, y "" dejaría
+    // la barra en blanco.
+    if (global.chapter != 1 || global.tempflag[10] == 1)
+        scr_windowcaption("")
+
     // Persistir la elección para próximas sesiones y para que el menú
     // principal arranque en el mismo idioma.
     ossafe_ini_open("true_config.ini")
