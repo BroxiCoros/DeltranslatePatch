@@ -461,7 +461,7 @@ if (MENU_NO >= 0)
         draw_set_alpha(0.4);
         draw_set_color(c_white);
         draw_set_halign(fa_right);
-        draw_text_transformed(320, 230, stringsetsubloc("DELTARUNE ~1 (C) Toby Fox 2018-2025 ", global.versionno, "DEVICE_MENU_slash_Draw_0_gml_202_0"), 0.5, 0.5, 0);
+        draw_text_transformed(320, 230, stringsetsubloc("DELTARUNE ~1 (C) Toby Fox 2018-2026 ", global.versionno, "DEVICE_MENU_slash_Draw_0_gml_202_0"), 0.5, 0.5, 0);
         draw_set_halign(fa_left);
     }
     else
