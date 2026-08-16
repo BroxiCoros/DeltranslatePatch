@@ -206,10 +206,11 @@ scan_languages = function() {
     // el menú de idioma sigue existiendo) y un pack que declare el mismo
     // `lang_code` gana.
     //
-    // Aquí no hay nada que cargar: el menú raíz lleva el inglés dentro, en
-    // ternarios sobre `global.lang`. Basta con ofrecerlo.
+    // Aquí no hay nada que cargar: el menú raíz lleva los dos idiomas de
+    // fábrica dentro, en ternarios `(global.lang == "en") ? "..." : "..."`
+    // repartidos por una docena de entradas. Basta con ofrecerlo.
     //
-    // El japonés se descartó a propósito; ver el gamecontroller compartido.
+    // El japonés se descartó; ver el gamecontroller compartido.
     var native_codes = ["en"]
     var native_names = ["English"]
 

@@ -149,11 +149,24 @@ scan_languages = function() {
     // subcarpeta, y el menú de idioma sigue existiendo. Con el guard, en una
     // instalación de pack suelto el idioma nativo no aparecía nunca.
     //
-    // El japonés ("ja", 日本語) también funcionaba y se descartó a propósito:
-    // arrastraba las fuentes y sprites `_ja` (con sus pares ambiguos sin
-    // resolver) y los textos traducidos a mano. El mecanismo es agnóstico del
-    // idioma, así que volver a ofrecerlo es añadirlo a estas dos listas; lo
-    // que hay que revisar antes está en el ESTADO.md.
+    // El mecanismo entero es agnóstico del idioma: mira el flag `native` del
+    // settings, no el código. Por eso estas dos listas son el único sitio
+    // donde se decide qué idiomas nativos se ofrecen.
+    //
+    // El japonés ("ja", 日本語) se ofreció y se retiró DOS veces, la última el
+    // 2026-08-15 después de jugarlo entero. Funciona, pero deja fallos de
+    // maquetación que hay que arreglar uno a uno y que vuelven con cada
+    // actualización del juego. Tres fuentes, y ninguna la cierra el mecanismo
+    // de gemelos:
+    //   - los ~75 `gml_GlobalScript_*` por capítulo, que no pueden llevar
+    //     gemelo (hace falta el grafo de llamadas; se intentó dos veces y
+    //     rompió el arranque las dos);
+    //   - los 16 pares (entrada, fuente) ambiguos de la pasada de fuentes;
+    //   - y las filas que el fork INVENTA, como la del BORDE, para las que no
+    //     hay vanilla que copiar: hay que maquetarlas a mano en cada idioma.
+    // El inglés nativo no da ese problema porque la maquetación del mod ya está
+    // hecha para texto latino de esa anchura. Lo que habría que reponer para
+    // volver a intentarlo está en el ESTADO.md.
     var native_codes = ["en"]
     var native_names = ["English"]
 

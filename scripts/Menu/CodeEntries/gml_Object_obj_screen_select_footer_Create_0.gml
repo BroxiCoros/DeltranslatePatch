@@ -119,15 +119,15 @@ trigger_event = function(arg0, arg1)
             // `obj_CHAPTER_SELECT`, cuyo `toggle_language()` el mod
             // redefine para abrir el selector del fork.
             //
-            // Pero `obj_CHAPTER_SELECT` SI lleva gemelo vanilla (su Create
-            // esta lleno de ternarios `global.lang`: los titulos, los
-            // "はい/いいえ", los dialogos de importar partida), asi que en
-            // idioma nativo el que corre es el `toggle_language()` original
-            // del juego: el interruptor en<->ja. Resultado: el boton dice
-            // "Config" y hace otra cosa, y no hay forma de volver a un pack.
+            // Cuando `obj_CHAPTER_SELECT` llevaba gemelo vanilla, en idioma
+            // nativo corria su `toggle_language()` original -el interruptor
+            // en<->ja-, asi que el boton decia "Config" y hacia otra cosa, sin
+            // forma de volver a un pack. Por eso se abre el selector aqui
+            // directamente, que este objeto si esta en la lista negra.
             //
-            // Este objeto esta en la lista negra justo para casos asi, o sea
-            // que puede abrir el selector el mismo.
+            // Hoy `obj_CHAPTER_SELECT` tambien esta en la lista negra (por la
+            // opcion de "Language" de sus avisos), asi que la rama de abajo
+            // funcionaria igual. Se deja porque no depende de esa decision.
             if (is_native_lang())
                 instance_create_depth(0, 0, 0, asset_get_index("obj_lang_settings"));
             else

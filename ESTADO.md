@@ -1,6 +1,6 @@
 # Estado: idioma nativo (inglés)
 
-Última actualización: **2026-08-08**. Rama `idiomas-nativos-en` del repo principal.
+Última actualización: **2026-08-15**. En `main`.
 
 Este documento es para retomar el trabajo sin reconstruir el contexto. El `CHANGES.md` del
 repo explica *qué hace* el mod; esto explica *dónde está esto*, *qué está comprobado* y
@@ -8,29 +8,52 @@ sobre todo *qué ya se intentó y salió mal*, que es lo que más tiempo costó.
 
 ---
 
-## El japonés se descartó (2026-08-08)
+## El japonés: probado dos veces, descartado dos veces
 
-Este trabajo nació cubriendo los **dos** idiomas de fábrica del juego, inglés y japonés, y
-así se probó en pantalla. Decisión del usuario: **se queda solo el inglés.** El japonés
-funcionaba, pero es el que arrastra todo lo caro y lo que quedaba a medias — las fuentes y
-sprites `_ja`, los 16 pares (entrada, fuente) ambiguos sin resolver, y los textos del selector
-traducidos a mano. El inglés nativo es, literalmente, "correr el código vanilla".
+Este trabajo nació cubriendo los **dos** idiomas de fábrica del juego. Se retiró el japonés el
+2026-08-08, se volvió a poner el 2026-08-15, y **se volvió a retirar el mismo día tras jugarlo**.
+Decisión del usuario, y con razón. Si algún día se retoma, esta sección es lo que hay que leer
+antes.
 
-**Qué cambió al quitarlo:** solo las dos listas `native_codes` / `native_names` de los
-`scan_languages()` (el del gamecontroller compartido y el del menú), que pasan de
-`["en", "ja"]` a `["en"]`. Nada más. El mecanismo entero — `is_native_lang()`, los gemelos
-vanilla, `is_english()`, la rama nativa de los `scr_init_localization` — es **agnóstico del
-idioma**: mira el flag `native` del settings inyectado, no el código concreto.
+**Poner o quitar el japonés es un solo sitio**: las listas `native_codes` / `native_names` de los
+dos `scan_languages()` (el gamecontroller compartido y el del menú). El mecanismo entero —
+`is_native_lang()`, los gemelos, `is_english()`, la rama nativa de los `scr_init_localization`,
+la pasada de fuentes clavadas — es **agnóstico del idioma**: mira el flag `native` del settings.
 
-**Volver a ofrecer el japonés = volver a añadirlo a esas dos listas.** Lo que quedaba
-pendiente para él sigue documentado abajo, sin tocar. Todo el código japonés que quedó por
-en medio (los ternarios `(global.lang == "en") ? "Config" : "設定"`, las ramas
-`(global.lang == "ja")` de la geometría del menú de opciones, la pasada de fuentes clavadas)
-se dejó a propósito: es inalcanzable mientras "ja" no sea nativo, y borrarlo solo añadía
-riesgo a algo ya probado.
+**Por qué no sale a cuenta, que no es lo que parecía.** La primera vez se retiró creyendo que el
+japonés era lo que hacía lento el parcheo. Eso era **falso** y quedó medido: lo caro son los
+gemelos, que sirven igual al inglés, y añadir el japonés cuesta **0 ms**. El motivo real es otro,
+y es de mantenimiento: el japonés deja fallos de maquetación que hay que arreglar de uno en uno,
+y vuelven con cada actualización del juego. Salen de tres sitios, y **ninguno lo cierra el
+mecanismo de gemelos**:
 
-Abajo, todo lo que hable del japonés describe el estado del mecanismo, no lo que se ofrece
-hoy en el selector.
+1. **Los ~75 `gml_GlobalScript_*` por capítulo.** No pueden llevar gemelo: hace falta el grafo de
+   llamadas y no se pudo extraer (se intentó dos veces y rompió el arranque las dos). Ahí vive
+   ~el 9 % de los 164 ajustes por idioma.
+2. **Los 16 pares (entrada, fuente) ambiguos**, que hay que decidir sitio por sitio.
+3. **Lo que el fork INVENTA y vanilla no tiene** — la fila del BORDE. No hay original que copiar,
+   así que hay que maquetarla a mano para cada idioma. En inglés cabe; en japonés no.
+
+**El inglés nativo no da ese problema**, y por eso se queda: la maquetación del mod está hecha
+para texto latino de anchura parecida a la inglesa, así que aunque una entrada corra la versión
+del mod en vez de la de vanilla, se ve bien igualmente. Dicho al revés: que el inglés funcione no
+es prueba de que el mecanismo esté completo, es prueba de que el inglés perdona. El japonés era
+lo único que lo ejercía de verdad.
+
+**Qué habría que reponer para intentarlo otra vez**, todo medido y probado el 2026-08-15 antes de
+deshacerse:
+
+- Las dos listas → `["en", "ja"]` / `["English", "日本語"]`.
+- **La cobertura total de gemelos** (ver la sección de cobertura). Con el criterio de hoy, en el
+  Cap.5 solo 127 de 260 entradas caen a vanilla; ampliándolo eran 512 de 532.
+- **Los parches del BORDE contra el texto vanilla**, para sacar `obj_darkcontroller_` de la lista
+  negra (ver su sección). Funcionaba, pero seguía sin resolver la fila inventada.
+- Lo que **no** hizo falta deshacer y ya está puesto: el ayudante `lang_text` de
+  `obj_CHAPTER_SELECT` con los textos japoneses del vanilla, y todo el código japonés
+  inalcanzable que se dejó a propósito.
+
+Lo que **no** hay que volver a hacer: creer que el problema es el tiempo de parcheo, y reutilizar
+los parches del mod sobre el gemelo.
 
 ---
 
@@ -71,9 +94,8 @@ retorna de la función.
 
 | Qué | Dónde |
 |---|---|
-| Este repo (clon, fuera del principal) | `~/Proyectos/Letra Delta - Repos/DeltranslatePatch-idiomas-nativos` |
-| Repo principal (limpio, sin esto) | `~/Proyectos/Letra Delta - Repos/DeltranslatePatch` en `main` |
-| Respaldo en parche | `~/Proyectos/Letra Delta - Repos/idiomas-nativos-v2.patch` |
+| Esto (ya en el repo principal) | `~/Proyectos/Letra Delta - Repos/DeltranslatePatch`, rama `main` |
+| Clon histórico donde se desarrolló | `~/Proyectos/Letra Delta - Repos/DeltranslatePatch-idiomas-nativos` — **obsoleto**, `main` está por delante en todo |
 | Build instalado para probar | `~/.local/share/Steam/steamapps/common/DELTARUNE-copia/` |
 | **Vanilla (parchear desde aquí)** | `~/.local/share/Steam/steamapps/common/DELTARUNE/` — se reconoce porque **no** tiene `lang/` |
 | Pack de idiomas usado en las pruebas | `~/Proyectos/Letra Delta - Repos/DELTARUNE - LETRA DELTA/lang` |
@@ -90,7 +112,7 @@ Siempre **sobre copias**: nunca parchear in-place la carpeta limpia.
 
 ```bash
 CLI="$HOME/Proyectos/Letra Delta - Repos/LETRA DELTA/letradelta/herramientas/UTMT_CLI_v0.9.1.1-Ubuntu/UndertaleModCli"
-SCR="$HOME/Proyectos/Letra Delta - Repos/DeltranslatePatch-idiomas-nativos/scripts"
+SCR="$HOME/Proyectos/Letra Delta - Repos/DeltranslatePatch/scripts"
 VAN="$HOME/.local/share/Steam/steamapps/common/DELTARUNE"
 DST="$HOME/.local/share/Steam/steamapps/common/DELTARUNE-copia"
 
@@ -118,62 +140,133 @@ sale rc=0 y "Saved data file to...". Hay que correr con `-v` y grepear:
 grep -iE "Failed to find a valid|floating outside|Ошибка при компиляции" *.log
 ```
 
-Números de referencia con esta rama (si salen otros, algo pasó):
+Números de referencia (si salen otros, algo pasó). Remedidos sobre `main` el 2026-08-15:
 
 | | Cap.1 | Cap.2 | Cap.3 | Cap.4 | Cap.5 | Menú |
 |---|---|---|---|---|---|---|
-| Gemelos | 45 | 96 | 169 | 185 | 127 | 15 |
+| Gemelos | 45 | 96 | 169 | 185 | 127 | 6 |
+| Fuentes clavadas | 1 | 3 | 47 | 8 | 36 | 0 |
+| Ambiguos (a mano) | 0 | 1 | 6 | 6 | 3 | 0 |
 | Tamaño final | 19,8 MB | 78,6 MB | 158,8 MB | 146,8 MB | 200,7 MB | 3,0 MB |
+
+Los ambiguos suman **16**, que son exactamente los pares de la tabla de pendientes.
+
+Con la cobertura ampliada que se probó y se deshizo, los gemelos eran 108/349/832/534/516/8 y
+los tamaños subían ~1-3 MB por capítulo.
 
 ### Cuánto tarda, y cuánto cuestan los gemelos
 
-Medido el 2026-08-08 en el equipo de siempre (Ryzen 5 5500, 12 hilos, NVMe), parcheando desde
-el vanilla limpio y con la caché de disco caliente. Tres rondas de esta rama (84,2 / 82,4 /
-85,1 s) y dos de `main`. **Los tiempos absolutos son de esta máquina y no valen como referencia
-en otra**; lo que sí viaja es la proporción.
+Remedido el **2026-08-15** en el equipo de siempre (Ryzen 5 5500, 12 hilos, NVMe), parcheando
+desde el vanilla limpio y con la caché de disco caliente. **Los tiempos absolutos son de esta
+máquina y no valen como referencia en otra**; lo que sí viaja es la proporción. Ojo con la
+dispersión: el rango entre rondas es de ~3 s, así que para comparar dos versiones no basta una
+ronda de cada una.
 
-| Segundos | Cap.1 | Cap.2 | Cap.3 | Cap.4 | Cap.5 | Menú | **Total** |
-|---|---|---|---|---|---|---|---|
-| `Fix.csx` esta rama | 4,2 | 8,5 | 13,1 | 14,1 | 15,1 | 2,5 | **57,4** |
-| `Fix.csx` en `main` | 3,3 | 5,1 | 7,1 | 7,4 | 9,1 | 2,2 | **34,3** |
-| Sobrecoste | +0,8 | +3,4 | +5,9 | +6,7 | +6,0 | +0,3 | **+23,1** |
-| `Borders.csx` | 3,0 | 4,6 | 5,6 | 5,9 | 7,0 | — | **26,1** |
+| Segundos (`Fix.csx`) | Cap.1 | Cap.2 | Cap.3 | Cap.4 | Cap.5 | **Total** |
+|---|---|---|---|---|---|---|
+| Un `CompileGroup` por gemelo | 3,9 | 7,9 | 11,8 | 13,0 | 14,4 | **51,0** |
+| **Todos en un grupo (hoy)** | **3,8** | **6,3** | **9,2** | **9,6** | **11,5** | **40,3** |
+| Sin gemelos (referencia) | 3,4 | — | — | — | 9,1 | — |
+| Cobertura total (probada y deshecha) | 4,0 | 7,6 | 11,9 | 10,9 | 14,1 | 48,4 |
 
-Build entero (los seis `data.win`): **83,9 s esta rama contra 59,3 s en `main`, +41 %.** Un
-minuto pasa a ser minuto y veinticinco, así que el coste no molesta en la práctica.
+Build entero de los seis `data.win`, con bordes y copias incluidas: **~65 s**.
 
-Ojo con la **dispersión**: antes de la pasada de fuentes clavadas, dos rondas seguidas caían
-dentro de ~1 s. Ahora el rango es de ~3 s (y una ronda suelta llegó a 89,5 s con la máquina
-ocupada). Para comparar dos versiones no basta una ronda de cada una.
+**El coste de los gemelos no era compilar: era montar el `CompileGroup`.** En el Cap.5 los 127
+gemelos costaban 5,3 s (14,4 s con ellos contra 9,1 s sin ellos). Cronometrando solo las
+llamadas a `Compile()`, 2,4 s de esos 5,3 eran los 127 grupos individuales. Al encolarlos todos
+en **un** grupo, el sobrecoste del capítulo baja a ~1,3 s. Es decir, casi todo lo que se pagaba
+era el montaje del grupo repetido 127 veces, no el trabajo de compilar.
 
-Tres cosas que confirma el reparto:
+El aislamiento no se pierde: el grupo de gemelos sigue siendo distinto del grupo final del
+patcher, así que un gemelo que no compile no puede tumbar el parche. Lo único que cambia es que
+para saber **cuál** falló hay que reintentar uno por uno, y eso solo ocurre cuando algo va mal
+(`TwinFlush` en `BaseFix.csx`).
 
-- **Todo el sobrecoste está en `Fix.csx`.** Los `Borders.csx` son byte-idénticos a `main` y
-  tardan lo mismo (+3 %, dentro del ruido). Es la comprobación cruzada de que el reloj mide lo
-  que debe.
-- **La mayor parte sale de los gemelos, no del tamaño del `data.win`.** El Cap.4 es el más caro
-  en absoluto aunque el Cap.5 es 54 MB más grande: el Cap.4 tiene 185 gemelos y el Cap.5, 127.
-  El gemelo sale entre **~12 ms** (Cap.1 y menú) y **~40 ms** (Cap.5): no es constante, sube con
-  el tamaño de las entradas, que es lo esperable si lo que se paga es decompilar la entrada y
-  recompilarla en su propio `CompileGroup` (el `TwinCompile` aislado que exige el diseño; ver
-  arriba por qué no puede ir en el grupo común).
-- **La pasada de fuentes clavadas cuesta ~4,3 s** de los 57,4 (era 53,1 sin ella). Recorre
-  `backedList` decompilando cada entrada y su `_old`; el `_old` es trivial, pero son dos
-  decompilaciones por entrada tocada.
+**Verificado que el cambio no altera la salida**: se decompilaron todas las entradas de los dos
+builds (el de grupos individuales y el de grupo único) y se compararon una a una —
+**Cap.1: 1513 entradas, 0 diferencias. Cap.5: 12350 entradas, 0 diferencias.** El `data.win`
+no sale byte-idéntico, pero solo por el orden de serialización; el contenido es el mismo. El
+verificador es el `DumpAll.csx` del anexo (decompila todas las entradas raíz a una carpeta,
+y luego `diff -rq` entre las dos).
 
-Para dimensionar lo que falta: cubrir los ~15 `gml_Script_*` de la lista de pendientes añadiría
-medio segundo por capítulo, más o menos. El presupuesto de tiempo no es argumento en esa
-decisión.
+**Lo que NO merece la pena, y por qué.** Se estudió sustituir el gemelo compilado por una
+**copia del bytecode vanilla** (copiar la lista de instrucciones al cuerpo de la función en vez
+de decompilar y recompilar). Ventaja real: el gemelo pasaría a ser una copia exacta y
+desaparecería la dependencia del decompilador. Pero:
+
+- **El ahorro de tiempo ya está cogido.** Lo que iba a ahorrar era justo el `Compile()` de los
+  gemelos (2,4 s en el Cap.5), y agrupar los grupos ahorra más (4,0 s) con un cambio de 40
+  líneas.
+- **Hay que clonar instrucciones a mano.** `UndertaleInstruction` no tiene copia: son dos
+  palabras empaquetadas (`_firstWord`, `_primitiveValue`) donde el valor comparte sitio con el
+  puntero de la cadena de ocurrencias de variables y funciones. Compartir los objetos entre dos
+  entradas corrompe esas cadenas; clonarlos mal, también, y en silencio.
+- **No vale para todas.** 38 de los 628 gemelos salen de entradas con **entradas hijas**
+  (funciones anónimas y structs declarados dentro del evento: `obj_yellow_trial_manager_Create_0`
+  tiene 202, `obj_dw_fcastle_cafe_Other_13` 184). Esas hijas viven como (offset, longitud) dentro
+  del bytecode del padre, así que copiar el padre las deja apuntando a otro sitio. Habría que
+  duplicarlas y repuntarlas.
+
+Si algún día se quiere la fidelidad bit a bit, la vía que evita todo eso es **no mover bytecode
+ninguno**: dejar la entrada vanilla intacta, colgarla de un objeto pantalla creado al vuelo y
+desviar con `event_perform_object(obj_native_X, <tipo>, <num>)` en vez de con una llamada a
+función. La entrada no se toca, así que hijas, `CodeLocals` y locales siguen válidos solos.
+
+### Cuánto se cubre, y la cobertura total que se probó y se deshizo
+
+El número que hay que mirar no es "cuántos gemelos" sino **qué porcentaje de lo que el mod toca
+cae a vanilla en idioma nativo**. Lo mide el `Cobertura.csx` del anexo, sobre un `data.win` ya
+parcheado: "el mod la toca" es tener respaldo `_old`, "va a vanilla" es llevar el desvío.
+
+| Cap.5 | Entradas que el mod toca | A vanilla | Corren código del mod |
+|---|---|---|---|
+| **Criterio de hoy** (`twinLangPattern`) | 260 | 127 (**49 %**) | 133 |
+| Ampliado, sin las poblaciones de los JSON | 328 | 231 (70 %) | 97 |
+| Cobertura total (probada y deshecha) | 532 | 512 (**96 %**) | 20 |
+
+**La cobertura total funcionaba**, y con ella las 20 restantes eran exactamente la lista negra —
+cero sin explicar, clasificadas una a una con el `PorQue.csx` del anexo. Se deshizo al quitar el
+japonés: lo que compraba era paridad con el vanilla **japonés**, y costaba ~10 s de parcheo más
+y ~380 entradas por capítulo cambiando de comportamiento.
+
+**Cómo se rehace** (dos cambios en `BaseFix.csx`, ambos en el bloque de los gemelos):
+
+1. El criterio pasa de `if (!vacío && twinLangPattern.IsMatch(vgml))` a `if (!vacío)`: gemelo a
+   todo objeto que el mod toque.
+2. `twinCandidates` suma las demás poblaciones. **Ojo con la forma de cada JSON, que no es la
+   misma**, y equivocarse no da error, solo cobertura de menos sin que se note:
+   - `CodesWithSprites` / `CodesWithSounds` / `CodesWithSpritesIds` → la clave **es** la entrada;
+   - `CodesWithFonts` → la clave es la **fuente** (`fnt_8bit`), las entradas son los **valores**;
+   - `ObjectsWithAssignedSprites` → la clave es el **objeto**, hay que expandirla a sus entradas.
+
+**Y la trampa que casi cuela un build roto:** `twinCandidates` alimenta también `entriesOk`, que
+es lo que habilita la pasada 2. Al filtrarla a "solo `gml_Object_`", los scripts del fork dejaron
+de reemplazarse y `is_native_lang` / `scr_init_localization` se quedaron como la función vacía de
+`CreateBlankFunction` — con el patcher diciendo **rc=0, 0 errores y un `data.win` más grande**.
+De ahí viene la guarda que avisa si alguna entrada de `CodeEntries` no llegó a aplicarse, y el
+chequeo rápido: decompilar `gml_GlobalScript_is_native_lang` y ver que mida ~759 caracteres y no
+~30.
+
+### Por qué el inglés no delataba nada de esto
+
+Con el criterio viejo, la mitad de lo que el mod reescribe corria codigo del mod tambien en
+idioma nativo, y **en ingles no se notaba**: las entradas del mod estan maquetadas para texto
+latino de anchura parecida a la inglesa, asi que se ven bien igualmente. El japones es lo unico
+que ejerce la cobertura de verdad, y cada hueco sale a la superficie como un fallo visual. Que
+"el ingles funciona" no era prueba de que el mecanismo estuviera bien; era prueba de que el
+ingles perdona.
 
 ## Qué está hecho y comprobado
 
 ### Probado en el juego
 
-- Los cinco capítulos, en español y en los dos idiomas nativos. El japonés sale con sus fuentes
-  y sus assets.
-- **El menú raíz**, en los dos idiomas nativos: el selector de idiomas se abre y funciona, el
-  japonés sale con su fuente, los textos siguen al idioma y la esquina del copyright se ve
-  igual que en vanilla. Costó cuatro fallos encadenados; están todos abajo, en su sección.
+- Los cinco capítulos, en español y en inglés nativo. **Reprobado el 2026-08-15** con el
+  patcher de hoy (gemelos en un solo `CompileGroup`): sin cambios de comportamiento.
+- **El menú raíz** en inglés nativo: el selector de idiomas se abre y funciona, los textos
+  siguen al idioma y la esquina del copyright se ve igual que en vanilla. Costó cuatro fallos
+  encadenados; están todos abajo, en su sección.
+- En japonés se probó todo lo anterior el 2026-08-15 y **funcionaba**, con los defectos de
+  maquetación que llevaron a descartarlo (ver la sección del japonés).
 - El crash de `scr_asterskip` (Cap.5, hablando con Flowery, **solo en inglés**) resuelto.
 - La fila "Borde" del menú de opciones aparece y el cursor cuadra, en todos los idiomas.
 
@@ -204,7 +297,12 @@ decisión.
 
 ## Lo que falta
 
-1. Probar los dos diálogos del menú en japonés (arriba).
+**Ojo: casi todo lo de esta lista es del japonés, que hoy no se ofrece.** Se deja porque es la
+lista de la compra si algún día se retoma; nada de esto afecta al inglés nativo.
+
+1. Los avisos del selector en japonés se arreglaron el 2026-08-15 y **están puestos** (el
+   ayudante `lang_text` de `obj_CHAPTER_SELECT`), aunque hoy sean inalcanzables. No hay nada que
+   hacer ahí.
 2. **Los `gml_Script_*` con ajustes por idioma no están cubiertos**: unos 15 de los 164, en
    `scr_charbox`, `scr_roomname`, `scr_credit`, `scr_84_get_sound`. **Leer antes la sección de
    abajo sobre los gemelos de script**: se intentó dos veces y rompió el juego las dos.
@@ -216,11 +314,9 @@ decisión.
    objeto con gemelo tiene evento de colisión, ese evento se queda con el código del mod
    mientras el resto corre vanilla. Conviene excluirlos **a propósito** (dentro de una función,
    `other` ya no es la instancia con la que colisionas, así que el gemelo no sería fiel).
-5. Quedó un `if (true) {` huérfano en el `scan_languages` del gamecontroller compartido, resto
-   de un guard eliminado.
-6. Ya **no hace falta compatibilidad con UndertaleModLib 0.8** (confirmado por el usuario,
+5. Ya **no hace falta compatibilidad con UndertaleModLib 0.8** (confirmado por el usuario,
    2026-08-06): el `#region Обратная совместимость` de `BaseFix.csx` se puede simplificar.
-7. **Los 16 pares (entrada, fuente) ambiguos** que la pasada de fuentes clavadas no puede
+6. **Los 16 pares (entrada, fuente) ambiguos** que la pasada de fuentes clavadas no puede
    decidir sola, porque el vanilla usa **las dos formas** para la misma fuente en la misma
    entrada. Hay que mirarlos sitio por sitio. Son:
 
@@ -236,7 +332,7 @@ decisión.
 
    El recuento sale en el log de cada `Fix.csx` ("ambiguos (a mano): N"); si una actualización
    del juego lo mueve, es que cambió el reparto y hay que repasar la tabla.
-8. **Los sprites tienen la misma pasada pero sin verificador.** El ternario de
+7. **Los sprites tienen la misma pasada pero sin verificador.** El ternario de
    `CodesWithSprites.json` se aplica a ciegas a todas las entradas: donde
    `chemg_sprite_map` no tiene variante japonesa es un no-op inofensivo, pero **no se ha
    medido la población equivalente en las entradas escritas a mano**, como sí se hizo con las
@@ -252,9 +348,20 @@ entero y el script termina con rc=0 y "Saved data file to...".
 
 Consecuencia para los gemelos: su cuerpo es salida del **decompilador** sobre un `data.win`
 arbitrario, no GML escrito a mano y revisado. Basta con que una actualización del juego traiga
-algo que Underanalyzer decompile mal para tumbar el parche entero sin avisar. Por eso cada
-gemelo se compila **en su propio `CompileGroup`** (`TwinCompile`) y se saca de `changedCodes`;
-si falla, se deja la función vacía, no se pone el desvío y se reporta en `twinFailed`.
+algo que Underanalyzer decompile mal para tumbar el parche entero sin avisar. Por eso los
+gemelos se compilan **fuera del grupo final** y se sacan de `changedCodes`.
+
+**Fuera del grupo final, pero todos juntos (2026-08-15).** Al principio cada gemelo tenía su
+propio `CompileGroup`, y eso costaba casi todo el tiempo del mecanismo (ver la sección de
+tiempos: 5,3 s de sobrecoste en el Cap.5, de los que 2,4 s eran los 127 grupos). Ahora se
+encolan (`TwinQueueCompile`) y se compilan de una vez en `TwinFlush`, que corre al final de la
+pasada 3. El aislamiento es el mismo, porque lo que protege el parche es que el grupo sea
+**distinto** del final, no que sea uno por gemelo. Un grupo por gemelo solo servía para saber
+**cuál** falló, y eso ahora se hace reintentando uno por uno **solo si** el grupo se cae —
+o sea, nunca en el camino normal. Al aislar al culpable se le deja la función vacía y, esto es
+lo importante, **se le quita el desvío a su entrada** (`changedCodes`, quitando el prefijo que
+genera `TwinDispatch`): si no, en idioma nativo esa entrada llamaría a una función vacía y no
+dibujaría nada, que es peor que quedarse con la versión del mod.
 
 ### La pasada 3 necesita `GetOrig()`, no `Decompile()` a pelo
 
@@ -276,29 +383,60 @@ Muta `Data.Code`, `Data.Scripts` y `Data.GlobalInitScripts`, y se llama desde de
 desde otro hilo revienta el binding. Va envuelto en `ExecuteInUIThread`, como ya hacía
 `GetOrig()` con su `Data.Code.Add`.
 
-### NO parchear el gemelo desde `Borders.csx`
+### Los bordes en el gemelo: cómo se hace, y por qué está deshecho
 
-Se intentó encolar los parches de bordes también sobre el gemelo, con
-`ThrowOnNoOpFindReplace = false`. **Sale mal**: los parches de una línea son iguales en vanilla
-y en el texto del mod, así que casan contra el gemelo; los bloques multilínea están escritos
-contra el texto del mod y no casan, y se saltan en silencio. El gemelo queda **a medio
-parchear**, que es peor que las dos opciones puras:
+**Primero, cómo se hizo mal**, que es lo que no hay que repetir. Se intentó encolar los parches
+de bordes *del mod* también sobre el gemelo, con `ThrowOnNoOpFindReplace = false`. Los de una
+línea son iguales en vanilla y en el texto del mod, así que casaban; los bloques multilínea están
+escritos contra el texto del mod y **no** casaban, y se saltaban en silencio. El gemelo quedaba a
+medio parchear, que es peor que las dos opciones puras: en el Cap.5, Step a 8 filas navegables
+con el Draw dibujando 7; en Cap.1-4, corazón 10 px descolocado. Se revirtió, y
+`obj_darkcontroller_` se metió en la lista negra para que ese menú corriera siempre la versión
+del mod.
 
-- **Cap.5**: el Step del gemelo pasaba a 8 filas navegables (`> 6` → `> 7`, una línea) mientras
-  su Draw seguía sin dibujar la fila del borde (en vanilla solo existe dentro de la rama de
-  consola, y el bloque que aplana ese gate es multilínea) → el corazón bajaba a una fila que no
-  se dibuja.
-- **Cap.1-4**: el corazón se movía a `yy + 140` (una línea) con las filas en las posiciones
-  vanilla (`yy + 150`, multilínea) → cursor 10 px descolocado.
+**Después se hizo bien** (2026-08-15): un **segundo** juego de parches escritos contra el texto
+vanilla, en un bloque al final de cada `Borders.csx`, con `ThrowOnNoOpFindReplace = true`.
+Funcionó en los cinco capítulos: gemelo y entrada del mod con las mismas 8 filas, corazón en
+`yy + 140` y la fila del borde en `yy + 305`.
 
-Como el gemelo se congela **antes** de que Borders toque nada, dejarlo intacto lo hace
-consistente por construcción. Los cinco `Borders.csx` son hoy byte-idénticos a `main`.
+**Y está deshecho**, junto con el japonés. El motivo: lo que recuperaba eran los ajustes
+`langopt(en, ja)` y `global.lang == "ja"` de vanilla — el 62 % de los 164 medidos — y esos son
+código muerto si "ja" no se ofrece. Sin japonés pasaba a costar un camino nuevo sin comprar nada.
+`obj_darkcontroller_` volvió a la lista negra.
 
-La solución adoptada para que la fila del borde exista en todos los idiomas fue meter
-`obj_darkcontroller_` en la lista negra: ese menú corre **siempre** la versión del mod. Se
-pierden los ajustes finos de vanilla ahí (el 62 % de los 164), a cambio de que la fila esté y el
-cursor cuadre. Si algún día se quiere el menú vanilla **con** la fila, hay que escribir esos
-parches una segunda vez **contra el texto vanilla**, no reutilizar los del mod.
+Si se retoma, esto es lo que hay que saber. Cuatro diferencias entre los dos textos:
+
+| | vanilla | mod |
+|---|---|---|
+| condición de la fila | `if (global.is_console)` | `if (global.is_console \|\| os_type == os_android)` |
+| array de opciones | `border_options` | `border_options_tr` |
+| columna de valores | `xx + 430` | `_selectXPos` |
+
+Y el gemelo lleva **un nivel más de indentación**, porque su cuerpo vive dentro de una función.
+
+**El error que costó la primera pasada:** `Borders.csx` no decompila con los ajustes por defecto,
+sino con `RemoveSingleLineBlockBraces` y `EmptyLineAroundBranchStatements`. El texto contra el
+que casan los parches **no** es el de un volcado normal: los `if` de una sentencia van sin llaves,
+hay líneas en blanco alrededor de las ramas, **y esas líneas llevan su indentación dentro**. Los
+patrones hay que sacarlos de un volcado hecho con esos mismos ajustes (`DumpB.csx` del anexo).
+
+La escalera es la misma en los cinco capítulos: **8 filas, paso 35, empezando 20 px más arriba
+que el vanilla** (130, 165, 200, 235, 270, 305, 340, 375), corazón en `yy + 140`. El Cap.5 va
+aparte: su menú no tiene forma regular (la fila de "Simplify VFX" se cambia por "Voice Clips" o
+"Feather" según la partida).
+
+**Lo que NO arregla, y es lo que zanjó la discusión.** La fila del borde es del fork: vanilla
+nunca la dibuja en PC, así que no hay maquetación original que copiar. En japonés se sale del
+marco, y el bloque de "Feather" del Cap.5 (etiqueta en `yy + 200`, valor en `yy + 200 + 16`) se
+superpone — **igual en el gemelo que en la versión del mod**, porque la geometría la inventa el
+fork en las dos. Eso solo se arregla maquetando a mano, idioma por idioma.
+
+**De regalo, un arreglo que sí es genérico y está anotado por si vuelve:** el vanilla pone la
+columna de valores en `xx + 385` solo si el idioma es japonés **y** estamos en consola; en PC la
+deja en 430, porque ahí la fila del borde no existe y 430 nunca tuvo que alojar un valor japonés
+largo. Quitando el `&& global.is_console` queda
+`(global.lang == "ja") ? (xx + 385) : (xx + 430)`, que es la respuesta del propio juego a
+"japonés + fila de borde".
 
 ### NO dar gemelo a los `gml_GlobalScript_*` sin resolver antes el grafo de llamadas
 
@@ -416,6 +554,40 @@ con los textos japoneses **copiados del vanilla**, no inventados. Es la frontera
 gemelo cubre todo lo que puede correr vanilla, y lo poco que por necesidad no puede (lista
 negra) se lleva los tres idiomas consigo.
 
+### Los avisos de `obj_CHAPTER_SELECT` (2026-08-15)
+
+El mismo fallo, encontrado en pantalla por el usuario: en japonés nativo, el aviso de
+"¿continuar desde el capítulo N?" salía **en inglés**, aunque el botón de "Language" sí
+aparecía. Es exactamente el síntoma de la regla de arriba: `obj_CHAPTER_SELECT_` entró en la
+lista negra **para** que ese botón exista (en vanilla no existe), y al correr siempre código
+del mod, sus catorce `scr_get_lang_string` devolvían el literal inglés.
+
+Arreglado con un ayudante en el propio Create, para no repetir el ternario catorce veces:
+
+```gml
+lang_text = function(en_text, ja_text, pack_key)
+{
+    if (is_native_lang())
+        return (global.lang == "en") ? en_text : ja_text;
+
+    return scr_get_lang_string(en_text, pack_key);
+};
+```
+
+Los tres textos que llevan el número del capítulo en medio (`create_continue_screen`,
+`create_start_next_screen`) **no** pueden usarlo: el japonés coloca el número en otro sitio
+(`"Chapter " + N + "から続けますか？"` frente a `"Continue from Chapter " + N + "?"`), así que
+ahí se arma la frase entera en cada rama.
+
+Todos los japoneses salen del vanilla del menú raíz, menos "Language" → `言語`, que es etiqueta
+del fork (en vanilla el botón del pie dice `"日本語"`/`"English"`, porque es el interruptor de
+idioma, no un menú).
+
+**La geometría se dejó como está**: el mod pasa `init(id, texto, opciones, -26, -40)` y llama a
+`adjust_choices_x()`, valores pensados para tres opciones y texto traducido, mientras el vanilla
+usa `choice_offset = (global.lang == "ja") ? -20 : 0` con dos. Cambiarla tocaría también el
+español, y el usuario reportó que solo fallaba el texto.
+
 ### La decisión es POR OBJETO, no por entrada
 
 Si el `Draw` de un objeto corriera vanilla y su `Step` se quedara con el del mod, el cursor de
@@ -426,12 +598,20 @@ congela también las entradas que el mod no reemplaza pero que tocan después `B
 
 ### El criterio de gemelo NO ve los fallos que introduce el propio mod (2026-08-08)
 
-Esta es la clase de fallo que se destapó probando el Cap.4 en japonés nativo, y conviene
-entenderla porque **el gemelo no la cubre por diseño**.
+El criterio es "¿el vanilla menciona `global.lang` o `langopt`?". Eso encuentra los sitios donde
+el vanilla **tiene** lógica de idioma. No encuentra el caso contrario: donde el vanilla es
+deliberadamente **ciego** al idioma y es el mod el que le añade la dependencia. O sea que el
+criterio no puede ver una clase entera de fallos que existe para prevenir.
 
-El criterio para dar gemelo es "¿el vanilla menciona `global.lang` o `langopt`?". Eso encuentra
-los sitios donde el vanilla **tiene** lógica de idioma. No encuentra el caso contrario: donde el
-vanilla es deliberadamente **ciego** al idioma y es el mod el que le añade la dependencia.
+El caso que lo dejó claro en pantalla (2026-08-15) fue `obj_choicer_neo` en el Cap.5: su vanilla
+no menciona el idioma en ninguna línea -fija `fnt_8bit` y calcula las posiciones con
+`string_width`-, así que nunca califica, y en japonés las respuestas salían montadas unas sobre
+otras. **Sin japonés esto casi no se nota**, porque en inglés la versión del mod y la de vanilla
+se ven parecidas; con japonés era la mitad de la superficie, y por eso se amplió el criterio y
+luego se deshizo (ver la sección de cobertura).
+
+El ejemplo de las fuentes de abajo es aparte y sigue vigente pase lo que pase con el criterio:
+ahí el gemelo no basta, porque la conversión la hace el patcher **después** de congelarlo.
 
 El ejemplo canónico son las fuentes. El vanilla escribe:
 
@@ -478,7 +658,12 @@ arreglo del punto 1, pero **el del punto 2 no se ha hecho ni medido** para ellos
 `obj_gamecontroller_`, `obj_lang_settings_`, `DEVICE_MENU_`, `obj_time_`,
 `obj_border_controller_`, `obj_initializer2_`, `obj_date_controller_`, `obj_onion_event_`,
 `obj_room_ranking_b_`, `obj_ch2_lw_cutscenes_short_`, `obj_dw_church_ripplepuzzle_postgers_`,
-`obj_darkcontroller_`, y en el menú `obj_init_pc_` y `obj_screen_select_footer_`.
+`obj_darkcontroller_`, `obj_screen_start_`, `obj_ui_choice_`, `obj_CHAPTER_SELECT_`, y en el
+menú `obj_init_pc_` y `obj_screen_select_footer_`.
+
+`obj_darkcontroller_` **salió** de la lista el 2026-08-15 al escribir los parches del borde
+contra el texto vanilla, y **volvió** el mismo día al quitar el japonés: el 62 % de ajustes que
+recuperaba eran los `langopt(en, ja)` y los `global.lang == "ja"`, código muerto sin japonés.
 
 El criterio es siempre el mismo: **entradas que sostienen funcionalidad propia del fork**. Con
 gemelo, en idioma nativo esa funcionalidad desaparecería. Los casos críticos son `DEVICE_MENU_*`
@@ -534,6 +719,86 @@ sb.AppendLine(riesgos == 0 ? "OK" : ("HAY " + riesgos + " RIESGOS"));
 File.WriteAllText(Environment.GetEnvironmentVariable("OUT"), sb.ToString());
 ```
 
+**DumpAll** — vuelca TODAS las entradas raíz decompiladas a una carpeta, para comparar dos
+`data.win` por contenido y no por bytes. Es lo que hay que usar cuando un cambio del patcher
+altera el md5 pero no debería cambiar nada: dos volcados y un `diff -rq`. Se usó para validar
+que agrupar los `CompileGroup` de los gemelos no cambia la salida (Cap.1: 1513 entradas, 0
+diferencias; Cap.5: 12350, 0).
+
+```bash
+DUMP_OUT=dumpA "$CLI" load nuevo.win   -s DumpAll.csx < /dev/null
+DUMP_OUT=dumpB "$CLI" load antiguo.win -s DumpAll.csx < /dev/null
+diff -rq dumpA dumpB
+```
+
+```csharp
+using System; using System.IO; using System.Linq;
+EnsureDataLoaded();
+string outDir = Environment.GetEnvironmentVariable("DUMP_OUT");
+Directory.CreateDirectory(outDir);
+var ctx = new GlobalDecompileContext(Data);
+int ok = 0, fail = 0;
+foreach (var code in Data.Code.ToList())
+{
+    if (code.ParentEntry != null) continue;                 // las hijas van dentro del padre
+    string name = code.Name?.Content;
+    if (string.IsNullOrEmpty(name)) continue;
+    string gml;
+    try { gml = new Underanalyzer.Decompiler.DecompileContext(ctx, code, Data.ToolInfo.DecompilerSettings).DecompileToString(); ok++; }
+    catch (Exception e) { gml = "<<FALLO AL DECOMPILAR>> " + e.Message; fail++; }
+    File.WriteAllText(Path.Combine(outDir, name.Replace('/', '_') + ".gml"), gml);
+}
+Console.WriteLine("DUMPALL entradas=" + ok + " fallos=" + fail);
+```
+
+Ojo: `GlobalDecompileContext` va **sin** el prefijo `Underanalyzer.Decompiler.` (en UMTLib 0.9
+vive en `UndertaleModLib.Decompiler`), mientras que `DecompileContext` sí lo lleva.
+
+**Cobertura** — el verificador mas util de todos: cuanto de lo que el mod toca cae a vanilla en
+idioma nativo. Sobre un `data.win` ya parcheado. "El mod la toca" es tener respaldo `_old`; "va a
+vanilla" es que su texto lleve `is_native_lang()` y `scr_native_`. Hoy el Cap.5 da
+**512 de 532 (96 %)**, y las 20 restantes son la lista negra. Si baja, algo se salio de las
+poblaciones de `twinCandidates`.
+
+```csharp
+using System; using System.IO; using System.Linq; using System.Collections.Generic;
+EnsureDataLoaded();
+var ctx = new GlobalDecompileContext(Data);
+string Dec(UndertaleCode c){ try { return new Underanalyzer.Decompiler.DecompileContext(ctx,c,Data.ToolInfo.DecompilerSettings).DecompileToString(); } catch { return ""; } }
+int toca = 0, vanilla = 0, mod = 0, scripts = 0;
+var sinDesvio = new List<string>();
+foreach (var c in Data.Code.ToList())
+{
+    var n = c.Name?.Content;
+    if (c.ParentEntry != null || string.IsNullOrEmpty(n) || n.EndsWith("_old") || n.Contains("scr_native_")) continue;
+    if (Data.Code.ByName(n + "_old") == null) continue;
+    if (n.StartsWith("gml_GlobalScript_")) { scripts++; continue; }
+    if (!n.StartsWith("gml_Object_")) continue;
+    toca++;
+    var t = Dec(c);
+    if (t.Contains("is_native_lang()") && t.Contains("scr_native_")) vanilla++;
+    else { mod++; sinDesvio.Add(n); }
+}
+File.WriteAllText(Environment.GetEnvironmentVariable("OUT"),
+    string.Format("toca={0} vanilla={1} mod={2} scripts={3}\n{4}", toca, vanilla, mod, scripts,
+                  string.Join("\n", sinDesvio.OrderBy(x => x))));
+```
+
+**DumpB** — igual que `DumpAll`, pero decompilando con **los mismos ajustes que `Borders.csx`**:
+
+```csharp
+var st = new Underanalyzer.Decompiler.DecompileSettings() {
+    RemoveSingleLineBlockBraces = true,
+    EmptyLineAroundBranchStatements = true,
+    EmptyLineBeforeSwitchCases = true,
+};
+```
+
+Es de donde hay que sacar los literales de cualquier parche nuevo de `Borders.csx`. Con los
+ajustes por defecto el texto NO coincide -los `if` de una sentencia salen con llaves y no hay
+lineas en blanco entre ramas-, y el parche no casa. Ojo tambien: esas lineas en blanco llevan su
+indentacion dentro, asi que copiarlas a mano es pedir problemas.
+
 **Gemelos recursivos** — para comprobar la idempotencia hay que parchear dos veces seguidas el
 mismo `data.win` y luego contar los gemelos cuyo cuerpo contenga `is_native_lang`: deben ser
 **cero**. También conviene contar los de cuerpo vacío (gemelos que no compilaron) y comprobar que
@@ -541,8 +806,10 @@ el número de entradas con desvío coincide con el de gemelos.
 
 **Menú de opciones** — el invariante del número de filas: en Cap.1-4 el gemelo del
 `obj_darkcontroller_Step_0` tenía `submenucoord[30] > 6` (7 filas) y la entrada `> 7` (8 filas);
-en Cap.5 los dos `> 7`. Ya no aplica desde que `obj_darkcontroller_` está en la lista negra, pero
-sirve si alguna vez se le devuelve el gemelo.
+en Cap.5 los dos `> 7`. No aplica mientras `obj_darkcontroller_` esté en la lista negra, pero
+sirve si alguna vez se le devuelve el gemelo. Con los parches del borde contra el texto vanilla
+el invariante pasa a ser que **los dos digan `> 7`**, con la fila en `yy + 305` y el corazón en
+`yy + 140`.
 
 **Fuentes clavadas** (`Ambig2.csx`) — el que hay que dejar en cero. Para cada entrada con
 respaldo, compara el texto parcheado con el vanilla que guarda su `_old` y clasifica cada par
