@@ -93,7 +93,10 @@ if (MENU_NO == 1 || MENU_NO == 4 || MENU_NO == 6 || MENU_NO == 7 || MENU_NO == 1
                         
                         if (!global.is_console)
                         {
-                            global.screen_border_id = ini_read_string("BORDER", "TYPE", "Dynamic");
+                            var _bid = ini_read_string("BORDER", "TYPE", "Dynamic");
+                            if (_bid != "Dynamic" && _bid != "Simple" && _bid != "None" && _bid != "ダイナミック" && _bid != "シンプル" && _bid != "なし")
+                                _bid = "Dynamic";
+                            global.screen_border_id = _bid;
                             var _disable_border = global.screen_border_id == "None" || global.screen_border_id == "なし";
                             scr_enable_screen_border(!_disable_border);
                             ini_close();
@@ -107,7 +110,10 @@ if (MENU_NO == 1 || MENU_NO == 4 || MENU_NO == 6 || MENU_NO == 7 || MENU_NO == 1
                             global.button0 = global.input_g[4];
                             global.button1 = global.input_g[5];
                             global.button2 = global.input_g[6];
-                            global.screen_border_id = ini_read_string("BORDER", "TYPE", "Dynamic");
+                            var _bid = ini_read_string("BORDER", "TYPE", "Dynamic");
+                            if (_bid != "Dynamic" && _bid != "Simple" && _bid != "None" && _bid != "ダイナミック" && _bid != "シンプル" && _bid != "なし")
+                                _bid = "Dynamic";
+                            global.screen_border_id = _bid;
                             var _disable_border = global.screen_border_id == "None" || global.screen_border_id == "なし";
                             scr_enable_screen_border(!_disable_border);
                             ossafe_ini_close();

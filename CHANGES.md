@@ -106,6 +106,20 @@ del upstream, entra correctamente.
   escribe las variables de fondo de `DEVICE_MENU` cuando existen (UI oscura,
   `SUBTYPE == 1`); sin partidas guardadas sale la UI verde de Gaster, donde no
   existían y entrar en Config reventaba.
+- **Crash de Ajustes con un `BORDER.TYPE` desconocido:** el tipo de borde
+  guardado en los ini es un **identificador**, y el juego lo compara contra
+  literales (`Dynamic`/`Simple`/`None` y sus equivalentes japoneses). Un valor
+  fuera de esa lista —por ejemplo el `"Dinámico"` que dejan en los guardados
+  otras traducciones que sí traducen el id— no casaba con ninguna rama de
+  `obj_border_controller_Draw_77`, así que no se dibujaba ningún borde y
+  `global.disable_border` no llegaba a crearse; al abrir AJUSTES,
+  `obj_darkcontroller_Draw_0` la leía y el juego reventaba. Ahora los dos únicos
+  puntos que reciben el id desde disco (`DEVICE_MENU_Step_0`, que lee el
+  `keyconfig_<n>.ini` de la partida, y el `obj_time_Create_0` de los bordes, que
+  lee `true_config.ini`) validan el valor y caen a `Dynamic` si no lo reconocen.
+  Los seis valores válidos se comportan igual que antes. La guarda del
+  `DEVICE_MENU` va en la base, no en `Borders.csx`, porque en consola los bordes
+  son nativos y el crash se daría también sin la opción de bordes.
 
 ### Notas
 

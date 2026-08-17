@@ -249,7 +249,10 @@ application_surface_draw_enable(false);");
 // la global ya existe.
 // ---------------------------------------------------------------------
 importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"ini_open(""true_config.ini"");", @"ini_open(""true_config.ini"");
-global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", global.screen_border_id);");
+var _bid = ini_read_string(""BORDER"", ""TYPE"", global.screen_border_id);
+if (_bid != ""Dynamic"" && _bid != ""Simple"" && _bid != ""None"" && _bid != ""ダイナミック"" && _bid != ""シンプル"" && _bid != ""なし"")
+    _bid = ""Dynamic"";
+global.screen_border_id = _bid;");
 
 importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "scr_enable_screen_border(global.is_console);", @"scr_enable_screen_border(global.screen_border_id != ""None"" && global.screen_border_id != ""なし"");");
 

@@ -211,7 +211,10 @@ application_surface_draw_enable(false);");
 // la global ya existe.
 // ---------------------------------------------------------------------
 importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", @"ini_open(""true_config.ini"");", @"ini_open(""true_config.ini"");
-global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", global.screen_border_id);");
+var _bid = ini_read_string(""BORDER"", ""TYPE"", global.screen_border_id);
+if (_bid != ""Dynamic"" && _bid != ""Simple"" && _bid != ""None"" && _bid != ""ダイナミック"" && _bid != ""シンプル"" && _bid != ""なし"")
+    _bid = ""Dynamic"";
+global.screen_border_id = _bid;");
 
 importGroup.QueueFindReplace("gml_Object_obj_time_Create_0", "scr_enable_screen_border(global.is_console);", @"scr_enable_screen_border(global.screen_border_id != ""None"" && global.screen_border_id != ""なし"");");
 
@@ -314,7 +317,12 @@ importGroup.QueueFindReplace("gml_GlobalScript_scr_draw_background_ps4", @"    i
 // --- Bloque 1: rama keyconfig_X.ini ---
 importGroup.QueueFindReplace("gml_Object_DEVICE_MENU_Step_0", @"if (global.is_console || os_type == os_android)
                         {
-                            global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            var _bid = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            
+                            if (_bid != ""Dynamic"" && _bid != ""Simple"" && _bid != ""None"" && _bid != ""ダイナミック"" && _bid != ""シンプル"" && _bid != ""なし"")
+                                _bid = ""Dynamic"";
+                            
+                            global.screen_border_id = _bid;
                             var _disable_border = global.screen_border_id == ""None"" || global.screen_border_id == ""なし"";
                             scr_enable_screen_border(!_disable_border);
                         }
@@ -325,7 +333,12 @@ importGroup.QueueFindReplace("gml_Object_DEVICE_MENU_Step_0", @"if (global.is_co
                     else if (ossafe_file_exists(""config_"" + string(global.filechoice) + "".ini""))",
 @"if (true)
                         {
-                            global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            var _bid = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            
+                            if (_bid != ""Dynamic"" && _bid != ""Simple"" && _bid != ""None"" && _bid != ""ダイナミック"" && _bid != ""シンプル"" && _bid != ""なし"")
+                                _bid = ""Dynamic"";
+                            
+                            global.screen_border_id = _bid;
                             var _disable_border = global.screen_border_id == ""None"" || global.screen_border_id == ""なし"";
                             scr_enable_screen_border(!_disable_border);
                         }
@@ -338,7 +351,12 @@ importGroup.QueueFindReplace("gml_Object_DEVICE_MENU_Step_0", @"if (global.is_co
 // --- Bloque 2: rama config_X.ini (legacy) ---
 importGroup.QueueFindReplace("gml_Object_DEVICE_MENU_Step_0", @"if (global.is_console || os_type == os_android)
                         {
-                            global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            var _bid = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            
+                            if (_bid != ""Dynamic"" && _bid != ""Simple"" && _bid != ""None"" && _bid != ""ダイナミック"" && _bid != ""シンプル"" && _bid != ""なし"")
+                                _bid = ""Dynamic"";
+                            
+                            global.screen_border_id = _bid;
                             var _disable_border = global.screen_border_id == ""None"" || global.screen_border_id == ""なし"";
                             scr_enable_screen_border(!_disable_border);
                         }
@@ -351,7 +369,12 @@ importGroup.QueueFindReplace("gml_Object_DEVICE_MENU_Step_0", @"if (global.is_co
                             ossafe_ini_open(""keyconfig_"" + string(global.filechoice) + "".ini"");",
 @"if (true)
                         {
-                            global.screen_border_id = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            var _bid = ini_read_string(""BORDER"", ""TYPE"", ""Dynamic"");
+                            
+                            if (_bid != ""Dynamic"" && _bid != ""Simple"" && _bid != ""None"" && _bid != ""ダイナミック"" && _bid != ""シンプル"" && _bid != ""なし"")
+                                _bid = ""Dynamic"";
+                            
+                            global.screen_border_id = _bid;
                             var _disable_border = global.screen_border_id == ""None"" || global.screen_border_id == ""なし"";
                             scr_enable_screen_border(!_disable_border);
                         }
