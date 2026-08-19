@@ -24,6 +24,9 @@ function scr_console_read_lang_config() //gml_GlobalScript_scr_console_read_lang
     // decidio el escaneo del Create. NUNCA el `global.lang` de este momento: en
     // consola vale "en" porque acaba de pisarlo `load_default_settings()` del
     // juego al cargar la savedata. Ver la guarda de `is_native_lang`.
+    // `LANG_DT` guarda el id del idioma (el nombre de su carpeta). Si ya no
+    // corresponde a ningun idioma instalado, ese idioma se fue: se cae al que
+    // decidio el escaneo, igual que en el Create.
     var target = saved_lang
     if (target == "" || !variable_global_exists("all_lang_settings")
         || !variable_struct_exists(global.all_lang_settings, target))

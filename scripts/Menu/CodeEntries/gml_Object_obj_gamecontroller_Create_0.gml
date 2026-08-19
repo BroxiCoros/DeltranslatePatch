@@ -178,7 +178,10 @@ scan_languages = function() {
                 var setting_path = global.lang_folder + entry + "/settings.json"
                 if (scr_file_exists(setting_path)) {
                     s = scr_load_json(setting_path)
-                    code = get_struct_field(s, "lang_code", entry)
+                    // El id es el nombre de la carpeta: es lo unico que
+                    // garantiza que la ruta exista y que dos packs no puedan
+                    // pisarse. Ver `lang_public_code()`.
+                    code = entry
                     array_push(global.languages_list, code)
                     variable_struct_set(global.all_lang_settings, code, s)
                 }
@@ -193,7 +196,11 @@ scan_languages = function() {
     if (array_length(global.languages_list) == 0 && scr_file_exists(global.lang_folder + "settings.json")) {
         global.is_single_lang_mode = true
         s = scr_load_json(global.lang_folder + "settings.json")
+        // Sin carpeta que sirva de id, aqui el id SI sale del `lang_code`,
+        // validado. Es el unico modo donde decide algo.
         code = get_struct_field(s, "lang_code", "en")
+        if (!lang_code_is_valid(code))
+            code = "en"
         array_push(global.languages_list, code)
         variable_struct_set(global.all_lang_settings, code, s)
     }
@@ -203,8 +210,8 @@ scan_languages = function() {
     // ---------------------------------------------------------------
     // Igual que en el gamecontroller compartido de los capítulos, y por los
     // mismos motivos: se ofrece siempre (también en modo pack-suelto, donde
-    // el menú de idioma sigue existiendo) y un pack que declare el mismo
-    // `lang_code` gana.
+    // el menú de idioma sigue existiendo) y un pack instalado en la carpeta
+    // `lang/en/` gana.
     //
     // Aquí no hay nada que cargar: el menú raíz lleva los dos idiomas de
     // fábrica dentro, en ternarios `(global.lang == "en") ? "..." : "..."`
@@ -294,6 +301,8 @@ lang_is_native = function(code) {
 var os_lang = detect_os_lang()
 var picked = ""
 
+// Lo guardado en el ini es el id. Si ya no corresponde a ningun idioma
+// instalado, ese idioma se fue y se baja al siguiente paso.
 if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang))
     picked = saved_lang
 
@@ -302,7 +311,7 @@ if (picked == "" && os_lang != "" && variable_struct_exists(global.all_lang_sett
 
 if (picked == "" && os_lang != "") {
     for (var i = 0; i < array_length(global.languages_list); i++) {
-        if (!lang_is_native(global.languages_list[i]) && lang_base_code(global.languages_list[i]) == os_lang) {
+        if (!lang_is_native(global.languages_list[i]) && lang_base_code(lang_public_code(global.languages_list[i])) == os_lang) {
             picked = global.languages_list[i]
             break
         }
@@ -361,22 +370,13 @@ update_language = function() {
     if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
         var settings = scr_load_json(get_lang_folder_path() + "settings.json")
 
-        var lang_code = variable_struct_get(settings, "lang_code")
-        // Si el `settings.json` del pack no declara `lang_code`, usamos
-        // el `global.lang` que ya eligió `scan_languages` (que a su vez
-        // usa el nombre de la subcarpeta como fallback). Antes esto
-        // hardcodeaba "en", lo que reseteaba el idioma a inglés en
-        // packs sin lang_code.
-        if (is_undefined(lang_code))
-            lang_code = global.lang
-
-        global.lang = lang_code
+        // `global.lang` NO se toca: el id lo fijó `scan_languages`.
         global.lang_settings = settings
 
         // Mantenemos la caché `all_lang_settings` sincronizada por si
         // el settings en disco cambió desde el último escaneo (p.ej.
         // tras una actualización automática del pack).
-        variable_struct_set(global.all_lang_settings, lang_code, settings)
+        variable_struct_set(global.all_lang_settings, global.lang, settings)
 
         update_lang_version()
     } else {
@@ -471,8 +471,11 @@ load_datas = function() {
 
 copy_files_from_tmp = function() {
     // Destino: si el pack es de un solo idioma (estructura heredada),
-    // los archivos van a `lang/`. Si es multi-idioma, van a la
-    // subcarpeta del idioma activo (`lang/<lang_code>/`).
+    // los archivos van a `lang/`. Si es multi-idioma, van a la subcarpeta del
+    // idioma activo, que es su id, o sea la carpeta de la que se cargo. Antes
+    // esto era el `lang_code` declarado, asi que un pack cuyo codigo no
+    // coincidiera con su carpeta se autoactualizaba CREANDO una carpeta
+    // paralela en vez de sobrescribir la suya.
     var dest_lang_dir = global.is_single_lang_mode ? "lang/" : ("lang/" + global.lang + "/")
 
     for (var i = 0; i < array_length(loaded_files); i++) {

@@ -43,9 +43,11 @@ function add_font(argument0, argument1) //gml_Script_add_font
         font = font_add(filename_ttf, fnt_size, font_get_bold(font), font_get_italic(font), fonts_range[0], fonts_range[1])
     else if scr_file_exists(filename_otf)
         font = font_add(filename_otf, fnt_size, font_get_bold(font), font_get_italic(font), fonts_range[0], fonts_range[1])
-    else if ((asset_get_index(fnt_name_alt + "_" + global.lang)) != -1)
-        font = asset_get_index(fnt_name_alt + "_" + global.lang)
-    else if ((asset_get_index(fnt_name + "_" + global.lang)) != -1)
-        font = asset_get_index(fnt_name + "_" + global.lang)
+    // Fuentes del juego base para ese idioma (`fnt_main_ja`): por codigo
+    // PUBLICO, que es como las nombra el vanilla, no por el id de la carpeta.
+    else if ((asset_get_index(fnt_name_alt + "_" + lang_public_code())) != -1)
+        font = asset_get_index(fnt_name_alt + "_" + lang_public_code())
+    else if ((asset_get_index(fnt_name + "_" + lang_public_code())) != -1)
+        font = asset_get_index(fnt_name + "_" + lang_public_code())
     ds_map_add(global.font_map, fnt_name, font)
 }

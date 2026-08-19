@@ -110,7 +110,10 @@ scan_languages = function() {
                 var setting_path = global.lang_folder + entry + "/settings.json"
                 if (scr_file_exists(setting_path)) {
                     s = scr_load_json(setting_path)
-                    code = get_struct_field(s, "lang_code", entry)
+                    // El id es el nombre de la carpeta: es lo unico que
+                    // garantiza que la ruta exista y que dos packs no puedan
+                    // pisarse. Ver `lang_public_code()`.
+                    code = entry
                     array_push(global.languages_list, code)
                     variable_struct_set(global.all_lang_settings, code, s)
                 }
@@ -125,7 +128,11 @@ scan_languages = function() {
     if (array_length(global.languages_list) == 0 && scr_file_exists(global.lang_folder + "settings.json")) {
         global.is_single_lang_mode = true
         s = scr_load_json(global.lang_folder + "settings.json")
+        // Sin carpeta que sirva de id, aqui el id SI sale del `lang_code`,
+        // validado. Es el unico modo donde decide algo.
         code = get_struct_field(s, "lang_code", "en")
+        if (!lang_code_is_valid(code))
+            code = "en"
         array_push(global.languages_list, code)
         variable_struct_set(global.all_lang_settings, code, s)
     }
@@ -139,8 +146,9 @@ scan_languages = function() {
     // reemplaza). `is_native_lang()` es lo que hace que el resto del mod se
     // aparte y deje trabajar a ese código.
     //
-    // Si un pack declara el mismo `lang_code`, el pack gana: quien instala
-    // un pack "en" quiere el suyo, no el inglés de fábrica.
+    // Si hay un pack en la carpeta `lang/en/`, ese gana: quien lo instala
+    // quiere el suyo, no el inglés de fábrica. Manda la carpeta, no el
+    // `lang_code` declarado.
     //
     // Se añade TAMBIÉN en modo pack-suelto (`is_single_lang_mode`). Al
     // principio esto iba detrás de un `if (!global.is_single_lang_mode)`,
@@ -258,6 +266,8 @@ lang_is_native = function(code) {
 var os_lang = detect_os_lang()
 var picked = ""
 
+// Lo guardado en el ini es el id. Si ya no corresponde a ningun idioma
+// instalado, ese idioma se fue y se baja al siguiente paso.
 if (saved_lang != "" && variable_struct_exists(global.all_lang_settings, saved_lang))
     picked = saved_lang
 
@@ -266,7 +276,7 @@ if (picked == "" && os_lang != "" && variable_struct_exists(global.all_lang_sett
 
 if (picked == "" && os_lang != "") {
     for (var i = 0; i < array_length(global.languages_list); i++) {
-        if (!lang_is_native(global.languages_list[i]) && lang_base_code(global.languages_list[i]) == os_lang) {
+        if (!lang_is_native(global.languages_list[i]) && lang_base_code(lang_public_code(global.languages_list[i])) == os_lang) {
             picked = global.languages_list[i]
             break
         }
@@ -288,9 +298,9 @@ global.lang_choice = picked
 // Lo que decidio el escaneo, para que el hook diferido pueda restaurarlo.
 global.lang_scan_pick = picked
 
-// Cargar el settings.json del idioma activo. Si el pack no declara
-// `lang_code` explícitamente, conservamos el `global.lang` que ya
-// eligió el escaneo (normalmente el nombre de la subcarpeta).
+// Cargar el settings.json del idioma activo. Se relee del disco por si cambió
+// desde el escaneo (p. ej. tras una actualización automática del pack).
+// `global.lang` NO se toca: el id lo fijó el escaneo.
 //
 // Los idiomas nativos no tienen carpeta ni settings.json: su struct lo
 // fabricó `scan_languages()`, así que se toma de ahí (si no, el nombre del
@@ -299,12 +309,8 @@ if (is_native_lang()) {
     global.lang_settings = variable_struct_get(global.all_lang_settings, global.lang)
 } else if (scr_file_exists(get_lang_folder_path() + "settings.json")) {
     var settings = scr_load_json(get_lang_folder_path() + "settings.json")
-    var lang_code = variable_struct_get(settings, "lang_code")
-    if (is_undefined(lang_code))
-        lang_code = global.lang
-    global.lang = lang_code
     global.lang_settings = settings
-    variable_struct_set(global.all_lang_settings, lang_code, settings)
+    variable_struct_set(global.all_lang_settings, global.lang, settings)
 } else {
     global.lang_settings = json_parse("{\"name\": \"English\"}")
 }

@@ -7,9 +7,10 @@
 // `native: true` en su settings, y este helper es el que consulta el resto
 // del mod para saber que debe apartarse y dejar trabajar al juego.
 //
-// Si un pack de `lang/` declara el mismo `lang_code`, el pack gana y esta
-// función devuelve false para ese código: quien instala un pack "en" quiere
-// su pack, no el inglés de fábrica.
+// Un pack instalado en `lang/en/` gana y esta función devuelve false para ese
+// código: quien lo instala quiere su pack, no el inglés de fábrica. Manda la
+// carpeta: un pack en `lang/english/` que declare `"lang_code": "en"` no
+// suprime el inglés nativo.
 function is_native_lang(argument0) //gml_Script_is_native_lang
 {
     var code = argument0

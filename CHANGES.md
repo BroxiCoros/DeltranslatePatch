@@ -18,15 +18,46 @@ del upstream, entra correctamente.
 
 ### Funciones propias (reaplicadas sobre el upstream)
 
-- **Multi-idioma:** escaneo de `lang/<código>/`, selección persistida en
+- **Multi-idioma:** escaneo de `lang/<carpeta>/`, selección persistida en
   `true_config.ini` (`LANG.LANG_DT`), selector con ←/→ en el Menu raíz y en
   Ajustes in-game, y **cambio de idioma en caliente** dentro de los capítulos
   (sprites **y sonidos** diferidos para no cortar el render ni el audio).
   Las subcarpetas de idioma tienen prioridad: si `lang/` contiene al menos un
-  `lang/<código>/settings.json` válido, se usa el modo multi-idioma y se
+  `lang/<carpeta>/settings.json` válido, se usa el modo multi-idioma y se
   **ignora** cualquier `lang/settings.json` suelto en la raíz. Solo se cae al
   pack heredado de un único idioma en la raíz cuando no hay ninguna subcarpeta
   válida.
+- **La carpeta es la identidad de un idioma.** El id con el que el mod resuelve
+  rutas **y claves del ini** (`global.lang`) es el **nombre de la subcarpeta**,
+  no el `lang_code` del `settings.json`. El `lang_code` deja de ser un
+  identificador: solo se usa para acertar el idioma la primera vez
+  (comparándolo con el del sistema) y para nombrar assets del juego base
+  (`lang_ja.json`, `fnt_main_ja`). Antes el
+  `lang_code` era el id y con eso un pack podía apuntar **fuera de su propia
+  carpeta**: `lang/es/` declarando `"lang_code": "es_es"` mandaba a todo el mod
+  a `lang/es_es/`, que no existe, y el juego se quedaba entero en inglés sin un
+  solo aviso (el selector sí mostraba el idioma, con su nombre y descripción
+  bien puestos); si el código declarado era el nombre de **otra** carpeta
+  instalada, se cargaban los archivos del pack vecino con los ajustes del suyo,
+  y cuál ganaba lo decidía el orden del file system. También se valida el tipo:
+  un `"lang_code": 5` sin comillas reventaba el arranque en la primera
+  concatenación (GML no suma cadena y número); ahora un `settings.json`
+  malformado degrada en vez de crashear. Como la carpeta es única por
+  construcción, dos packs ya no pueden pisarse ni robarse la preferencia
+  guardada. Los `true_config.ini` que ya existen siguen valiendo, porque en un
+  pack bien montado la carpeta se llama como el código; y si el valor guardado
+  no corresponde a ningún idioma instalado se trata como que ese idioma se fue
+  (se cae al idioma por defecto y se corrige solo en cuanto el jugador elige
+  una vez), igual que cuando se borra una carpeta. El modo pack-suelto no
+  cambia: allí no hay carpeta, así que el id sale del `lang_code`.
+  Hubo una versión intermedia en la que el ini guardaba el `lang_code` en vez
+  del id. Se descartó a propósito: obligaba a traducir entre dos espacios de
+  nombres en 18 sitios (uno olvidado parte la preferencia en dos claves sin que
+  nadie se entere) y reprodujo el mismo bug una capa más arriba, porque un pack
+  que declarase el nombre de otra carpeta se llevaba su preferencia guardada.
+  El precio de la versión simple es que renombrar la carpeta de un pack le
+  borra sus ajustes recordados, que es poco: renombrarla es cambiarle la
+  identidad.
 - **Modo especial y voces dobladas por idioma:** los dos interruptores Sí/No
   del upstream se recuerdan por *pack* (`LANG.special_mode_<código>` y
   `LANG.translated_songs_<código>` en `true_config.ini`) en vez de en una

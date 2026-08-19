@@ -3,7 +3,7 @@
 > **Arquitectura:** este fork se basa directamente en el *patcher* del **upstream de [Neprim](https://github.com/Lazy-Desman/DeltranslatePatch)** (lógica de idioma compartida en `scripts/SharedCodeEntries/`, importada recursivamente por `BaseFix.csx`). Las funciones propias se aplican como *overlay* fino sobre esa base, no como una copia plana. Traer cambios del upstream es un `git merge` normal.
 >
 > **Añade sobre el mod de Neprim:**
-> - **Multi-idioma:** varios *packs* en `lang/<código>/` a la vez, con selector (←/→) en el Menu raíz y en Ajustes, y **cambio de idioma en caliente** dentro de los capítulos.
+> - **Multi-idioma:** varios *packs* en `lang/<carpeta>/` a la vez, con selector (←/→) en el Menu raíz y en Ajustes, y **cambio de idioma en caliente** dentro de los capítulos. El identificador de un idioma es **el nombre de su carpeta**, tanto para leer sus archivos como para lo que se guarda en el ini; el `lang_code` de su `settings.json` no es un segundo identificador (solo sirve para acertar el idioma la primera vez), así que no hace falta que coincidan y un pack nunca puede apuntar a la carpeta de otro.
 > - **Modo especial y voces dobladas por idioma:** ambos interruptores Sí/No se recuerdan por *pack* (`special_mode_<código>` y `translated_songs_<código>`), no en una clave global.
 > - **`font_settings`:** tamaño y rango de glifos por fuente desde `settings.json` / `chapter_settings.json`.
 > - **Fuentes por capítulo:** variantes `<fuente>_chapterN.ttf/otf`.
@@ -54,6 +54,21 @@ Full name of your language translation.
 
 `lang_code`
 Language code of your language translation.
+
+> **Fork note (multi-language mode).** When several packs are installed as
+> `lang/<folder>/`, the **folder name is the identifier** of a language: it is
+> what the mod uses to find that pack's `strings.json`, sprites, sounds and
+> fonts, and also what it saves in `true_config.ini` (`LANG_DT`,
+> `special_mode_<folder>`, `translated_songs_<folder>`). `lang_code` is **not**
+> a second identifier and does not have to match the folder: it is only used to
+> match the player's OS language on first run, and to name the base game's own
+> assets (`lang_ja.json`, `fnt_main_ja`). So a pack in `lang/es/` declaring
+> `"lang_code": "es_mx"` works fine, and a pack cannot reach into another
+> pack's folder — or steal its saved settings — by declaring its name. A pack
+> installed as `lang/en/` still replaces the game's built-in English; one in
+> `lang/english/` declaring `"lang_code": "en"` does not. If the language saved
+> in `true_config.ini` no longer matches an installed folder, it is treated as
+> gone and the default language is picked, exactly as if you had deleted it.
 
 `description`
 Description of your language translation.

@@ -85,10 +85,15 @@ function add_font(argument0, argument1) //gml_Script_add_font
     if (resolved_path != "") {
         font = font_add(resolved_path, fnt_size, font_get_bold(font), font_get_italic(font), fonts_range[0], fonts_range[1])
         array_push(global.loaded_fonts, font)
-    } else if ((asset_get_index(fnt_name_alt + "_" + global.lang)) != -1) {
-        font = asset_get_index(fnt_name_alt + "_" + global.lang)
-    } else if ((asset_get_index(fnt_name + "_" + global.lang)) != -1) {
-        font = asset_get_index(fnt_name + "_" + global.lang)
+    } else {
+        // Fuentes del juego base para ese idioma (`fnt_main_ja`): van por
+        // codigo PUBLICO, que es como las nombra el vanilla, no por el id de
+        // la carpeta del pack.
+        var vanilla_suffix = "_" + lang_public_code()
+        if ((asset_get_index(fnt_name_alt + vanilla_suffix)) != -1)
+            font = asset_get_index(fnt_name_alt + vanilla_suffix)
+        else if ((asset_get_index(fnt_name + vanilla_suffix)) != -1)
+            font = asset_get_index(fnt_name + vanilla_suffix)
     }
 
     ds_map_add(global.font_map, fnt_name, font)

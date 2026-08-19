@@ -18,8 +18,11 @@ function scr_lang_load(argument0) //gml_Script_scr_lang_load
     // primer `undefined` revienta en cualquier window_set_caption /
     // font_add_sprite_ext. Los Cap.2-5 usan `stringsetloc("English", "clave")`
     // y ya degradan solos.
+    // Aqui se usa el codigo PUBLICO y no el id: estos archivos son del juego
+    // base y estan nombrados por codigo de idioma (`lang_en.json`,
+    // `lang_ja.json`), no por la carpeta del pack.
     if (is_undefined(orig_map))
-        orig_map = scr_84_load_map_json(working_directory + "lang/lang_" + global.lang + ".json")
+        orig_map = scr_84_load_map_json(working_directory + "lang/lang_" + lang_public_code() + ".json")
 
     if (is_undefined(orig_map))
         orig_map = scr_84_load_map_json(working_directory + "lang/lang_en.json")
