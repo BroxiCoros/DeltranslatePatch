@@ -19,8 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install 7-Zip
-        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+      # p7zip-full ya viene en la imagen de ubuntu-latest. El `apt-get update`
+      # que habia aqui colgo dos runs seguidos (25 min sin una linea) cuando el
+      # mirror de Azure fallo; solo se instala si algun dia deja de venir.
+      - name: Install 7-Zip (solo si faltara)
+        run: command -v 7z || sudo apt-get install -y p7zip-full
 
       - name: Make version
         run: |
