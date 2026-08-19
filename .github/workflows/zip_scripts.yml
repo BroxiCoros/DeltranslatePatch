@@ -5,6 +5,10 @@ on:
   push:
     paths:
       - 'scripts/**'
+      # Tocar el workflow tambien lo lanza: asi el cambio en la tuberia de
+      # release queda probado por la propia tuberia. Ademas los runs de
+      # `workflow_dispatch` no cuentan para el check del commit, solo los de push.
+      - '.github/workflows/zip_scripts.yml'
 
 concurrency:
   group: ${{ github.workflow }}
